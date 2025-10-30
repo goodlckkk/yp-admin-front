@@ -1,16 +1,17 @@
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import { Button } from "./ui/button"
-import { Input, InputWithLabel } from "./ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
-import { Badge } from "./ui/badge"
 import { Avatar, AvatarFallback } from "./ui/avatar"
+import { Badge } from "./ui/badge"
+import { Button } from "./ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
+import { FooterPage } from "./footer"
+import { HeaderPage } from "./header"
+import { Input } from "./ui/input"
 import { Progress } from "./ui/progress"
-import { Icons } from "./ui/Icons"
+import { useState, useEffect } from "react"
+import MedicsPage from "./medics"
 import PatientForm from "./ui/patientform"
-import { Textarea, TextareaWithLabel } from "./ui/textarea"
-import { Label } from "./ui/label"
+import TrialsPage from "./trials"
+import { Icons } from "./ui/icons"
+import { createPatientIntake } from "../lib/api"
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -19,22 +20,11 @@ export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showPatientForm, setShowPatientForm] = useState(false)
   const [selectedCondition, setSelectedCondition] = useState("")
-  const [formContactoInstitucion, setFormContactoInstitucion] = useState({
-    nombreInstitucion: "",
-    nombreContacto: "",
-    email: "",
-    telefono: "",
-    mensaje: "",
-  })
-  const [formContactoMedico, setFormContactoMedico] = useState({
-    nombreCompleto: "",
-    especialidad: "",
-    institucion: "",
-    email: "",
-    telefono: "",
-    experiencia: "",
-    mensaje: "",
-  })
+  const [isSubmittingIntake, setIsSubmittingIntake] = useState(false)
+  const [submissionMessage, setSubmissionMessage] = useState<string | null>(null)
+  const [submissionError, setSubmissionError] = useState<string | null>(null)
+
+
 
   // Data para Pacientes
   const estadisticasPacientes = [
@@ -114,68 +104,7 @@ export default function HomePage() {
     },
   ]
 
-  // Data para Instituciones
-  const estadisticasInstituciones = [
-    { numero: "300%", label: "Más Reclutamiento", Icono: Icons.Target, color: "text-indigo-600" },
-    { numero: "45", label: "Instituciones Activas", Icono: Icons.Shield, color: "text-purple-600" },
-    { numero: "2.8K", label: "Pacientes en Red", Icono: Icons.Users, color: "text-blue-600" },
-    { numero: "24/7", label: "Soporte Técnico", Icono: Icons.Zap, color: "text-green-600" },
-  ]
-
-  const planesInstituciones = [
-    {
-      nombre: "Básico",
-      precio: "Gratis",
-      descripcion: "Ideal para comenzar",
-      caracteristicas: ["Hasta 2 ensayos simultáneos", "Dashboard básico", "Soporte por email", "Reportes mensuales"],
-      destacado: false,
-    },
-    {
-      nombre: "Profesional",
-      precio: "$99",
-      periodo: "/mes",
-      descripcion: "Para instituciones activas",
-      caracteristicas: [
-        "Ensayos ilimitados",
-        "Dashboard avanzado con IA",
-        "Soporte prioritario 24/7",
-        "Reportes en tiempo real",
-        "Matching automático de pacientes",
-        "API de integración",
-      ],
-      destacado: true,
-    },
-    {
-      nombre: "Enterprise",
-      precio: "Personalizado",
-      descripcion: "Solución a medida",
-      caracteristicas: [
-        "Todo de Profesional",
-        "Cuenta dedicada",
-        "Integración personalizada",
-        "Capacitación on-site",
-        "SLA garantizado",
-      ],
-      destacado: false,
-    },
-  ]
-
   // Data para Médicos
-  const estadisticasMedicos = [
-    { numero: "450+", label: "Médicos Registrados", Icono: Icons.User, color: "text-teal-600" },
-    { numero: "85%", label: "Satisfacción", Icono: Icons.Star, color: "text-yellow-600" },
-    { numero: "156", label: "Estudios Activos", Icono: Icons.Microscope, color: "text-blue-600" },
-    { numero: "40h", label: "Ahorro Promedio", Icono: Icons.Clock, color: "text-purple-600" },
-  ]
-
-  const especialidades = [
-    { nombre: "Oncología", ensayos: 34, medicos: 78, icon: Icons.Activity },
-    { nombre: "Cardiología", ensayos: 28, medicos: 65, icon: Icons.Heart },
-    { nombre: "Neurología", ensayos: 22, medicos: 52, icon: Icons.Target },
-    { nombre: "Endocrinología", ensayos: 18, medicos: 43, icon: Icons.Zap },
-    { nombre: "Reumatología", ensayos: 15, medicos: 38, icon: Icons.Shield },
-    { nombre: "Hematología", ensayos: 12, medicos: 29, icon: Icons.Microscope },
-  ]
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -186,85 +115,50 @@ export default function HomePage() {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
+      setSubmissionMessage(null)
+      setSubmissionError(null)
       setSelectedCondition(searchQuery)
       setShowPatientForm(true)
     }
   }
 
-  const handleSubmitContactoInstitucion = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Contacto Institución:", formContactoInstitucion)
-    alert("¡Gracias por tu interés! Nos contactaremos contigo en menos de 24 horas.")
-    setFormContactoInstitucion({
-      nombreInstitucion: "",
-      nombreContacto: "",
-      email: "",
-      telefono: "",
-      mensaje: "",
-    })
-  }
-
-  const handleSubmitContactoMedico = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Contacto Médico:", formContactoMedico)
-    alert("¡Bienvenido! Revisaremos tu perfil y te contactaremos pronto.")
-    setFormContactoMedico({
-      nombreCompleto: "",
-      especialidad: "",
-      institucion: "",
-      email: "",
-      telefono: "",
-      experiencia: "",
-      mensaje: "",
-    })
+  const handlePatientFormSubmit = async (data: any) => {
+    setIsSubmittingIntake(true)
+    setSubmissionError(null)
+    try {
+      await createPatientIntake({
+        ...data,
+        condicionPrincipal: data.condicionPrincipal || selectedCondition,
+      })
+      setSubmissionMessage("Solicitud enviada correctamente. Nuestro equipo se comunicará contigo pronto.")
+      setShowPatientForm(false)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "No se pudo enviar la solicitud"
+      setSubmissionError(message)
+    } finally {
+      setIsSubmittingIntake(false)
+    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Header */}
-      <header className="fixed top-4 left-4 right-4 z-50 bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Icons.Microscope className="w-6 h-6 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse-slow"></div>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gradient">yoParticipo</h1>
-                <p className="text-xs text-gray-500">Chile</p>
-              </div>
-            </div>
-
-            <nav className="hidden md:flex bg-gray-100 rounded-full p-1">
-              {["pacientes", "instituciones", "medicos"].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                    activeTab === tab ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-blue-600"
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </nav>
-
-            <div className="hidden md:flex items-center gap-3">
-              <Button variant="ghost">Iniciar Sesión</Button>
-              <Button className="rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                Comenzar
-              </Button>
-            </div>
-
-            <button className="md:hidden" onClick={() => setShowMobileMenu(!showMobileMenu)}>
-              <Icons.Menu className="w-6 h-6" />
+      {submissionMessage && (
+        <div className="fixed top-6 inset-x-0 flex justify-center px-4 z-40">
+          <div className="bg-white border border-green-200 text-green-700 shadow-lg rounded-2xl px-6 py-4 flex items-center gap-3 max-w-2xl w-full">
+            <Icons.CheckCircle className="w-5 h-5" />
+            <span>{submissionMessage}</span>
+            <button
+              type="button"
+              onClick={() => setSubmissionMessage(null)}
+              className="ml-auto text-green-700 hover:text-green-900"
+            >
+              <Icons.X className="w-4 h-4" />
             </button>
           </div>
         </div>
-      </header>
+      )}
+      {/* Header */}
+      <HeaderPage setActiveTab={setActiveTab} activeTab={activeTab} showMobileMenu={showMobileMenu} setShowMobileMenu={setShowMobileMenu} />
 
       {/* CONTENIDO PARA PACIENTES */}
       {activeTab === "pacientes" && (
@@ -297,7 +191,7 @@ export default function HomePage() {
                             <Icons.Search className="w-5 h-5 text-gray-400" />
                           </div>
                           <Input
-                            placeholder="¿Qué condición médica tienes?"
+                            placeholder="Ingresa tu condición médica y postula a nuestros ensayos"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -309,7 +203,7 @@ export default function HomePage() {
                           className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-14 px-8 rounded-xl"
                         >
                           <Icons.Search className="w-5 h-5 mr-2" />
-                          Buscar Ensayos
+                          Postular
                         </Button>
                       </div>
                     </div>
@@ -469,485 +363,40 @@ export default function HomePage() {
           </section>
         </>
       )}
-
       {/* CONTENIDO PARA INSTITUCIONES */}
-      {activeTab === "instituciones" && (
-        <div className="pt-32 pb-20 px-4">
-          <div className="max-w-7xl mx-auto">
-            {/* Hero Instituciones */}
-            <div className="text-center mb-20">
-              <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-                <Icons.Shield className="w-4 h-4" />
-                Soluciones para instituciones de salud
-              </div>
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6">
-                <span className="text-gradient">Publica</span> tus ensayos
-                <br />
-                <span className="text-gray-900">y alcanza más pacientes</span>
-              </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed">
-                La plataforma líder para difundir ensayos clínicos en Chile. Conecta con miles de pacientes interesados
-                y acelera tu investigación.
-              </p>
-
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                {estadisticasInstituciones.map((stat, index) => (
-                  <div key={index} className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                    <div className="flex items-center justify-center mb-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-indigo-100 to-purple-100 flex items-center justify-center">
-                        <stat.Icono className={`w-6 h-6 ${stat.color}`} />
-                      </div>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900 mb-1">{stat.numero}</div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Planes y Precios */}
-            <div className="mb-20">
-              <div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Planes que se Adaptan a Ti</h2>
-                <p className="text-xl text-gray-600">Elige el plan perfecto para tu institución</p>
-              </div>
-
-              <div className="grid lg:grid-cols-3 gap-8">
-                {planesInstituciones.map((plan, index) => (
-                  <Card
-                    key={index}
-                    className={`${plan.destacado ? "ring-4 ring-indigo-500 scale-105" : ""} bg-white/80 backdrop-blur-sm border-0 hover:shadow-2xl transition-all`}
-                  >
-                    <CardHeader>
-                      {plan.destacado && <Badge className="bg-indigo-600 text-white mb-4 w-fit">Más Popular</Badge>}
-                      <CardTitle className="text-2xl">{plan.nombre}</CardTitle>
-                      <div className="mt-4">
-                        <span className="text-4xl font-bold text-gray-900">{plan.precio}</span>
-                        {plan.periodo && <span className="text-gray-600">{plan.periodo}</span>}
-                      </div>
-                      <CardDescription className="mt-2">{plan.descripcion}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-3 mb-6">
-                        {plan.caracteristicas.map((caract, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <Icons.Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                            <span className="text-gray-700">{caract}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <Button
-                        className={`w-full rounded-xl ${
-                          plan.destacado
-                            ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
-                            : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-                        }`}
-                      >
-                        {plan.destacado ? "Comenzar Ahora" : "Más Información"}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Formulario de Contacto */}
-            <div className="max-w-3xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">¿Listo para Empezar?</h2>
-                <p className="text-xl text-gray-600">Completa el formulario y nos contactaremos contigo</p>
-              </div>
-
-              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
-                <CardContent className="pt-8">
-                  <form onSubmit={handleSubmitContactoInstitucion} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <InputWithLabel
-                        label="Nombre de la Institución *"
-                        value={formContactoInstitucion.nombreInstitucion}
-                        onChange={(e) =>
-                          setFormContactoInstitucion((prev) => ({ ...prev, nombreInstitucion: e.target.value }))
-                        }
-                        placeholder="Ej: Clínica Santa María"
-                        required
-                      />
-                      <InputWithLabel
-                        label="Nombre del Contacto *"
-                        value={formContactoInstitucion.nombreContacto}
-                        onChange={(e) =>
-                          setFormContactoInstitucion((prev) => ({ ...prev, nombreContacto: e.target.value }))
-                        }
-                        placeholder="Ej: Dr. Juan Pérez"
-                        required
-                      />
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <InputWithLabel
-                        label="Email *"
-                        type="email"
-                        value={formContactoInstitucion.email}
-                        onChange={(e) => setFormContactoInstitucion((prev) => ({ ...prev, email: e.target.value }))}
-                        placeholder="contacto@institucion.cl"
-                        required
-                      />
-                      <InputWithLabel
-                        label="Teléfono *"
-                        value={formContactoInstitucion.telefono}
-                        onChange={(e) => setFormContactoInstitucion((prev) => ({ ...prev, telefono: e.target.value }))}
-                        placeholder="+56 9 1234 5678"
-                        required
-                      />
-                    </div>
-
-                    <TextareaWithLabel
-                      label="Cuéntanos sobre tu institución *"
-                      value={formContactoInstitucion.mensaje}
-                      onChange={(e) => setFormContactoInstitucion((prev) => ({ ...prev, mensaje: e.target.value }))}
-                      placeholder="¿Qué ensayos te gustaría publicar? ¿Cuántos estudios realizas al año?"
-                      className="min-h-[120px]"
-                      required
-                    />
-
-                    <Button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-lg py-6 rounded-xl"
-                    >
-                      <Icons.Mail className="w-5 h-5 mr-2" />
-                      Solicitar Información
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-
-              <div className="mt-12 text-center">
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-100">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">¿Necesitas ayuda?</h3>
-                  <p className="text-gray-600 mb-6">Nuestro equipo está listo para responder tus consultas</p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <Icons.Phone className="w-4 h-4 text-indigo-600" />
-                      <span>+56 2 3456 7890</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <Icons.Mail className="w-4 h-4 text-indigo-600" />
-                      <span>instituciones@yoparticipo.cl</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {activeTab === "instituciones" && <TrialsPage />}
 
       {/* CONTENIDO PARA MÉDICOS */}
-      {activeTab === "medicos" && (
-        <div className="pt-32 pb-20 px-4">
-          <div className="max-w-7xl mx-auto">
-            {/* Hero Médicos */}
-            <div className="text-center mb-20">
-              <div className="inline-flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-                <Icons.User className="w-4 h-4" />
-                Para profesionales de la salud
-              </div>
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6">
-                <span className="text-gradient">Impulsa</span> tu carrera
-                <br />
-                <span className="text-gray-900">en investigación clínica</span>
-              </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed">
-                Únete a la red de médicos investigadores más grande de Chile. Accede a estudios innovadores y contribuye
-                al avance de la medicina.
-              </p>
-
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                {estadisticasMedicos.map((stat, index) => (
-                  <div key={index} className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                    <div className="flex items-center justify-center mb-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-teal-100 to-cyan-100 flex items-center justify-center">
-                        <stat.Icono className={`w-6 h-6 ${stat.color}`} />
-                      </div>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900 mb-1">{stat.numero}</div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Especialidades */}
-            <div className="mb-20">
-              <div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Especialidades en Demanda</h2>
-                <p className="text-xl text-gray-600">Encuentra estudios en tu área de especialización</p>
-              </div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {especialidades.map((esp, index) => (
-                  <Card
-                    key={index}
-                    className="bg-white/80 backdrop-blur-sm border-0 hover:shadow-xl transition-all group cursor-pointer"
-                  >
-                    <CardHeader>
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-gradient-to-r from-teal-100 to-cyan-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <esp.icon className="w-7 h-7 text-teal-600" />
-                        </div>
-                        <div className="flex-1">
-                          <CardTitle className="group-hover:text-teal-600 transition-colors">{esp.nombre}</CardTitle>
-                          <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                            <div className="flex items-center gap-1">
-                              <Icons.Microscope className="w-4 h-4" />
-                              <span>{esp.ensayos} estudios</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Icons.User className="w-4 h-4" />
-                              <span>{esp.medicos} médicos</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Beneficios */}
-            <div className="mb-20">
-              <div className="grid md:grid-cols-3 gap-8">
-                <Card className="bg-white/80 backdrop-blur-sm border-0 hover:shadow-xl transition-all text-center">
-                  <CardHeader>
-                    <div className="w-16 h-16 bg-gradient-to-r from-teal-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Icons.Target className="w-8 h-8 text-teal-600" />
-                    </div>
-                    <CardTitle>Matching Inteligente</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">
-                      IA que conecta automáticamente a pacientes ideales con tus criterios de selección.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/80 backdrop-blur-sm border-0 hover:shadow-xl transition-all text-center">
-                  <CardHeader>
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Icons.FileText className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <CardTitle>Gestión Simplificada</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">
-                      Dashboard completo para administrar consentimientos, datos y seguimiento de participantes.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/80 backdrop-blur-sm border-0 hover:shadow-xl transition-all text-center">
-                  <CardHeader>
-                    <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Icons.Shield className="w-8 h-8 text-purple-600" />
-                    </div>
-                    <CardTitle>Cumplimiento Normativo</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">
-                      Plataforma certificada que cumple con ISP, CEICH y estándares internacionales GCP.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* Formulario de Registro */}
-            <div className="max-w-3xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Únete a Nuestra Red</h2>
-                <p className="text-xl text-gray-600">Completa el formulario y comienza tu camino como investigador</p>
-              </div>
-
-              <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
-                <CardContent className="pt-8">
-                  <form onSubmit={handleSubmitContactoMedico} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <InputWithLabel
-                        label="Nombre Completo *"
-                        value={formContactoMedico.nombreCompleto}
-                        onChange={(e) => setFormContactoMedico((prev) => ({ ...prev, nombreCompleto: e.target.value }))}
-                        placeholder="Dr. Juan Pérez"
-                        required
-                      />
-                      <InputWithLabel
-                        label="Especialidad *"
-                        value={formContactoMedico.especialidad}
-                        onChange={(e) => setFormContactoMedico((prev) => ({ ...prev, especialidad: e.target.value }))}
-                        placeholder="Ej: Oncología"
-                        required
-                      />
-                    </div>
-
-                    <InputWithLabel
-                      label="Institución Actual *"
-                      value={formContactoMedico.institucion}
-                      onChange={(e) => setFormContactoMedico((prev) => ({ ...prev, institucion: e.target.value }))}
-                      placeholder="Ej: Hospital Clínico Universidad de Chile"
-                      required
-                    />
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <InputWithLabel
-                        label="Email *"
-                        type="email"
-                        value={formContactoMedico.email}
-                        onChange={(e) => setFormContactoMedico((prev) => ({ ...prev, email: e.target.value }))}
-                        placeholder="medico@institucion.cl"
-                        required
-                      />
-                      <InputWithLabel
-                        label="Teléfono *"
-                        value={formContactoMedico.telefono}
-                        onChange={(e) => setFormContactoMedico((prev) => ({ ...prev, telefono: e.target.value }))}
-                        placeholder="+56 9 1234 5678"
-                        required
-                      />
-                    </div>
-
-                    <InputWithLabel
-                      label="Años de Experiencia *"
-                      value={formContactoMedico.experiencia}
-                      onChange={(e) => setFormContactoMedico((prev) => ({ ...prev, experiencia: e.target.value }))}
-                      placeholder="Ej: 10 años"
-                      required
-                    />
-
-                    <TextareaWithLabel
-                      label="¿Por qué quieres unirte? *"
-                      value={formContactoMedico.mensaje}
-                      onChange={(e) => setFormContactoMedico((prev) => ({ ...prev, mensaje: e.target.value }))}
-                      placeholder="Cuéntanos sobre tu interés en la investigación clínica..."
-                      className="min-h-[120px]"
-                      required
-                    />
-
-                    <Button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white text-lg py-6 rounded-xl"
-                    >
-                      <Icons.User className="w-5 h-5 mr-2" />
-                      Solicitar Registro
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-
-              <div className="mt-12 text-center">
-                <div className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-100">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">¿Preguntas?</h3>
-                  <p className="text-gray-600 mb-6">Contáctanos para conocer más sobre los beneficios</p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <Icons.Phone className="w-4 h-4 text-teal-600" />
-                      <span>+56 2 3456 7891</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <Icons.Mail className="w-4 h-4 text-teal-600" />
-                      <span>medicos@yoparticipo.cl</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {activeTab === "medicos" && <MedicsPage />}
 
       {/* Footer */}
-      <footer className="py-16 px-4 bg-gray-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-12">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Icons.Microscope className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">yoParticipo Chile</h3>
-                  <p className="text-gray-400 text-sm">Conectando ciencia y esperanza</p>
-                </div>
-              </div>
-              <p className="text-gray-400 mb-6 max-w-md">
-                Revolucionamos el acceso a ensayos clínicos en Chile, conectando pacientes con innovación médica.
-              </p>
-              <div className="flex flex-col gap-2 text-gray-400">
-                <div className="flex items-center gap-2">
-                  <Icons.Phone className="w-4 h-4" />
-                  <span className="text-sm">+56 2 3456 7890</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Icons.Mail className="w-4 h-4" />
-                  <span className="text-sm">contacto@yoparticipo.cl</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-white mb-4">Plataforma</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Para Pacientes
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Para Instituciones
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Para Médicos
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-white mb-4">Soporte</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Ayuda
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contacto
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 yoParticipo Chile. Innovando el futuro de la medicina.</p>
-          </div>
-        </div>
-      </footer>
+      <FooterPage />
 
       {/* Modal del Formulario */}
       {showPatientForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {submissionError && (
+              <div className="bg-red-50 text-red-700 px-6 py-3 border-b border-red-200 flex items-center gap-2">
+                <Icons.AlertTriangle className="w-5 h-5" />
+                <span>{submissionError}</span>
+                <button
+                  type="button"
+                  onClick={() => setSubmissionError(null)}
+                  className="ml-auto text-red-700 hover:text-red-900"
+                >
+                  <Icons.X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
             <PatientForm
               condition={selectedCondition}
-              onClose={() => setShowPatientForm(false)}
-              onSubmit={(data) => {
-                console.log("Datos:", data)
-                alert("¡Registro completado!")
+              onClose={() => {
                 setShowPatientForm(false)
+                setSubmissionError(null)
               }}
+              onSubmit={handlePatientFormSubmit}
+              isSubmitting={isSubmittingIntake}
             />
           </div>
         </div>

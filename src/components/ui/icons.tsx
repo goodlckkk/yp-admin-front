@@ -185,6 +185,28 @@ export const Icons = {
       />
     </svg>
   ),
+  Loader: ({ className = "w-6 h-6" }: { className?: string }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 2a10 10 0 00-7.07 2.93M12 22a10 10 0 007.07-2.93M4.93 4.93L7.76 7.76M19.07 19.07l-2.83-2.83"
+      />
+    </svg>
+  ),
+  AlertTriangle: ({ className = "w-6 h-6" }: { className?: string }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M10.29 3.86L1.82 18a1 1 0 00.86 1.5h18.64a1 1 0 00.86-1.5L13.71 3.86a1 1 0 00-1.72 0z"
+      />
+      <line x1="12" y1="9" x2="12" y2="13" strokeLinecap="round" strokeWidth={2} />
+      <line x1="12" y1="17" x2="12.01" y2="17" strokeLinecap="round" strokeWidth={2} />
+    </svg>
+  ),
   ChevronDown: ({ className = "w-6 h-6" }: { className?: string }) => (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
