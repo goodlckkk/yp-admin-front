@@ -8,15 +8,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./car
 import { Badge } from "./badge"
 import { Checkbox } from "./checkbox"
 import { SelectWithLabel } from "./select"
-import { Icons } from "./Icons"
+import { Icons } from "./icons"
 
 interface PatientFormProps {
   condition: string
   onClose: () => void
   onSubmit: (data: any) => void
+  isSubmitting?: boolean
 }
 
-export default function PatientForm({ condition, onClose, onSubmit }: PatientFormProps) {
+export default function PatientForm({ condition, onClose, onSubmit, isSubmitting = false }: PatientFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     nombres: "",
@@ -342,11 +343,20 @@ export default function PatientForm({ condition, onClose, onSubmit }: PatientFor
         ) : (
           <Button
             onClick={() => onSubmit(formData)}
-            disabled={!validateStep(currentStep)}
+            disabled={!validateStep(currentStep) || isSubmitting}
             className="bg-gradient-to-r from-green-600 to-emerald-600"
           >
-            <Icons.CheckCircle className="w-5 h-5 mr-2" />
-            Completar
+            {isSubmitting ? (
+              <>
+                <Icons.Loader className="w-5 h-5 mr-2 animate-spin" />
+                Enviando...
+              </>
+            ) : (
+              <>
+                <Icons.CheckCircle className="w-5 h-5 mr-2" />
+                Completar
+              </>
+            )}
           </Button>
         )}
       </div>

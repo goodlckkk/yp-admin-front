@@ -1,25 +1,20 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
 import { Button } from "./ui/button"
-import { Input, InputWithLabel } from "./ui/input"
 import { Card, CardContent } from "./ui/card"
 import { Icons } from "./ui/icons"
-import { Label } from "./ui/label"
-import { TextareaWithLabel } from "./ui/textarea"
+import { InputWithLabel } from "./ui/input"
+import { useState } from "react"
+import type React from "react"
 
 export default function AuthPage() {
-  const [activeTab, setActiveTab] = useState<"login" | "register">("login")
+  //const [activeTab, setActiveTab] = useState<"login" | "register">("login")
   const [loginData, setLoginData] = useState({ email: "", password: "" })
-  const [registerData, setRegisterData] = useState({
-    nombre: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    tipo: "paciente",
-  })
+  // const [registerData, setRegisterData] = useState({
+  //   nombre: "",
+  //   email: "",
+  //   password: "",
+  //   confirmPassword: "",
+  //   tipo: "paciente",
+  // })
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,16 +23,16 @@ export default function AuthPage() {
     window.location.href = "/dashboard"
   }
 
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (registerData.password !== registerData.confirmPassword) {
-      alert("Las contraseñas no coinciden")
-      return
-    }
-    console.log("Register:", registerData)
-    alert("¡Registro exitoso! Inicia sesión para continuar.")
-    setActiveTab("login")
-  }
+  // const handleRegister = (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   if (registerData.password !== registerData.confirmPassword) {
+  //     alert("Las contraseñas no coinciden")
+  //     return
+  //   }
+  //   console.log("Register:", registerData)
+  //   alert("¡Registro exitoso! Inicia sesión para continuar.")
+  //   //setActiveTab("login")
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
@@ -63,25 +58,25 @@ export default function AuthPage() {
               <p className="text-sm text-gray-600">Chile</p>
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          {/* <h2 className="text-3xl font-bold text-gray-900 mb-2">
             {activeTab === "login" ? "¡Bienvenido de vuelta!" : "Únete a nosotros"}
-          </h2>
-          <p className="text-gray-600">
-            {activeTab === "login" ? "Ingresa tus credenciales para continuar" : "Crea tu cuenta para comenzar"}
+          </h2> */}
+          <p className="text-3xl font-bold text-gray-900 mb-2">
+            "Ingresa tus credenciales para continuar"
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-xl">
+        {/* <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-xl">
           <button
-            onClick={() => setActiveTab("login")}
-            className={`flex-1 py-3 rounded-lg font-medium transition-all ${
-              activeTab === "login" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
-            }`}
+            onClick={() => ("login")}
+            className={`flex-1 py-3 rounded-lg font-medium transition-all 
+              "login" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
+            `}
           >
             Iniciar Sesión
           </button>
-          <button
+           <button
             onClick={() => setActiveTab("register")}
             className={`flex-1 py-3 rounded-lg font-medium transition-all ${
               activeTab === "register" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
@@ -89,12 +84,11 @@ export default function AuthPage() {
           >
             Registrarse
           </button>
-        </div>
+        </div> */}
 
         {/* Forms */}
         <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
           <CardContent className="pt-6">
-            {activeTab === "login" ? (
               <form onSubmit={handleLogin} className="space-y-4">
                 <InputWithLabel
                   label="Email"
@@ -129,8 +123,8 @@ export default function AuthPage() {
                   Iniciar Sesión
                 </Button>
               </form>
-            ) : (
-              <form onSubmit={handleRegister} className="space-y-4">
+            
+              {/* <form onSubmit={handleRegister} className="space-y-4">
                 <InputWithLabel
                   label="Nombre Completo"
                   value={registerData.nombre}
@@ -201,8 +195,7 @@ export default function AuthPage() {
                   <Icons.CheckCircle className="w-5 h-5 mr-2" />
                   Crear Cuenta
                 </Button>
-              </form>
-            )}
+              </form> */}
           </CardContent>
         </Card>
 
