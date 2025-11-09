@@ -1,246 +1,228 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
-import { Badge } from "./ui/badge"
 import { Avatar, AvatarFallback } from "./ui/avatar"
+import { Badge } from "./ui/badge"
+import { Button } from "./ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
+import {
+  getLastActivityTimestamp,
+  getPatientIntakes,
+  getToken,
+  getTokenExpiration,
+  getTrials,
+  removeToken,
+  updateLastActivityTimestamp,
+} from "../lib/api"
 import { Icons } from "./ui/icons"
+import { Input } from "./ui/input"
+import { useEffect, useMemo, useState } from "react"
+import type { PatientIntake, Trial } from "../lib/api"
 
-type Section = "overview" | "pacientes" | "instituciones" | "medicos" | "ensayos"
+type Section = "overview" | "pacientes" | "ensayos"
 
 export default function DashboardPage() {
+  const [isAuthorized, setIsAuthorized] = useState(false)
   const [activeSection, setActiveSection] = useState<Section>("overview")
   const [searchQuery, setSearchQuery] = useState("")
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [trials, setTrials] = useState<Trial[]>([])
+  const [patientIntakes, setPatientIntakes] = useState<PatientIntake[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [patientError, setPatientError] = useState<string | null>(null)
 
-  // Mock Data
-  const statsOverview = [
-    {
-      label: "Total Pacientes",
-      value: "2,847",
-      change: "+12%",
-      icon: Icons.Users,
-      color: "text-blue-600",
-      bg: "bg-blue-100",
-    },
-    {
-      label: "Instituciones",
-      value: "45",
-      change: "+5",
-      icon: Icons.Shield,
-      color: "text-purple-600",
-      bg: "bg-purple-100",
-    },
-    { label: "Médicos", value: "450", change: "+23", icon: Icons.User, color: "text-teal-600", bg: "bg-teal-100" },
-    {
-      label: "Ensayos Activos",
-      value: "156",
-      change: "+8",
-      icon: Icons.Microscope,
-      color: "text-green-600",
-      bg: "bg-green-100",
-    },
-  ]
+  const INACTIVITY_LIMIT_MS = 15 * 60 * 1000
 
-  const pacientes = [
-    {
-      id: 1,
-      nombre: "Patricia Silva",
-      rut: "12.345.678-9",
-      edad: 52,
-      condicion: "Artritis",
-      estado: "Activo",
-      ensayo: "Innovación en Diabetes",
-      fecha: "15/01/2025",
-    },
-    {
-      id: 2,
-      nombre: "Roberto Morales",
-      rut: "23.456.789-0",
-      edad: 67,
-      condicion: "Parkinson",
-      estado: "En Seguimiento",
-      ensayo: "Neuroplasticidad",
-      fecha: "10/01/2025",
-    },
-    {
-      id: 3,
-      nombre: "Carmen López",
-      rut: "34.567.890-1",
-      edad: 43,
-      condicion: "Esclerosis",
-      estado: "Activo",
-      ensayo: "Inmunoterapia",
-      fecha: "08/01/2025",
-    },
-    {
-      id: 4,
-      nombre: "Juan Pérez",
-      rut: "45.678.901-2",
-      edad: 58,
-      condicion: "Diabetes",
-      estado: "Pendiente",
-      ensayo: "Innovación en Diabetes",
-      fecha: "20/01/2025",
-    },
-    {
-      id: 5,
-      nombre: "María González",
-      rut: "56.789.012-3",
-      edad: 45,
-      condicion: "Cáncer",
-      estado: "Activo",
-      ensayo: "Inmunoterapia",
-      fecha: "18/01/2025",
-    },
-  ]
+  useEffect(() => {
+    let redirecting = false
 
-  const instituciones = [
-    {
-      id: 1,
-      nombre: "Hospital Clínico Universidad de Chile",
-      ubicacion: "Santiago, RM",
-      ensayos: 23,
-      pacientes: 450,
-      plan: "Enterprise",
-      estado: "Activo",
-    },
-    {
-      id: 2,
-      nombre: "Instituto Nacional del Cáncer",
-      ubicacion: "Santiago, RM",
-      ensayos: 18,
-      pacientes: 320,
-      plan: "Profesional",
-      estado: "Activo",
-    },
-    {
-      id: 3,
-      nombre: "Hospital Guillermo Grant Benavente",
-      ubicacion: "Concepción, Biobío",
-      ensayos: 15,
-      pacientes: 280,
-      plan: "Profesional",
-      estado: "Activo",
-    },
-    {
-      id: 4,
-      nombre: "Clínica Las Condes",
-      ubicacion: "Santiago, RM",
-      ensayos: 12,
-      pacientes: 195,
-      plan: "Básico",
-      estado: "Pendiente",
-    },
-  ]
+    const handleUnauthorized = () => {
+      if (redirecting) return
+      redirecting = true
+      removeToken()
+      setIsAuthorized(false)
+      window.location.href = "/auth"
+    }
 
-  const medicos = [
-    {
-      id: 1,
-      nombre: "Dr. Carlos Mendoza",
-      especialidad: "Oncología",
-      institucion: "Hospital Clínico UC",
-      ensayos: 12,
-      pacientes: 85,
-      rating: 4.9,
-    },
-    {
-      id: 2,
-      nombre: "Dra. María Fernández",
-      especialidad: "Cardiología",
-      institucion: "Instituto Nacional del Cáncer",
-      ensayos: 8,
-      pacientes: 62,
-      rating: 4.8,
-    },
-    {
-      id: 3,
-      nombre: "Dr. Roberto Silva",
-      especialidad: "Neurología",
-      institucion: "Hospital Guillermo Grant",
-      ensayos: 10,
-      pacientes: 74,
-      rating: 4.9,
-    },
-    {
-      id: 4,
-      nombre: "Dra. Patricia Rojas",
-      especialidad: "Endocrinología",
-      institucion: "Clínica Las Condes",
-      ensayos: 6,
-      pacientes: 48,
-      rating: 4.7,
-    },
-    {
-      id: 5,
-      nombre: "Dr. Juan Valenzuela",
-      especialidad: "Reumatología",
-      institucion: "Hospital Carlos Van Buren",
-      ensayos: 7,
-      pacientes: 56,
-      rating: 4.8,
-    },
-  ]
+    const ensureAuthenticated = () => {
+      const token = getToken()
+      if (!token) {
+        handleUnauthorized()
+        return false
+      }
 
-  const ensayos = [
-    {
-      id: 1,
-      titulo: "Innovación en Diabetes",
-      institucion: "Hospital Clínico UC",
-      estado: "Reclutando",
-      participantes: 45,
-      objetivo: 60,
-      inicio: "01/12/2024",
-    },
-    {
-      id: 2,
-      titulo: "Inmunoterapia Avanzada",
-      institucion: "Instituto Nacional del Cáncer",
-      estado: "En Curso",
-      participantes: 38,
-      objetivo: 50,
-      inicio: "15/11/2024",
-    },
-    {
-      id: 3,
-      titulo: "Neuroplasticidad Cognitiva",
-      institucion: "Hospital Guillermo Grant",
-      estado: "Próximamente",
-      participantes: 0,
-      objetivo: 40,
-      inicio: "01/03/2025",
-    },
-    {
-      id: 4,
-      titulo: "Terapia Cardiovascular",
-      institucion: "Clínica Las Condes",
-      estado: "Reclutando",
-      participantes: 22,
-      objetivo: 35,
-      inicio: "10/01/2025",
-    },
-  ]
+      const expiration = getTokenExpiration()
+      if (expiration && Date.now() >= expiration) {
+        handleUnauthorized()
+        return false
+      }
 
-  const actividadReciente = [
-    {
-      tipo: "nuevo_paciente",
-      mensaje: "Patricia Silva se registró en Innovación en Diabetes",
-      tiempo: "Hace 5 minutos",
-    },
-    { tipo: "nuevo_ensayo", mensaje: "Hospital Clínico UC publicó nuevo ensayo", tiempo: "Hace 1 hora" },
-    { tipo: "actualizacion", mensaje: "Dr. Carlos Mendoza actualizó datos de paciente", tiempo: "Hace 2 horas" },
-    { tipo: "completado", mensaje: "Ensayo de Cardiología alcanzó meta de participantes", tiempo: "Hace 3 horas" },
-  ]
+      const lastActivity = getLastActivityTimestamp()
+      if (lastActivity && Date.now() - lastActivity >= INACTIVITY_LIMIT_MS) {
+        handleUnauthorized()
+        return false
+      }
+
+      return true
+    }
+
+    if (!ensureAuthenticated()) {
+      return
+    }
+
+    setIsAuthorized(true)
+    updateLastActivityTimestamp()
+
+    const activityEvents: Array<keyof WindowEventMap> = [
+      "click",
+      "keydown",
+      "mousemove",
+      "scroll",
+      "touchstart",
+    ]
+
+    const registerActivity = () => {
+      updateLastActivityTimestamp()
+    }
+
+    activityEvents.forEach((event) => window.addEventListener(event, registerActivity))
+
+    const intervalId = window.setInterval(() => {
+      ensureAuthenticated()
+    }, 60_000)
+
+    return () => {
+      activityEvents.forEach((event) => window.removeEventListener(event, registerActivity))
+      window.clearInterval(intervalId)
+    }
+  }, [])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const [trialsResponse, intakesResponse] = await Promise.allSettled([
+          getTrials(),
+          getPatientIntakes(),
+        ])
+
+        if (trialsResponse.status === "fulfilled") {
+          setTrials(trialsResponse.value.data)
+          setError(null)
+        } else {
+          setError(trialsResponse.reason instanceof Error ? trialsResponse.reason.message : "Error al cargar los ensayos")
+        }
+
+        if (intakesResponse.status === "fulfilled") {
+          setPatientIntakes(intakesResponse.value)
+          setPatientError(null)
+        } else {
+          setPatientError(
+            intakesResponse.reason instanceof Error
+              ? intakesResponse.reason.message
+              : "Error al cargar las postulaciones",
+          )
+        }
+      } catch (err) {
+        setError("Error al cargar los ensayos")
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (!isAuthorized) {
+      return
+    }
+
+    if (activeSection === "ensayos" || activeSection === "overview" || activeSection === "pacientes") {
+      fetchData()
+    }
+  }, [activeSection, isAuthorized])
+
+  const patientsToDisplay = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return patientIntakes
+    }
+
+    const lowerQuery = searchQuery.toLowerCase()
+    return patientIntakes.filter((intake) =>
+      [
+        `${intake.nombres} ${intake.apellidos}`,
+        intake.email,
+        intake.rut,
+        intake.condicionPrincipal,
+        intake.region,
+        intake.comuna,
+        intake.trial?.title ?? "",
+      ]
+        .filter(Boolean)
+        .some((value) => value.toLowerCase().includes(lowerQuery)),
+    )
+  }, [patientIntakes, searchQuery])
+
+  const statsOverview = useMemo(
+    () => [
+      {
+        label: "Total Postulaciones",
+        value: patientIntakes.length.toString(),
+        change: `+${patientIntakes.filter((intake) => intake.status === "RECEIVED").length}`,
+        icon: Icons.Users,
+        color: "text-blue-600",
+        bg: "bg-blue-100",
+      },
+      {
+        label: "Postulaciones Contactadas",
+        value: patientIntakes.filter((intake) => intake.status === "CONTACTED").length.toString(),
+        change: `+${patientIntakes.filter((intake) => intake.status === "CONTACTED").length}`,
+        icon: Icons.Phone,
+        color: "text-emerald-600",
+        bg: "bg-emerald-100",
+      },
+      {
+        label: "Postulaciones en Revisión",
+        value: patientIntakes.filter((intake) => intake.status === "REVIEWING").length.toString(),
+        change: `+${patientIntakes.filter((intake) => intake.status === "REVIEWING").length}`,
+        icon: Icons.Activity,
+        color: "text-amber-600",
+        bg: "bg-amber-100",
+      },
+      {
+        label: "Ensayos Activos",
+        value: trials.length.toString(),
+        change: `+${trials.filter((trial) => trial.status === "RECRUITING").length}`,
+        icon: Icons.Microscope,
+        color: "text-green-600",
+        bg: "bg-green-100",
+      },
+    ],
+    [patientIntakes, trials],
+  )
+
+  const formatDate = (isoDate?: string) => {
+    if (!isoDate) return "Sin registro"
+    const date = new Date(isoDate)
+    if (Number.isNaN(date.getTime())) return "Sin registro"
+    return date.toLocaleDateString("es-CL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+  }
 
   const menuItems = [
     { id: "overview" as Section, label: "Vista General", icon: Icons.Activity },
     { id: "pacientes" as Section, label: "Pacientes", icon: Icons.Users },
-    { id: "instituciones" as Section, label: "Instituciones", icon: Icons.Shield },
-    { id: "medicos" as Section, label: "Médicos", icon: Icons.User },
     { id: "ensayos" as Section, label: "Ensayos", icon: Icons.Microscope },
   ]
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500">Validando sesión...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -376,7 +358,7 @@ export default function DashboardPage() {
                     <div className="h-64 flex items-center justify-center text-gray-400">
                       <div className="text-center">
                         <Icons.Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p>Gráfico de crecimiento</p>
+                        <p>Conecta un gráfico real para visualizar métricas</p>
                       </div>
                     </div>
                   </CardContent>
@@ -389,12 +371,12 @@ export default function DashboardPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {actividadReciente.map((actividad, index) => (
+                      {patientIntakes.map((intake, index) => (
                         <div key={index} className="flex items-start gap-3 pb-4 border-b last:border-0">
                           <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-900">{actividad.mensaje}</p>
-                            <p className="text-xs text-gray-500 mt-1">{actividad.tiempo}</p>
+                            <p className="text-sm text-gray-900">{intake.nombres} {intake.apellidos}</p>
+                            <p className="text-xs text-gray-500 mt-1">{formatDate(intake.fechaNacimiento)}</p>
                           </div>
                         </div>
                       ))}
@@ -427,7 +409,7 @@ export default function DashboardPage() {
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">RUT</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Edad</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha de Nacimiento</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Condición</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ensayo</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
@@ -435,38 +417,46 @@ export default function DashboardPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
-                        {pacientes.map((paciente) => (
+                        {patientsToDisplay.map((paciente) => (
                           <tr key={paciente.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-3">
                                 <Avatar className="w-8 h-8">
                                   <AvatarFallback>
-                                    {paciente.nombre
+                                    {`${paciente.nombres} ${paciente.apellidos}`
                                       .split(" ")
-                                      .map((n) => n[0])
+                                      .filter(Boolean)
+                                      .slice(0, 2)
+                                      .map((n) => n[0]?.toUpperCase())
                                       .join("")}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span className="text-sm font-medium text-gray-900">{paciente.nombre}</span>
+                                <span className="text-sm font-medium text-gray-900">
+                                  {paciente.nombres} {paciente.apellidos}
+                                </span>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{paciente.rut}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{paciente.edad}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <Badge variant="outline">{paciente.condicion}</Badge>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                              {formatDate(paciente.fechaNacimiento)}
                             </td>
-                            <td className="px-6 py-4 text-sm text-gray-600">{paciente.ensayo}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <Badge variant="outline">{paciente.condicionPrincipal}</Badge>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-600">{paciente.trial?.title ?? "Sin asignar"}</td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <Badge
                                 className={
-                                  paciente.estado === "Activo"
+                                  paciente.status === "CONTACTED"
                                     ? "bg-green-100 text-green-700"
-                                    : paciente.estado === "Pendiente"
+                                    : paciente.status === "REVIEWING"
                                       ? "bg-yellow-100 text-yellow-700"
-                                      : "bg-blue-100 text-blue-700"
+                                      : paciente.status === "DISCARDED"
+                                        ? "bg-rose-100 text-rose-700"
+                                        : "bg-blue-100 text-blue-700"
                                 }
                               >
-                                {paciente.estado}
+                                {paciente.status ?? "RECEIVED"}
                               </Badge>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -484,201 +474,46 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Instituciones */}
-          {activeSection === "instituciones" && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Instituciones Registradas</h3>
-                  <p className="text-sm text-gray-500">Gestiona clínicas y centros médicos</p>
-                </div>
-                <Button className="bg-gradient-to-r from-indigo-600 to-purple-600">
-                  <Icons.Shield className="w-4 h-4 mr-2" />
-                  Nueva Institución
-                </Button>
-              </div>
-
-              <div className="grid lg:grid-cols-2 gap-6">
-                {instituciones.map((inst) => (
-                  <Card key={inst.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle className="text-lg">{inst.nombre}</CardTitle>
-                          <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
-                            <Icons.MapPin className="w-4 h-4" />
-                            {inst.ubicacion}
-                          </div>
-                        </div>
-                        <Badge
-                          className={
-                            inst.plan === "Enterprise"
-                              ? "bg-purple-100 text-purple-700"
-                              : inst.plan === "Profesional"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-gray-100 text-gray-700"
-                          }
-                        >
-                          {inst.plan}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="text-center p-3 bg-blue-50 rounded-lg">
-                          <div className="text-2xl font-bold text-blue-600">{inst.ensayos}</div>
-                          <div className="text-xs text-gray-600">Ensayos</div>
-                        </div>
-                        <div className="text-center p-3 bg-green-50 rounded-lg">
-                          <div className="text-2xl font-bold text-green-600">{inst.pacientes}</div>
-                          <div className="text-xs text-gray-600">Pacientes</div>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" className="flex-1 bg-transparent" size="sm">
-                          Ver Detalles
-                        </Button>
-                        <Button className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600" size="sm">
-                          Contactar
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Médicos */}
-          {activeSection === "medicos" && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Médicos Investigadores</h3>
-                  <p className="text-sm text-gray-500">Red de profesionales de la salud</p>
-                </div>
-                <Button className="bg-gradient-to-r from-teal-600 to-cyan-600">
-                  <Icons.User className="w-4 h-4 mr-2" />
-                  Invitar Médico
-                </Button>
-              </div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {medicos.map((medico) => (
-                  <Card key={medico.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-center gap-3 mb-4">
-                        <Avatar className="w-14 h-14">
-                          <AvatarFallback className="text-lg">
-                            {medico.nombre
-                              .split(" ")
-                              .slice(0, 2)
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-base truncate">{medico.nombre}</CardTitle>
-                          <p className="text-sm text-gray-600">{medico.especialidad}</p>
-                          <div className="flex items-center gap-1 mt-1">
-                            <Icons.Star className="w-4 h-4 text-yellow-400" filled={true} />
-                            <span className="text-sm font-medium">{medico.rating}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-2 text-sm text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <Icons.Shield className="w-4 h-4 text-teal-500" />
-                          <span className="truncate">{medico.institucion}</span>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 gap-3 mb-4">
-                        <div className="text-center p-2 bg-teal-50 rounded-lg">
-                          <div className="text-xl font-bold text-teal-600">{medico.ensayos}</div>
-                          <div className="text-xs text-gray-600">Ensayos</div>
-                        </div>
-                        <div className="text-center p-2 bg-blue-50 rounded-lg">
-                          <div className="text-xl font-bold text-blue-600">{medico.pacientes}</div>
-                          <div className="text-xs text-gray-600">Pacientes</div>
-                        </div>
-                      </div>
-                      <Button variant="outline" className="w-full bg-transparent" size="sm">
-                        Ver Perfil
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Ensayos */}
           {activeSection === "ensayos" && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Ensayos Clínicos</h3>
-                  <p className="text-sm text-gray-500">Gestiona todos los estudios activos</p>
-                </div>
-                <Button className="bg-gradient-to-r from-green-600 to-emerald-600">
-                  <Icons.Microscope className="w-4 h-4 mr-2" />
-                  Nuevo Ensayo
-                </Button>
-              </div>
-
-              <div className="grid gap-6">
-                {ensayos.map((ensayo) => (
-                  <Card key={ensayo.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <CardTitle>{ensayo.titulo}</CardTitle>
-                            <Badge
-                              className={
-                                ensayo.estado === "Reclutando"
-                                  ? "bg-green-100 text-green-700"
-                                  : ensayo.estado === "En Curso"
-                                    ? "bg-blue-100 text-blue-700"
-                                    : "bg-yellow-100 text-yellow-700"
-                              }
-                            >
-                              {ensayo.estado}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <div className="flex items-center gap-1">
-                              <Icons.Shield className="w-4 h-4" />
-                              {ensayo.institucion}
+              {loading && <p>Cargando ensayos...</p>}
+              {error && <p className="text-red-500">{error}</p>}
+              {!loading && !error && (
+                <div className="grid gap-6">
+                  {trials.map((ensayo) => (
+                    <Card key={ensayo.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <CardTitle>{ensayo.title}</CardTitle>
+                              <Badge
+                                className={
+                                  ensayo.status === "RECRUITING"
+                                    ? "bg-green-100 text-green-700"
+                                    : ensayo.status === "ACTIVE"
+                                      ? "bg-blue-100 text-blue-700"
+                                      : "bg-yellow-100 text-yellow-700"
+                                }
+                              >
+                                {ensayo.status}
+                              </Badge>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <Icons.Clock className="w-4 h-4" />
-                              Inicio: {ensayo.inicio}
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                              <div className="flex items-center gap-1">
+                                <Icons.MapPin className="w-4 h-4" />
+                                {ensayo.clinic_city}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Icons.Shield className="w-4 h-4" />
+                                {ensayo.sponsor.name}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div>
-                          <div className="flex items-center justify-between text-sm mb-2">
-                            <span className="text-gray-600">
-                              Participantes: {ensayo.participantes}/{ensayo.objetivo}
-                            </span>
-                            <span className="font-medium text-blue-600">
-                              {Math.round((ensayo.participantes / ensayo.objetivo) * 100)}%
-                            </span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all"
-                              style={{ width: `${(ensayo.participantes / ensayo.objetivo) * 100}%` }}
-                            />
-                          </div>
-                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-gray-600 mb-4">{ensayo.public_description}</p>
                         <div className="flex gap-2">
                           <Button variant="outline" className="flex-1 bg-transparent" size="sm">
                             Ver Detalles
@@ -687,11 +522,11 @@ export default function DashboardPage() {
                             Gestionar
                           </Button>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </main>
