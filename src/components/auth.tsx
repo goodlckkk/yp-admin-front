@@ -4,23 +4,49 @@ import { Icons } from "./ui/icons"
 import { InputWithLabel } from "./ui/input"
 import { useState } from "react"
 import type React from "react"
+import { login, saveToken } from "../lib/api"
 
 export default function AuthPage() {
-  //const [activeTab, setActiveTab] = useState<"login" | "register">("login")
   const [loginData, setLoginData] = useState({ email: "", password: "" })
-  // const [registerData, setRegisterData] = useState({
-  //   nombre: "",
-  //   email: "",
-  //   password: "",
-  //   confirmPassword: "",
-  //   tipo: "paciente",
-  // })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Login:", loginData)
-    // Simular login exitoso - redirigir al dashboard
-    window.location.href = "/dashboard"
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await login(loginData)
+      saveToken(response.access_token, response.expires_at)
+      window.location.href = "/dashboard"
+    } catch (err) {
+      if (err instanceof Error) {
+        let parsedMessage: string | null = null
+        try {
+          const parsed = JSON.parse(err.message)
+          if (typeof parsed === "object" && parsed && "message" in parsed) {
+            parsedMessage = Array.isArray(parsed.message) ? parsed.message.join(" ") : String(parsed.message)
+            if ("statusCode" in parsed && parsed.statusCode === 401) {
+              parsedMessage = "Usuario o contraseña incorrectos."
+            }
+          }
+        } catch {
+          // ignore JSON parse error, fall back to default messages
+        }
+
+        if (!parsedMessage && err.message.toLowerCase().includes("unauthorized")) {
+          parsedMessage = "Usuario o contraseña incorrectos."
+        }
+
+        setError(parsedMessage ?? "Ocurrió un error inesperado. Inténtalo nuevamente.")
+      } else {
+        setError("Ocurrió un error inesperado. Inténtalo nuevamente.")
+      }
+      setIsLoading(false)
+    }
+    finally {
+      setIsLoading(false)
+    }
   }
 
   // const handleRegister = (e: React.FormEvent) => {
@@ -118,10 +144,25 @@ export default function AuthPage() {
                 <Button
                   type="submit"
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-xl"
+                  disabled={isLoading}
                 >
-                  <Icons.User className="w-5 h-5 mr-2" />
-                  Iniciar Sesión
+                  {isLoading ? (
+                    <>
+                      <Icons.Loader className="w-5 h-5 mr-2 animate-spin" />
+                      Validando...
+                    </>
+                  ) : (
+                    <>
+                      <Icons.User className="w-5 h-5 mr-2" />
+                      Iniciar Sesión
+                    </>
+                  )}
                 </Button>
+                {error && (
+                  <p className="text-sm text-red-600 text-center bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+                    {error}
+                  </p>
+                )}
               </form>
             
               {/* <form onSubmit={handleRegister} className="space-y-4">

@@ -5,13 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { FooterPage } from "./footer"
 import { HeaderPage } from "./header"
 import { Input } from "./ui/input"
-import { Progress } from "./ui/progress"
 import { useState, useEffect } from "react"
 import MedicsPage from "./medics"
 import PatientForm from "./ui/patientform"
 import TrialsPage from "./trials"
 import { Icons } from "./ui/icons"
-import { createPatientIntake } from "../lib/api"
+import { createPatientIntake, getTrials } from "@/lib/api"
+import type { Trial } from "@/lib/api"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog"
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -23,7 +31,20 @@ export default function HomePage() {
   const [isSubmittingIntake, setIsSubmittingIntake] = useState(false)
   const [submissionMessage, setSubmissionMessage] = useState<string | null>(null)
   const [submissionError, setSubmissionError] = useState<string | null>(null)
+  const [trials, setTrials] = useState<Trial[]>([])
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
+  useEffect(() => {
+    const fetchTrials = async () => {
+      try {
+        const paginatedTrials = await getTrials({ page: 1, limit: 3, status: 'RECRUITING' });
+        setTrials(paginatedTrials.data);
+      } catch (error) {
+        console.error("Error fetching trials:", error);
+      }
+    };
+    fetchTrials();
+  }, []);
 
 
   // Data para Pacientes
@@ -32,45 +53,6 @@ export default function HomePage() {
     { numero: "156", label: "Ensayos Activos", Icono: Icons.Microscope, color: "text-green-600" },
     { numero: "89%", label: "Tasa de Éxito", Icono: Icons.Heart, color: "text-red-600" },
     { numero: "45", label: "Centros Médicos", Icono: Icons.Shield, color: "text-purple-600" },
-  ]
-
-  const ensayosDestacados = [
-    {
-      id: 1,
-      titulo: "Innovación en Diabetes",
-      descripcion: "Terapia génica revolucionaria para diabetes tipo 1 con células madre.",
-      ubicacion: "Santiago",
-      progreso: 75,
-      participantes: "18-65 años",
-      duracion: "24 meses",
-      estado: "Reclutando",
-      urgencia: "Alta",
-      beneficios: ["Tratamiento gratuito", "Seguimiento especializado", "Medicación incluida"],
-    },
-    {
-      id: 2,
-      titulo: "Inmunoterapia Avanzada",
-      descripcion: "Tratamiento personalizado contra el cáncer usando inteligencia artificial.",
-      ubicacion: "Valparaíso",
-      progreso: 60,
-      participantes: "25-75 años",
-      duracion: "18 meses",
-      estado: "Reclutando",
-      urgencia: "Media",
-      beneficios: ["Terapia personalizada", "Análisis genético", "Equipo multidisciplinario"],
-    },
-    {
-      id: 3,
-      titulo: "Neuroplasticidad Cognitiva",
-      descripcion: "Estimulación cerebral no invasiva para mejorar la memoria y cognición.",
-      ubicacion: "Concepción",
-      progreso: 40,
-      participantes: "50-80 años",
-      duracion: "12 meses",
-      estado: "Próximamente",
-      urgencia: "Baja",
-      beneficios: ["Evaluación neurológica", "Terapia innovadora", "Seguimiento continuo"],
-    },
   ]
 
   const testimonios = [
@@ -126,12 +108,16 @@ export default function HomePage() {
     setIsSubmittingIntake(true)
     setSubmissionError(null)
     try {
-      await createPatientIntake({
+      const response = await createPatientIntake({
         ...data,
         condicionPrincipal: data.condicionPrincipal || selectedCondition,
       })
       setSubmissionMessage("Solicitud enviada correctamente. Nuestro equipo se comunicará contigo pronto.")
+      setShowSuccessModal(true)
       setShowPatientForm(false)
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("patient-intake-created", { detail: { intake: response } }))
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : "No se pudo enviar la solicitud"
       setSubmissionError(message)
@@ -142,15 +128,15 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {submissionMessage && (
+      {submissionError && (
         <div className="fixed top-6 inset-x-0 flex justify-center px-4 z-40">
-          <div className="bg-white border border-green-200 text-green-700 shadow-lg rounded-2xl px-6 py-4 flex items-center gap-3 max-w-2xl w-full">
-            <Icons.CheckCircle className="w-5 h-5" />
-            <span>{submissionMessage}</span>
+          <div className="bg-white border border-red-200 text-red-700 shadow-lg rounded-2xl px-6 py-4 flex items-center gap-3 max-w-2xl w-full">
+            <Icons.AlertTriangle className="w-5 h-5" />
+            <span>{submissionError}</span>
             <button
               type="button"
-              onClick={() => setSubmissionMessage(null)}
-              className="ml-auto text-green-700 hover:text-green-900"
+              onClick={() => setSubmissionError(null)}
+              className="ml-auto text-red-700 hover:text-red-900"
             >
               <Icons.X className="w-4 h-4" />
             </button>
@@ -228,8 +214,8 @@ export default function HomePage() {
           </section>
 
           {/* Ensayos Destacados */}
-          <section className="py-20 px-4">
-            <div className="max-w-7xl mx-auto">
+          <section className="py-20">
+            <div className="container mx-auto px-4">
               <div className="text-center mb-16">
                 <h2 className="text-4xl font-bold text-gray-900 mb-4">Ensayos Clínicos Destacados</h2>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -238,61 +224,22 @@ export default function HomePage() {
               </div>
 
               <div className="grid lg:grid-cols-3 gap-8">
-                {ensayosDestacados.map((ensayo) => (
-                  <Card key={ensayo.id} className="group hover:shadow-2xl transition-all border-0 bg-white/80">
+                {trials.map((trial) => (
+                  <Card key={trial.id} className="group hover:shadow-2xl transition-all border-0 bg-white/80">
                     <CardHeader>
                       <div className="flex items-start justify-between mb-4">
-                        <Badge className={ensayo.estado === "Reclutando" ? "bg-green-500 text-white" : ""}>
-                          {ensayo.estado}
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className={`${
-                            ensayo.urgencia === "Alta"
-                              ? "border-red-500 text-red-600"
-                              : ensayo.urgencia === "Media"
-                                ? "border-yellow-500 text-yellow-600"
-                                : "border-green-500 text-green-600"
-                          }`}
-                        >
-                          Urgencia {ensayo.urgencia}
+                        <Badge className={trial.status === "RECRUITING" ? "bg-green-500 text-white" : ""}>
+                          {trial.status}
                         </Badge>
                       </div>
-                      <CardTitle className="group-hover:text-blue-600 transition-colors">{ensayo.titulo}</CardTitle>
-                      <CardDescription>{ensayo.descripcion}</CardDescription>
-                      <div className="mt-4">
-                        <div className="flex justify-between text-sm text-gray-600 mb-2">
-                          <span>Progreso</span>
-                          <span>{ensayo.progreso}%</span>
-                        </div>
-                        <Progress value={ensayo.progreso} />
-                      </div>
+                      <CardTitle className="group-hover:text-blue-600 transition-colors">{trial.title}</CardTitle>
+                      <CardDescription>{trial.public_description}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3 mb-6">
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Icons.MapPin className="w-4 h-4 text-blue-500" />
-                          <span>{ensayo.ubicacion}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Icons.Users className="w-4 h-4 text-green-500" />
-                          <span>Edades: {ensayo.participantes}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Icons.Clock className="w-4 h-4 text-purple-500" />
-                          <span>Duración: {ensayo.duracion}</span>
-                        </div>
-                      </div>
-
-                      <div className="mb-6">
-                        <h4 className="text-sm font-semibold text-gray-900 mb-2">Beneficios incluidos:</h4>
-                        <div className="space-y-1">
-                          {ensayo.beneficios.map((beneficio, idx) => (
-                            <div key={idx} className="flex items-center gap-2 text-sm text-gray-600">
-                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                              <span>{beneficio}</span>
-                            </div>
-                          ))}
+                          <span>{trial.clinic_city}</span>
                         </div>
                       </div>
 
@@ -401,6 +348,33 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      <Dialog
+        open={showSuccessModal}
+        onOpenChange={(open) => {
+          setShowSuccessModal(open)
+          if (!open) {
+            setSubmissionMessage(null)
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-green-600">
+              <Icons.CheckCircle className="w-5 h-5" />
+              Postulación enviada
+            </DialogTitle>
+            <DialogDescription>
+              Hemos recibido tu información y nuestro equipo se pondrá en contacto contigo a la brevedad.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setShowSuccessModal(false)} className="bg-gradient-to-r from-blue-600 to-purple-600">
+              Entendido
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
