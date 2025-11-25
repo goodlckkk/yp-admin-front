@@ -1,0 +1,22 @@
+---
+/**
+ * Página de Edición de Ensayo
+ * Ruta dinámica: /trials/[id]/edit
+ * 
+ * En modo estático, esta página se renderiza del lado del cliente.
+ * El componente React maneja la obtención del ID desde la URL.
+ */
+
+// getStaticPaths es requerido para rutas dinámicas en modo estático
+// Retornamos un array vacío porque el routing lo maneja React del lado del cliente
+export function getStaticPaths() {
+  return [];
+}
+
+import Layout from '../../../layouts/Layout.astro';
+import { TrialEditPage } from '../../../components/trials/TrialEditPage';
+---
+
+<Layout title="Editar Ensayo Clínico">
+  <TrialEditPage client:only="react" />
+</Layout>

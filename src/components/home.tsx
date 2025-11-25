@@ -8,7 +8,7 @@ import { Input } from "./ui/input"
 import { useState, useEffect } from "react"
 import MedicsPage from "./medics"
 import PatientForm from "./ui/patientform"
-import TrialsPage from "./trials"
+import TrialPage from "./trials"
 import { Icons } from "./ui/icons"
 import { createPatientIntake, getTrials } from "@/lib/api"
 import type { Trial } from "@/lib/api"
@@ -311,7 +311,7 @@ export default function HomePage() {
         </>
       )}
       {/* CONTENIDO PARA INSTITUCIONES */}
-      {activeTab === "instituciones" && <TrialsPage />}
+      {activeTab === "instituciones" && <TrialPage />}
 
       {/* CONTENIDO PARA MÉDICOS */}
       {activeTab === "medicos" && <MedicsPage />}
