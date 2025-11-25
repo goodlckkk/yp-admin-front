@@ -21,7 +21,7 @@ function removeTokenLocal(): void {
 
 // Crear instancia de Axios con configuración base
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.PUBLIC_VITE_API_URL || 'http://localhost:3000',
+  baseURL: import.meta.env.PUBLIC_API_URL || 'http://Yoparticipo-api-env.eba-pynyf7cb.sa-east-1.elasticbeanstalk.com',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
