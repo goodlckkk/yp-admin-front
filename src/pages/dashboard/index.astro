@@ -1,13 +1,18 @@
 ---
+/**
+ * Página del Dashboard
+ * Ruta: /dashboard
+ * 
+ * Dashboard administrativo con:
+ * - Vista general con KPIs
+ * - Gestión de pacientes
+ * - Gestión de ensayos clínicos
+ * - Estadísticas en tiempo real del backend
+ */
 import Layout from '../../layouts/Layout.astro';
-import Dashboard from '../../components/dashboard.tsx';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Dashboard from '../../components/dashboard';
 ---
 
-<Layout>
-
-	<!-- Dashboard de Administración con shadcn/ui -->
+<Layout title="Dashboard - Yo Participo Admin">
 	<Dashboard client:only="react" />
 </Layout>

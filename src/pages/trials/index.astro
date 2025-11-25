@@ -1,0 +1,15 @@
+---
+/**
+ * Página de Lista de Ensayos
+ * Ruta: /trials
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import { TrialList } from '../../components/trials/TrialList';
+---
+
+<Layout title="Ensayos Clínicos">
+  <div class="container mx-auto py-6">
+    <TrialList client:only="react" />
+  </div>
+</Layout>

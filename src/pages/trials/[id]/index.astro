@@ -1,0 +1,22 @@
+---
+/**
+ * Página de detalles de un ensayo clínico
+ * Ruta: /trials/[id]
+ * 
+ * En modo estático, esta página se renderiza del lado del cliente.
+ * El componente React maneja la obtención del ID desde la URL.
+ */
+
+// getStaticPaths es requerido para rutas dinámicas en modo estático
+// Retornamos un array vacío porque el routing lo maneja React del lado del cliente
+export function getStaticPaths() {
+  return [];
+}
+
+import Layout from '../../../layouts/Layout.astro';
+import { TrialDetailPage } from '../../../components/trials/TrialDetailPage';
+---
+
+<Layout title="Detalles del Ensayo">
+  <TrialDetailPage client:only="react" />
+</Layout>
