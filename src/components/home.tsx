@@ -6,12 +6,11 @@ import { FooterPage } from "./footer"
 import { HeaderPage } from "./header"
 import { Input } from "./ui/input"
 import { useState, useEffect } from "react"
-import MedicsPage from "./medics"
 import PatientForm from "./ui/patientform"
 import TrialPage from "./trials"
 import { Icons } from "./ui/icons"
-import { createPatientIntake, getTrials } from "@/lib/api"
-import type { Trial } from "@/lib/api"
+import { createPatientIntake, getTrials, getPublicStats } from "@/lib/api"
+import type { Trial, PublicStats } from "@/lib/api"
 import {
   Dialog,
   DialogContent,
@@ -22,8 +21,6 @@ import {
 } from "./ui/dialog"
 
 export default function HomePage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [activeTab, setActiveTab] = useState("pacientes")
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showPatientForm, setShowPatientForm] = useState(false)
@@ -33,26 +30,43 @@ export default function HomePage() {
   const [submissionError, setSubmissionError] = useState<string | null>(null)
   const [trials, setTrials] = useState<Trial[]>([])
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [publicStats, setPublicStats] = useState<PublicStats | null>(null)
 
   useEffect(() => {
-    const fetchTrials = async () => {
+    const fetchData = async () => {
       try {
+        // Intentar cargar ensayos
         const paginatedTrials = await getTrials({ page: 1, limit: 3, status: 'RECRUITING' });
         setTrials(paginatedTrials.data);
+        console.log("Ensayos cargados:", paginatedTrials.data);
       } catch (error) {
         console.error("Error fetching trials:", error);
       }
+
+      try {
+        // Intentar cargar estadísticas (puede fallar si el endpoint no existe aún)
+        const stats = await getPublicStats();
+        setPublicStats(stats);
+        console.log("Estadísticas cargadas:", stats);
+      } catch (error) {
+        console.warn("Estadísticas no disponibles (endpoint no desplegado aún):", error);
+        // Usar valores por defecto mientras tanto
+        setPublicStats({
+          patientsConnected: 0,
+          activeTrials: 0,
+          medicalCenters: 0
+        });
+      }
     };
-    fetchTrials();
+    fetchData();
   }, []);
 
 
   // Data para Pacientes
   const estadisticasPacientes = [
-    { numero: "2,847", label: "Pacientes Conectados", Icono: Icons.Users, color: "text-blue-600" },
-    { numero: "156", label: "Ensayos Activos", Icono: Icons.Microscope, color: "text-green-600" },
-    { numero: "89%", label: "Tasa de Éxito", Icono: Icons.Heart, color: "text-red-600" },
-    { numero: "45", label: "Centros Médicos", Icono: Icons.Shield, color: "text-purple-600" },
+    { numero: publicStats ? publicStats.patientsConnected.toLocaleString() : "...", label: "Pacientes Incluidos", Icono: Icons.Users, color: "text-blue-600" },
+    { numero: publicStats ? publicStats.activeTrials.toString() : "...", label: "Ensayos Reclutando", Icono: Icons.Microscope, color: "text-green-600" },
+    { numero: publicStats ? publicStats.medicalCenters.toString() : "...", label: "Centros Médicos", Icono: Icons.Shield, color: "text-purple-600" },
   ]
 
   const testimonios = [
@@ -95,23 +109,11 @@ export default function HomePage() {
     return () => clearInterval(timer)
   }, [])
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      setSubmissionMessage(null)
-      setSubmissionError(null)
-      setSelectedCondition(searchQuery)
-      setShowPatientForm(true)
-    }
-  }
-
   const handlePatientFormSubmit = async (data: any) => {
     setIsSubmittingIntake(true)
     setSubmissionError(null)
     try {
-      const response = await createPatientIntake({
-        ...data,
-        condicionPrincipal: data.condicionPrincipal || selectedCondition,
-      })
+      const response = await createPatientIntake(data)
       setSubmissionMessage("Solicitud enviada correctamente. Nuestro equipo se comunicará contigo pronto.")
       setShowSuccessModal(true)
       setShowPatientForm(false)
@@ -127,7 +129,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-white">
       {submissionError && (
         <div className="fixed top-6 inset-x-0 flex justify-center px-4 z-40">
           <div className="bg-white border border-red-200 text-red-700 shadow-lg rounded-2xl px-6 py-4 flex items-center gap-3 max-w-2xl w-full">
@@ -144,53 +146,60 @@ export default function HomePage() {
         </div>
       )}
       {/* Header */}
-      <HeaderPage setActiveTab={setActiveTab} activeTab={activeTab} showMobileMenu={showMobileMenu} setShowMobileMenu={setShowMobileMenu} />
+      <HeaderPage activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* CONTENIDO PARA PACIENTES */}
       {activeTab === "pacientes" && (
         <>
           {/* Hero Pacientes */}
-          <section className="pt-32 pb-20 px-4">
-            <div className="max-w-7xl mx-auto">
+          <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+            <div className="pointer-events-none absolute -top-20 -right-10 w-96 h-96 bg-gradient-to-br from-[#A7F2EB] to-[#04BFAD] opacity-15 blur-3xl" />
+            <div className="pointer-events-none absolute top-40 -left-24 w-96 h-96 bg-gradient-to-br from-[#04BFAD]/30 to-transparent opacity-60 blur-3xl" />
+
+            <div className="relative max-w-7xl mx-auto">
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+                <div className="inline-flex items-center gap-2 bg-[#A7F2EB] text-[#024959] px-4 py-2 rounded-full text-sm font-medium mb-6">
                   <Icons.Heart className="w-4 h-4" />
                   Tu salud es nuestra prioridad
                 </div>
                 <h1 className="text-5xl lg:text-7xl font-bold mb-6">
                   <span className="text-gradient">Encuentra</span> el ensayo
                   <br />
-                  <span className="text-gray-900">perfecto para ti</span>
+                  <span className="text-[#024959]">perfecto para ti</span>
                 </h1>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed">
+                <p className="text-xl text-[#4D4D59] max-w-3xl mx-auto mb-12 leading-relaxed">
                   Accede a tratamientos innovadores y sé parte del futuro de la medicina. Miles de pacientes ya
                   confiaron en nosotros.
                 </p>
 
-                <div className="max-w-2xl mx-auto mb-12">
+                <div className="max-w-3xl mx-auto mb-12">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-20"></div>
-                    <div className="relative bg-white rounded-2xl p-6 shadow-xl border border-white/20">
-                      <div className="flex flex-col md:flex-row gap-4">
-                        <div className="flex-1 relative">
-                          <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                            <Icons.Search className="w-5 h-5 text-gray-400" />
-                          </div>
-                          <Input
-                            placeholder="Ingresa tu condición médica y postula a nuestros ensayos"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                            className="pl-12 h-14 text-lg border-0 bg-gray-50 rounded-xl"
-                          />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#04BFAD] to-[#024959] rounded-3xl blur-xl opacity-30"></div>
+                    <div className="relative bg-white rounded-3xl p-8 md:p-12 shadow-2xl border-2 border-[#A7F2EB]/50">
+                      <div className="text-center space-y-6">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#04BFAD] to-[#024959] rounded-full mb-4">
+                          <Icons.Heart className="w-8 h-8 text-white" />
                         </div>
+                        <h3 className="text-2xl md:text-3xl font-bold text-[#024959]">
+                          ¿Estás interesado en que te contactemos?
+                        </h3>
+                        <p className="text-lg text-[#4D4D59] max-w-xl mx-auto">
+                          Completa un breve formulario y nuestro equipo médico se pondrá en contacto contigo para evaluar tu elegibilidad
+                        </p>
                         <Button
-                          onClick={handleSearch}
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-14 px-8 rounded-xl"
+                          onClick={() => {
+                            setSelectedCondition("");
+                            setShowPatientForm(true);
+                          }}
+                          className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white h-16 px-12 text-xl rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                         >
-                          <Icons.Search className="w-5 h-5 mr-2" />
-                          Postular
+                          <Icons.Target className="w-6 h-6 mr-3" />
+                          Postula Aquí
                         </Button>
+                        <p className="text-sm text-[#4D4D59]/70 flex items-center justify-center gap-2">
+                          <Icons.Shield className="w-4 h-4 text-[#04BFAD]" />
+                          Tus datos están protegidos y son confidenciales
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -198,14 +207,14 @@ export default function HomePage() {
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                   {estadisticasPacientes.map((stat, index) => (
-                    <div key={index} className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <div key={index} className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-[#A7F2EB]/40">
                       <div className="flex items-center justify-center mb-3">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-[#04BFAD]/15 flex items-center justify-center">
                           <stat.Icono className={`w-6 h-6 ${stat.color}`} />
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900 mb-1">{stat.numero}</div>
-                      <div className="text-sm text-gray-600">{stat.label}</div>
+                      <div className="text-2xl font-bold text-[#024959] mb-1">{stat.numero}</div>
+                      <div className="text-sm text-[#4D4D59]">{stat.label}</div>
                     </div>
                   ))}
                 </div>
@@ -214,51 +223,81 @@ export default function HomePage() {
           </section>
 
           {/* Ensayos Destacados */}
-          <section className="py-20">
+          <section className="py-20 bg-[#F2F2F2]">
             <div className="container mx-auto px-4">
               <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Ensayos Clínicos Destacados</h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                <h2 className="text-4xl font-bold text-[#024959] mb-4">Ensayos Clínicos Destacados</h2>
+                <p className="text-xl text-[#4D4D59] max-w-3xl mx-auto">
                   Descubre oportunidades únicas de investigación médica
                 </p>
               </div>
 
               <div className="grid lg:grid-cols-3 gap-8">
-                {trials.map((trial) => (
-                  <Card key={trial.id} className="group hover:shadow-2xl transition-all border-0 bg-white/80">
-                    <CardHeader>
-                      <div className="flex items-start justify-between mb-4">
-                        <Badge className={trial.status === "RECRUITING" ? "bg-green-500 text-white" : ""}>
-                          {trial.status}
-                        </Badge>
-                      </div>
-                      <CardTitle className="group-hover:text-blue-600 transition-colors">{trial.title}</CardTitle>
-                      <CardDescription>{trial.public_description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3 mb-6">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Icons.MapPin className="w-4 h-4 text-blue-500" />
-                          <span>{trial.clinic_city}</span>
+                {trials.length > 0 ? (
+                  trials.map((trial) => (
+                    <Card key={trial.id} className="group hover:shadow-2xl transition-all duration-300 border-2 border-[#04BFAD]/20 hover:border-[#04BFAD] bg-white overflow-hidden">
+                      <div className="h-2 bg-gradient-to-r from-[#04BFAD] to-[#024959]"></div>
+                      
+                      <CardHeader className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Badge className={trial.status === "RECRUITING" ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0 px-4 py-1" : "bg-gray-400 text-white border-0 px-4 py-1"}>
+                            {trial.status === "RECRUITING" ? "🟢 Reclutando" : trial.status === "CLOSED" ? "⭕ Cerrado" : ""}
+                          </Badge>
+                          <div className="flex items-center gap-1 text-xs text-[#4D4D59] bg-[#F2F2F2] px-3 py-1 rounded-full">
+                            <Icons.Users className="w-3 h-3 text-[#04BFAD]" />
+                            <span className="font-semibold">{trial.current_participants || 0}/{trial.max_participants || 30}</span>
+                          </div>
                         </div>
-                      </div>
+                        
+                        <CardTitle className="group-hover:text-[#04BFAD] transition-colors text-[#024959] text-xl leading-tight">
+                          {trial.title}
+                        </CardTitle>
+                        
+                        <CardDescription className="text-[#4D4D59] line-clamp-3">
+                          {trial.public_description}
+                        </CardDescription>
+                      </CardHeader>
+                      
+                      <CardContent className="space-y-4">
+                        <div className="flex items-center gap-2 text-sm text-[#4D4D59] bg-[#F2F2F2] p-3 rounded-lg">
+                          <Icons.MapPin className="w-4 h-4 text-[#04BFAD] flex-shrink-0" />
+                          <span className="font-medium">{trial.clinic_city}</span>
+                        </div>
 
-                      <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl">
-                        <Icons.Target className="w-4 h-4 mr-2" />
-                        Aplicar Ahora
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                        {/* Barra de progreso de participantes */}
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center text-xs text-[#4D4D59]">
+                            <span className="font-medium">Progreso de reclutamiento</span>
+                            <span className="font-bold text-[#04BFAD]">
+                              {trial.max_participants ? Math.round(((trial.current_participants || 0) / trial.max_participants) * 100) : 0}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-[#04BFAD] to-[#024959] transition-all duration-500 rounded-full"
+                              style={{ width: `${trial.max_participants ? ((trial.current_participants || 0) / trial.max_participants) * 100 : 0}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="col-span-3 text-center py-12">
+                    <Icons.Microscope className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                    <p className="text-xl text-gray-600">Cargando ensayos disponibles...</p>
+                    <p className="text-sm text-gray-500 mt-2">Si este mensaje persiste, verifica la conexión con la API</p>
+                  </div>
+                )}
               </div>
             </div>
           </section>
 
           {/* Testimonios */}
-          <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
+          <section className="py-20 px-4 bg-gradient-to-r from-[#024959] to-[#04BFAD]">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-4xl font-bold text-white mb-4">Historias que Inspiran</h2>
-              <p className="text-xl text-blue-100 mb-12">
+              <p className="text-xl text-[#F2F2F2] mb-12">
                 Conoce cómo hemos transformado vidas a través de la investigación médica
               </p>
 
@@ -301,7 +340,7 @@ export default function HomePage() {
                     key={index}
                     onClick={() => setCurrentSlide(index)}
                     className={`w-3 h-3 rounded-full transition-all ${
-                      index === currentSlide ? "bg-white w-8" : "bg-white/30"
+                      index === currentSlide ? "bg-white w-8" : "bg-white/50"
                     }`}
                   />
                 ))}
@@ -310,14 +349,12 @@ export default function HomePage() {
           </section>
         </>
       )}
+
       {/* CONTENIDO PARA INSTITUCIONES */}
       {activeTab === "instituciones" && <TrialPage />}
 
-      {/* CONTENIDO PARA MÉDICOS */}
-      {activeTab === "medicos" && <MedicsPage />}
-
       {/* Footer */}
-      <FooterPage />
+      <FooterPage activeTab={activeTab} />
 
       {/* Modal del Formulario */}
       {showPatientForm && (
@@ -369,7 +406,7 @@ export default function HomePage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button onClick={() => setShowSuccessModal(false)} className="bg-gradient-to-r from-blue-600 to-purple-600">
+            <Button onClick={() => setShowSuccessModal(false)} className="bg-gradient-to-r from-[#04BFAD] to-[#024959]">
               Entendido
             </Button>
           </DialogFooter>

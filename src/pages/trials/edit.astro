@@ -1,0 +1,16 @@
+---
+/**
+ * Página de Edición de Ensayo
+ * Ruta: /trials/edit?id=[trialId]
+ * 
+ * Esta página usa query strings en lugar de parámetros de ruta
+ * para funcionar correctamente en modo static de Astro.
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import { TrialEditPage } from '../../components/trials/TrialEditPage';
+---
+
+<Layout>
+  <TrialEditPage client:only="react" />
+</Layout>

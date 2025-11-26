@@ -30,7 +30,9 @@ const Plus = ({ className = '' }: { className?: string }) => (
 );
 
 const RefreshCw = ({ className = '' }: { className?: string }) => (
-  <span className={cn("inline-block", className)}>🔄</span>
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" className={className}>
+    <path d="M196-331q-20-36-28-72.5t-8-74.5q0-131 94.5-225.5T480-798h43l-80-80 39-39 149 149-149 149-40-40 79-79h-41q-107 0-183.5 76.5T220-478q0 29 5.5 55t13.5 49l-43 43ZM476-40 327-189l149-149 39 39-80 80h45q107 0 183.5-76.5T740-479q0-29-5-55t-15-49l43-43q20 36 28.5 72.5T800-479q0 131-94.5 225.5T480-159h-45l80 80-39 39Z"/>
+  </svg>
 );
 
 const CalendarIcon = ({ className = '' }: { className?: string }) => (
@@ -95,7 +97,8 @@ const statusLabels: Record<TrialStatus, string> = {
 function TrialListContent() {
   const { showToast } = useToast();
   const [trials, setTrials] = useState<Trial[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalItems, setTotalItems] = useState(0);
   const [filters, setFilters] = useState<TrialsFilterParams>({
@@ -125,27 +128,54 @@ function TrialListContent() {
     'Santiago', 'Valparaíso', 'Concepción', 'La Serena', 'Antofagasta', 'Temuco',
   ], []);
 
-  const fetchTrials = useCallback(async () => {
+  const fetchTrials = useCallback(async (isInitial = false) => {
     try {
-      setLoading(true);
+      if (isInitial) {
+        setInitialLoading(true);
+      } else {
+        setLoading(true);
+      }
       setError(null);
       const data = await getTrials(filters);
       setTrials(data.data);
       setTotalItems(data.totalItems);
-      setFilters(prev => ({ ...prev, page: data.currentPage }));
-    } catch (err) {
+      // No actualizar filters aquí para evitar loop infinito
+    } catch (err: any) {
       console.error('Error al cargar los ensayos:', err);
-      const errorMsg = 'No se pudieron cargar los ensayos. Por favor, intente nuevamente.';
+      
+      let errorMsg = 'No se pudieron cargar los ensayos. Por favor, intente nuevamente.';
+      
+      // Manejo específico para error 429 (Too Many Requests)
+      if (err?.message?.includes('429') || err?.message?.includes('Too Many Requests')) {
+        errorMsg = 'Demasiadas solicitudes. Por favor, espera un momento antes de intentar nuevamente.';
+      }
+      
       setError(errorMsg);
       showToast(errorMsg, 'error');
     } finally {
-      setLoading(false);
+      if (isInitial) {
+        setInitialLoading(false);
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [filters, showToast]);
+
+  // Carga inicial
+  useEffect(() => {
+    const token = getToken();
+    if (token && initialLoading) {
+      fetchTrials(true);
+    }
+  }, []); // Solo en el montaje inicial
+
+  // Cargas subsecuentes cuando cambian los filtros
+  useEffect(() => {
+    const token = getToken();
+    if (token && !initialLoading) {
+      fetchTrials(false);
     }
   }, [filters]);
-
-  useEffect(() => {
-    fetchTrials();
-  }, [fetchTrials]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -185,7 +215,12 @@ function TrialListContent() {
   };
 
   const handleEdit = (trialId: string) => {
-    window.location.href = `/trials/${trialId}/edit`;
+    // Abrir modal de edición en lugar de redirigir
+    const trial = trials.find(t => t.id === trialId);
+    if (trial) {
+      setSelectedTrial(trial);
+      setIsFormOpen(true);
+    }
   };
 
   const handleDelete = async (trialId: string) => {
@@ -215,11 +250,37 @@ function TrialListContent() {
     setSelectedTrial(null);
   };
 
+  // Loading inicial fullscreen
+  if (initialLoading) {
+    return (
+      <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative w-20 h-20 mx-auto mb-4">
+            <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
+            <div 
+              className="absolute inset-0 border-4 border-transparent rounded-full animate-spin"
+              style={{ 
+                borderTopColor: '#04BFAD',
+                borderRightColor: '#04BFAD'
+              }}
+            ></div>
+          </div>
+          <h3 className="text-lg font-semibold text-[#024959] mb-2">Cargando ensayos clínicos</h3>
+          <p className="text-sm text-gray-500">Por favor espera un momento...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="p-4 text-center text-red-500">
         <p>{error}</p>
-        <Button variant="outline" className="mt-2" onClick={fetchTrials}>
+        <Button 
+          variant="outline" 
+          className="mt-2" 
+          onClick={() => fetchTrials(false)}
+        >
           <RefreshCw className="mr-2 h-4 w-4" />
           Reintentar
         </Button>
@@ -227,20 +288,22 @@ function TrialListContent() {
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Ensayos Clínicos</h2>
-          <p className="text-muted-foreground">
-            Gestiona y revisa los ensayos clínicos activos
-          </p>
-        </div>
-        <Button onClick={handleCreateNew}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nuevo Ensayo
-        </Button>
+  // Si el formulario está abierto, solo mostrar el formulario
+  if (isFormOpen) {
+    return (
+      <div className="animate-in fade-in-50 duration-300">
+        <TrialForm
+          trial={selectedTrial}
+          isOpen={isFormOpen}
+          onClose={handleFormClose}
+          onSuccess={handleFormSuccess}
+        />
       </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 animate-in fade-in-50 duration-300">
 
       <Card>
         <CardHeader>
@@ -251,10 +314,25 @@ function TrialListContent() {
                 {totalItems} {totalItems === 1 ? 'ensayo encontrado' : 'ensayos encontrados'}
               </CardDescription>
             </div>
-            <Button variant="outline" size="sm" onClick={fetchTrials} disabled={loading}>
-              <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              Actualizar
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleCreateNew}
+                className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Nuevo Ensayo
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => fetchTrials(false)} 
+                disabled={loading}
+                className="text-[#04BFAD] hover:text-[#024959] hover:bg-[#A7F2EB]/20"
+                title="Actualizar lista"
+              >
+                <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -265,108 +343,99 @@ function TrialListContent() {
             cities={cities}
           />
           
-          <div className="rounded-md border mt-4">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('title')}>
-                    Título {getSortIcon('title')}
-                  </TableHead>
-                  <TableHead>Patrocinador</TableHead>
-                  <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('status')}>
-                    Estado {getSortIcon('status')}
-                  </TableHead>
-                  <TableHead>Ubicación</TableHead>
-                  <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort('start_date')}>
-                    Fecha Inicio {getSortIcon('start_date')}
-                  </TableHead>
-                  <TableHead>Participantes</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  Array(5).fill(0).map((_, i) => (
-                    <TableRow key={`skeleton-${i}`}>
-                      <TableCell><LoadingSkeleton className="w-full" /></TableCell>
-                      <TableCell><LoadingSkeleton className="w-3/4" /></TableCell>
-                      <TableCell><LoadingSkeleton className="w-20" /></TableCell>
-                      <TableCell><LoadingSkeleton className="w-24" /></TableCell>
-                      <TableCell><LoadingSkeleton className="w-28" /></TableCell>
-                      <TableCell><LoadingSkeleton className="w-16" /></TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end"><LoadingSkeleton className="w-16 h-8" /></div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : trials.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                      No se encontraron ensayos que coincidan con los filtros.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  trials.map((trial) => (
-                    <TableRow key={trial.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium">
-                        <button
-                          onClick={() => window.location.href = `/trials/${trial.id}`}
-                          className="text-left hover:text-blue-600 hover:underline transition-colors"
+          {/* Grid de Cards en lugar de tabla */}
+          <div className="mt-6">
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array(6).fill(0).map((_, i) => (
+                  <Card key={`skeleton-${i}`} className="overflow-hidden">
+                    <CardHeader className="pb-3">
+                      <LoadingSkeleton className="w-full h-6" />
+                      <LoadingSkeleton className="w-3/4 h-4 mt-2" />
+                    </CardHeader>
+                    <CardContent>
+                      <LoadingSkeleton className="w-full h-20" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : trials.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <p className="text-lg">No se encontraron ensayos que coincidan con los filtros.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {trials.map((trial) => (
+                  <Card 
+                    key={trial.id} 
+                    className="overflow-hidden hover:shadow-xl transition-all duration-300 shadow-md border border-gray-200"
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg line-clamp-2 text-[#024959]">
+                            {trial.title}
+                          </CardTitle>
+                          <CardDescription className="mt-1">
+                            {trial.sponsor?.name || 'Sin patrocinador'}
+                          </CardDescription>
+                        </div>
+                        <Badge 
+                          variant={statusVariant[trial.status]}
+                          className="ml-2"
                         >
-                          {trial.title}
-                        </button>
-                      </TableCell>
-                      <TableCell>{trial.sponsor?.name || 'N/A'}</TableCell>
-                      <TableCell>
-                        <Badge variant={statusVariant[trial.status]}>
                           {statusLabels[trial.status]}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <MapPin className="mr-1 h-4 w-4 text-muted-foreground" />
-                          {trial.clinic_city}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {trial.public_description || 'Sin descripción'}
+                      </p>
+                      
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center text-gray-600">
+                          <MapPin className="mr-2 h-4 w-4 text-[#04BFAD]" />
+                          <span>{trial.clinic_city}</span>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {formatDate(trial.start_date)}
+                        <div className="flex items-center text-gray-600">
+                          <CalendarIcon className="mr-2 h-4 w-4 text-[#04BFAD]" />
+                          <span>{formatDate(trial.start_date)}</span>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <Users className="mr-1 h-4 w-4 text-muted-foreground" />
-                          {trial.current_participants || 0} / {trial.target_participants || '∞'}
+                        <div className="flex items-center text-gray-600">
+                          <Users className="mr-2 h-4 w-4 text-[#04BFAD]" />
+                          <span>{trial.current_participants || 0} / {trial.target_participants || '∞'} participantes</span>
                         </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => window.location.href = `/trials/${trial.id}`}
-                          >
-                            Ver
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleEdit(trial.id)}>
-                            Editar
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleDelete(trial.id)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            Eliminar
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                      </div>
+
+                      <div className="flex gap-2 pt-3 border-t">
+                        <Button 
+                          variant="outline"
+                          size="sm" 
+                          onClick={() => handleEdit(trial.id)}
+                          className="flex-1 border-[#04BFAD] text-[#024959] hover:bg-[#04BFAD] hover:text-white transition-all"
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          Editar
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleDelete(trial.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
 
           {totalPages > 1 && (
@@ -395,13 +464,6 @@ function TrialListContent() {
         </CardContent>
       </Card>
 
-      {/* Formulario de creación/edición */}
-      <TrialForm
-        trial={selectedTrial}
-        isOpen={isFormOpen}
-        onClose={handleFormClose}
-        onSuccess={handleFormSuccess}
-      />
     </div>
   );
 }

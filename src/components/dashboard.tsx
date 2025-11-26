@@ -20,15 +20,19 @@ import { CustomIcons } from "./ui/custom-icons"
 import { Input } from "./ui/input"
 import { useEffect, useMemo, useState } from "react"
 import type { PatientIntake, Trial, DashboardStats, TrendData } from "../lib/api"
-import { TrialForm } from "./trials/TrialForm"
+import { TrialForm } from './trials/TrialForm';
+import { PatientDetailsForm } from './patients/PatientDetailsForm';
+import { TrialList } from "./trials/TrialList"
 
 // Función de navegación para Astro - siempre recarga la página
 const navigate = (path: string) => {
   window.location.href = path;
 };
 
+// Tipos de sección
 type Section = "overview" | "pacientes" | "ensayos"
 
+// Tipos de filtros para ensayos
 type TrialFilters = {
   status: string;
   searchQuery: string;
@@ -38,6 +42,7 @@ type TrialFilters = {
   showFilters: boolean;
 };
 
+// Tipos de filtros para pacientes
 type PatientFilters = {
   ageMin: string;
   ageMax: string;
@@ -45,6 +50,8 @@ type PatientFilters = {
   status: string;
   searchQuery: string;
   showFilters: boolean;
+  page: number;
+  limit: number;
 };
 
 export default function DashboardPage() {
@@ -61,7 +68,10 @@ export default function DashboardPage() {
   const [trends, setTrends] = useState<TrendData[]>([])
   
   // Estado para el modal de creación de ensayos
-  const [isTrialFormOpen, setIsTrialFormOpen] = useState(false)
+  const [selectedTrial, setSelectedTrial] = useState<Trial | null>(null);
+  const [isTrialFormOpen, setIsTrialFormOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<PatientIntake | null>(null);
+  const [isPatientDetailsOpen, setIsPatientDetailsOpen] = useState(false);
   
   // Función para cerrar sesión
   const handleLogout = () => {
@@ -84,7 +94,9 @@ export default function DashboardPage() {
     condition: '',
     status: '',
     searchQuery: '',
-    showFilters: false
+    showFilters: false,
+    page: 1,
+    limit: 20
   })
 
   const INACTIVITY_LIMIT_MS = 15 * 60 * 1000
@@ -369,6 +381,7 @@ export default function DashboardPage() {
     })
   }
 
+
   const menuItems = [
     { id: "overview" as Section, label: "Vista General", icon: Icons.Activity },
     { id: "pacientes" as Section, label: "Pacientes", icon: Icons.Users },
@@ -395,9 +408,7 @@ export default function DashboardPage() {
           {/* Logo */}
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' }}>
-                <Icons.Microscope className="w-6 h-6 text-white" />
-              </div>
+              <img src="/logo.svg" alt="yoParticipo" className="w-10 h-10 scale-150" />
               <div>
                 <h1 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>yoParticipo</h1>
                 <p className="text-xs text-gray-500">Dashboard Admin</p>
@@ -665,24 +676,24 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              <Card className="border-0 shadow-sm">
+              <Card className="border-0 shadow-md">
                 <CardContent className="p-0">
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">RUT</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha de Nacimiento</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Condición</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ensayo</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Nombre</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">RUT</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Fecha de Nacimiento</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Condición</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Ensayo</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Estado</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Acciones</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
-                        {patientsToDisplay.map((paciente) => (
-                          <tr key={paciente.id} className="hover:bg-gray-50">
+                        {patientsToDisplay.slice((filters.page - 1) * filters.limit, filters.page * filters.limit).map((paciente) => (
+                          <tr key={paciente.id} className="hover:bg-[#A7F2EB]/20 transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-3">
                                 <Avatar className="w-8 h-8">
@@ -724,7 +735,15 @@ export default function DashboardPage() {
                               </Badge>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <Button variant="ghost" size="sm">
+                              <Button 
+                                size="sm"
+                                style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)' }}
+                                className="text-white hover:opacity-90 transition-opacity"
+                                onClick={() => {
+                                  setSelectedPatient(paciente);
+                                  setIsPatientDetailsOpen(true);
+                                }}
+                              >
                                 Ver Detalles
                               </Button>
                             </td>
@@ -735,192 +754,39 @@ export default function DashboardPage() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
-          )}
 
-          {activeSection === "ensayos" && (
-            <div className="space-y-6">
-              {/* Encabezado y controles de filtrado */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold tracking-tight">Ensayos Clínicos</h2>
-                  <p className="text-muted-foreground">
-                    {filteredTrials.length} {filteredTrials.length === 1 ? 'ensayo encontrado' : 'ensayos encontrados'}
+              {/* Paginación */}
+              {patientsToDisplay.length > filters.limit && (
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-gray-600">
+                    Mostrando {Math.min((filters.page - 1) * filters.limit + 1, patientsToDisplay.length)} - {Math.min(filters.page * filters.limit, patientsToDisplay.length)} de {patientsToDisplay.length} pacientes
                   </p>
-                </div>
-                <Button onClick={() => setIsTrialFormOpen(true)} className="gap-1 text-white" style={{ background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' }}>
-                  <CustomIcons.Plus className="h-4 w-4" />
-                  <span>Nuevo Ensayo</span>
-                </Button>
-              </div>
-
-              {/* Barra de búsqueda y filtros */}
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col md:flex-row gap-2">
-                  <div className="relative flex-1">
-                    <CustomIcons.Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Buscar ensayos..."
-                      className="w-full pl-8"
-                      value={trialFilters.searchQuery}
-                      onChange={(e) => handleTrialFilterChange({ searchQuery: e.target.value })}
-                    />
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFilters(prev => ({ ...prev, page: prev.page - 1 }))}
+                      disabled={filters.page === 1}
+                    >
+                      Anterior
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFilters(prev => ({ ...prev, page: prev.page + 1 }))}
+                      disabled={filters.page >= Math.ceil(patientsToDisplay.length / filters.limit)}
+                    >
+                      Siguiente
+                    </Button>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => handleTrialFilterChange({ showFilters: !trialFilters.showFilters })}
-                    className="gap-1"
-                  >
-                    <CustomIcons.Filter className="h-4 w-4" />
-                    <span>Filtros</span>
-                  </Button>
-                </div>
-
-                {/* Filtros avanzados */}
-                {trialFilters.showFilters && (
-                  <div className="bg-muted/50 p-4 rounded-lg space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Estado</label>
-                        <select
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          value={trialFilters.status}
-                          onChange={(e) => handleTrialFilterChange({ status: e.target.value })}
-                        >
-                          <option value="">Todos los estados</option>
-                          <option value="DRAFT">Borrador</option>
-                          <option value="RECRUITING">Reclutando</option>
-                          <option value="ACTIVE">Activo</option>
-                          <option value="CLOSED">Cerrado</option>
-                        </select>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Ciudad</label>
-                        <Input
-                          placeholder="Filtrar por ciudad"
-                          value={trialFilters.city}
-                          onChange={(e) => handleTrialFilterChange({ city: e.target.value })}
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Fecha de inicio</label>
-                        <Input
-                          type="date"
-                          value={trialFilters.startDate}
-                          onChange={(e) => handleTrialFilterChange({ startDate: e.target.value })}
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Fecha de fin</label>
-                        <Input
-                          type="date"
-                          value={trialFilters.endDate}
-                          onChange={(e) => handleTrialFilterChange({ endDate: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-end">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={clearTrialFilters}
-                        disabled={!trialFilters.status && !trialFilters.city && !trialFilters.startDate && !trialFilters.endDate}
-                      >
-                        Limpiar filtros
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Lista de ensayos */}
-              {loading ? (
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="p-4 border rounded-lg animate-pulse">
-                      <div className="h-6 bg-muted rounded w-1/3 mb-2"></div>
-                      <div className="h-4 bg-muted rounded w-1/2 mb-4"></div>
-                      <div className="flex gap-4">
-                        <div className="h-4 bg-muted rounded w-1/4"></div>
-                        <div className="h-4 bg-muted rounded w-1/4"></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : error ? (
-                <div className="bg-destructive/10 p-4 rounded-md text-destructive">
-                  <p>{error}</p>
-                </div>
-              ) : filteredTrials.length === 0 ? (
-                <div className="text-center py-12 space-y-2">
-                  <CustomIcons.FolderOpen className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="text-lg font-medium">No se encontraron ensayos</h3>
-                  <p className="text-muted-foreground">
-                    No hay ensayos que coincidan con los filtros seleccionados.
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    className="mt-4"
-                    onClick={clearTrialFilters}
-                  >
-                    Limpiar filtros
-                  </Button>
-                </div>
-              ) : (
-                <div className="grid gap-6">
-                  {filteredTrials.map((ensayo) => (
-                    <Card key={ensayo.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <CardTitle>{ensayo.title}</CardTitle>
-                              <Badge
-                                className={
-                                  ensayo.status === "RECRUITING"
-                                    ? "bg-green-100 text-green-700"
-                                    : ensayo.status === "ACTIVE"
-                                      ? "bg-[#dfe3e3] text-[#044c64]"
-                                      : "bg-yellow-100 text-yellow-700"
-                                }
-                              >
-                                {ensayo.status}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-4 text-sm text-gray-600">
-                              <div className="flex items-center gap-1">
-                                <Icons.MapPin className="w-4 h-4" />
-                                {ensayo.clinic_city}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Icons.Shield className="w-4 h-4" />
-                                {ensayo.sponsor.name}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-gray-600 mb-4">{ensayo.public_description}</p>
-                        <div className="flex gap-2">
-                          <Button variant="outline" className="flex-1 bg-transparent" size="sm">
-                            Ver Detalles
-                          </Button>
-                          <Button className="flex-1 text-white" style={{ background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' }} size="sm">
-                            Gestionar
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
                 </div>
               )}
             </div>
+          )}
+
+          {/* Ensayos */}
+          {activeSection === "ensayos" && (
+            <TrialList />
           )}
         </main>
       </div>
@@ -930,12 +796,17 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setShowMobileMenu(false)} />
       )}
 
-      {/* Modal de Creación de Ensayos */}
+      {/* Modal de formulario de ensayo */}
       <TrialForm
+        trial={selectedTrial}
         isOpen={isTrialFormOpen}
-        onClose={() => setIsTrialFormOpen(false)}
+        onClose={() => {
+          setIsTrialFormOpen(false);
+          setSelectedTrial(null);
+        }}
         onSuccess={() => {
           setIsTrialFormOpen(false);
+          setSelectedTrial(null);
           // Recargar los ensayos después de crear uno nuevo
           if (activeSection === "ensayos" || activeSection === "overview") {
             const fetchData = async () => {
@@ -950,6 +821,35 @@ export default function DashboardPage() {
           }
         }}
       />
+
+      {/* Modal de detalles del paciente */}
+      {isPatientDetailsOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl my-8">
+            <div className="p-6">
+              <PatientDetailsForm
+                patient={selectedPatient}
+                isOpen={isPatientDetailsOpen}
+                onClose={() => {
+                  setIsPatientDetailsOpen(false);
+                  setSelectedPatient(null);
+                }}
+                onSuccess={async () => {
+                  setIsPatientDetailsOpen(false);
+                  setSelectedPatient(null);
+                  // Recargar pacientes
+                  try {
+                    const intakesResponse = await getPatientIntakes();
+                    setPatientIntakes(intakesResponse);
+                  } catch (err) {
+                    console.error('Error al recargar pacientes:', err);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -163,11 +163,13 @@ export function TrialFilters({ filters, onFilterChange, onReset, cities }: Trial
   };
 
   const handleStatusChange = (status: string) => {
-    onFilterChange({ ...filters, status: status as TrialsFilterParams['status'], page: 1 });
+    const newStatus = status === 'all' ? undefined : status as TrialsFilterParams['status'];
+    onFilterChange({ ...filters, status: newStatus, page: 1 });
   };
 
   const handleCityChange = (city: string) => {
-    onFilterChange({ ...filters, city, page: 1 });
+    const newCity = city === 'all' ? undefined : city;
+    onFilterChange({ ...filters, city: newCity, page: 1 });
   };
 
   const handleDateChange = (
@@ -230,7 +232,7 @@ export function TrialFilters({ filters, onFilterChange, onReset, cities }: Trial
         
         <div className="flex flex-wrap gap-2">
           <Select
-            value={filters.status || ''}
+            value={filters.status || 'all'}
             onValueChange={handleStatusChange}
           >
             <SelectTrigger className="w-full sm:w-[180px]">
@@ -238,7 +240,7 @@ export function TrialFilters({ filters, onFilterChange, onReset, cities }: Trial
               <SelectValue placeholder="Estado" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos los estados</SelectItem>
+              <SelectItem value="all">Todos los estados</SelectItem>
               <SelectItem value="DRAFT">Borrador</SelectItem>
               <SelectItem value="RECRUITING">Reclutando</SelectItem>
               <SelectItem value="ACTIVE">Activo</SelectItem>
@@ -247,7 +249,7 @@ export function TrialFilters({ filters, onFilterChange, onReset, cities }: Trial
           </Select>
 
           <Select
-            value={filters.city || ''}
+            value={filters.city || 'all'}
             onValueChange={handleCityChange}
           >
             <SelectTrigger className="w-full sm:w-[180px]">
@@ -255,7 +257,7 @@ export function TrialFilters({ filters, onFilterChange, onReset, cities }: Trial
               <SelectValue placeholder="Ciudad" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas las ciudades</SelectItem>
+              <SelectItem value="all">Todas las ciudades</SelectItem>
               {cities.map((city) => (
                 <SelectItem key={city} value={city}>
                   {city}

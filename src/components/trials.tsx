@@ -1,64 +1,51 @@
-import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Icons } from "./ui/icons";
 import { InputWithLabel } from "./ui/input";
 import { TextareaWithLabel } from "./ui/textarea";
+import { SelectWithLabel } from "./ui/select";
 import { useState } from "react";
 
 const trialsPage = () => {
   const [formContactoInstitucion, setFormContactoInstitucion] = useState({
     nombreInstitucion: "",
+    tipoInstitucion: "",
     nombreContacto: "",
+    cargoContacto: "",
     email: "",
     telefono: "",
+    pais: "",
+    ciudad: "",
+    direccion: "",
+    sitioWeb: "",
+    numeroEnsayos: "",
+    areasInteres: "",
     mensaje: "",
   });
 
-  const estadisticasInstituciones = [
-    { numero: "300%", label: "Más Reclutamiento", Icono: Icons.Target, color: "text-indigo-600" },
-    { numero: "45", label: "Instituciones Activas", Icono: Icons.Shield, color: "text-purple-600" },
-    { numero: "2.8K", label: "Pacientes en Red", Icono: Icons.Users, color: "text-blue-600" },
-    { numero: "24/7", label: "Soporte Técnico", Icono: Icons.Zap, color: "text-green-600" },
+  const tiposInstitucion = [
+    { value: "hospital", label: "Hospital" },
+    { value: "clinica", label: "Clínica Privada" },
+    { value: "centro_investigacion", label: "Centro de Investigación" },
+    { value: "universidad", label: "Universidad" },
+    { value: "laboratorio", label: "Laboratorio Farmacéutico" },
+    { value: "otro", label: "Otro" }
   ];
 
-  const planesInstituciones = [
-    {
-      nombre: "Básico",
-      precio: "Gratis",
-      descripcion: "Ideal para comenzar",
-      caracteristicas: ["Hasta 2 ensayos simultáneos", "Dashboard básico", "Soporte por email", "Reportes mensuales"],
-      destacado: false,
-    },
-    {
-      nombre: "Profesional",
-      precio: "$99",
-      periodo: "/mes",
-      descripcion: "Para instituciones activas",
-      caracteristicas: [
-        "Ensayos ilimitados",
-        "Dashboard avanzado con IA",
-        "Soporte prioritario 24/7",
-        "Reportes en tiempo real",
-        "Matching automático de pacientes",
-        "API de integración",
-      ],
-      destacado: true,
-    },
-    {
-      nombre: "Enterprise",
-      precio: "Personalizado",
-      descripcion: "Solución a medida",
-      caracteristicas: [
-        "Todo de Profesional",
-        "Cuenta dedicada",
-        "Integración personalizada",
-        "Capacitación on-site",
-        "SLA garantizado",
-      ],
-      destacado: false,
-    },
+  const paises = [
+    { value: "chile", label: "Chile" },
+    { value: "argentina", label: "Argentina" },
+    { value: "peru", label: "Perú" },
+    { value: "colombia", label: "Colombia" },
+    { value: "otro", label: "Otro" }
   ];
+
+  const scrollToFormulario = () => {
+    const formulario = document.getElementById('formulario-institucion');
+    if (formulario) {
+      formulario.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const handleSubmitContactoInstitucion = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,101 +53,79 @@ const trialsPage = () => {
     alert("¡Gracias por tu interés! Nos contactaremos contigo en menos de 24 horas.");
     setFormContactoInstitucion({
       nombreInstitucion: "",
+      tipoInstitucion: "",
       nombreContacto: "",
+      cargoContacto: "",
       email: "",
       telefono: "",
+      pais: "",
+      ciudad: "",
+      direccion: "",
+      sitioWeb: "",
+      numeroEnsayos: "",
+      areasInteres: "",
       mensaje: "",
     });
   };
 
   return (
-    <div className="pt-32 pb-20 px-4">
+    <div className="pt-32 pb-20 px-4 min-h-screen bg-gradient-to-b from-[#001B28] via-[#013C52] to-[#001021] text-white">
       <div className="max-w-7xl mx-auto">
         {/* Hero Instituciones */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full text-sm font-medium mb-6 border border-white/20">
             <Icons.Shield className="w-4 h-4" />
             Soluciones para instituciones de salud
           </div>
           <h1 className="text-5xl lg:text-7xl font-bold mb-6">
             <span className="text-gradient">Publica</span> tus ensayos
             <br />
-            <span className="text-gray-900">y alcanza más pacientes</span>
+            <span className="text-[#A7F2EB]">y alcanza más pacientes</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed">
+          <p className="text-xl text-white/80 max-w-3xl mx-auto mb-12 leading-relaxed">
             La plataforma líder para difundir ensayos clínicos en Chile. Conecta con miles de pacientes interesados
             y acelera tu investigación.
           </p>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            {estadisticasInstituciones.map((stat, index) => (
-              <div key={index} className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <div className="flex items-center justify-center mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-indigo-100 to-purple-100 flex items-center justify-center">
-                    <stat.Icono className={`w-6 h-6 ${stat.color}`} />
+          <div className="max-w-3xl mx-auto">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#04BFAD] to-[#024959] rounded-3xl blur-xl opacity-30"></div>
+              <div className="relative bg-white rounded-3xl p-8 md:p-12 shadow-2xl border-2 border-[#04BFAD]/50">
+                <div className="text-center space-y-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#04BFAD] to-[#024959] rounded-full mb-4">
+                    <Icons.Shield className="w-8 h-8 text-white" />
                   </div>
-                </div>
-                <div className="text-2xl font-bold text-gray-900 mb-1">{stat.numero}</div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Planes y Precios */}
-        <div className="mb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Planes que se Adaptan a Ti</h2>
-            <p className="text-xl text-gray-600">Elige el plan perfecto para tu institución</p>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            {planesInstituciones.map((plan, index) => (
-              <Card
-                key={index}
-                className={`${plan.destacado ? "ring-4 ring-indigo-500 scale-105" : ""} bg-white/80 backdrop-blur-sm border-0 hover:shadow-2xl transition-all`}
-              >
-                <CardHeader>
-                  {plan.destacado && <Badge className="bg-indigo-600 text-white mb-4 w-fit">Más Popular</Badge>}
-                  <CardTitle className="text-2xl">{plan.nombre}</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold text-gray-900">{plan.precio}</span>
-                    {plan.periodo && <span className="text-gray-600">{plan.periodo}</span>}
-                  </div>
-                  <CardDescription className="mt-2">{plan.descripcion}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 mb-6">
-                    {plan.caracteristicas.map((caract, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <Icons.Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">{caract}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <h3 className="text-2xl md:text-3xl font-bold text-[#024959]">
+                    ¿Estás interesado en publicar tus ensayos?
+                  </h3>
+                  <p className="text-lg text-[#4D4D59] max-w-xl mx-auto">
+                    Completa un breve formulario y nuestro equipo se pondrá en contacto contigo para evaluar las necesidades de tu institución
+                  </p>
                   <Button
-                    className={`w-full rounded-xl ${
-                      plan.destacado
-                        ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
-                        : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-                    }`}
+                    onClick={scrollToFormulario}
+                    className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white h-16 px-12 text-xl rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                   >
-                    {plan.destacado ? "Comenzar Ahora" : "Más Información"}
+                    <Icons.FileText className="w-6 h-6 mr-3" />
+                    Completa el Formulario
                   </Button>
-                </CardContent>
-              </Card>
-            ))}
+                  <p className="text-sm text-[#4D4D59]/70 flex items-center justify-center gap-2">
+                    <Icons.Shield className="w-4 h-4 text-[#04BFAD]" />
+                    Tus datos están protegidos y son confidenciales
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Formulario de Contacto */}
-        <div className="max-w-3xl mx-auto">
+        <div id="formulario-institucion" className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">¿Listo para Empezar?</h2>
-            <p className="text-xl text-gray-600">Completa el formulario y nos contactaremos contigo</p>
+            <h2 className="text-4xl font-bold text-white mb-4">¿Listo para Empezar?</h2>
+            <p className="text-xl text-white/80">Completa el formulario y nos contactaremos contigo</p>
           </div>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-2xl">
+          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-2xl text-[#024959]">
             <CardContent className="pt-8">
               <form onSubmit={handleSubmitContactoInstitucion} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
@@ -213,7 +178,7 @@ const trialsPage = () => {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-lg py-6 rounded-xl"
+                  className="w-full bg-gradient-to-r from-[#04BFAD] to-[#02a596] hover:opacity-90 text-[#024959] text-lg py-6 rounded-xl"
                 >
                   <Icons.Mail className="w-5 h-5 mr-2" />
                   Solicitar Información
@@ -223,16 +188,16 @@ const trialsPage = () => {
           </Card>
 
           <div className="mt-12 text-center">
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-100">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">¿Necesitas ayuda?</h3>
-              <p className="text-gray-600 mb-6">Nuestro equipo está listo para responder tus consultas</p>
+            <div className="bg-white/10 rounded-2xl p-8 border border-white/20 backdrop-blur-sm">
+              <h3 className="text-xl font-semibold text-white mb-4">¿Necesitas ayuda?</h3>
+              <p className="text-white/80 mb-6">Nuestro equipo está listo para responder tus consultas</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Icons.Phone className="w-4 h-4 text-indigo-600" />
+                <div className="flex items-center gap-2 text-white/80">
+                  <Icons.Phone className="w-4 h-4 text-[#04BFAD]" />
                   <span>+56 2 3456 7890</span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Icons.Mail className="w-4 h-4 text-indigo-600" />
+                <div className="flex items-center gap-2 text-white/80">
+                  <Icons.Mail className="w-4 h-4 text-[#04BFAD]" />
                   <span>instituciones@yoparticipo.cl</span>
                 </div>
               </div>

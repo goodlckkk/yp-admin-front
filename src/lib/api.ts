@@ -213,6 +213,7 @@ export interface Trial {
   end_date?: string;
   target_participants?: number;
   current_participants?: number;
+  max_participants?: number;
   inclusion_criteria?: Record<string, unknown> | null;
 }
 
@@ -243,6 +244,8 @@ export interface CreateTrialPayload {
   clinic_city: string;
   sponsor_id?: string; // Sponsor es opcional
   status?: 'RECRUITING' | 'ACTIVE' | 'CLOSED';
+  max_participants?: number; // Límite de participantes
+  current_participants?: number; // Participantes actuales
 }
 
 export interface Paginated<T> {
@@ -402,4 +405,14 @@ export async function getStats(): Promise<DashboardStats> {
 
 export async function getTrends(): Promise<TrendData[]> {
   return fetchWithAuth<TrendData[]>(`/stats/trends`);
+}
+
+export interface PublicStats {
+  patientsConnected: number;
+  activeTrials: number;
+  medicalCenters: number;
+}
+
+export async function getPublicStats(): Promise<PublicStats> {
+  return request<PublicStats>(`/stats/public`);
 }

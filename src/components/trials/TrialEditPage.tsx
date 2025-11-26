@@ -22,8 +22,9 @@ import {
 } from '../ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { Icons } from '../ui/icons';
 import type { Trial, CreateTrialPayload, Sponsor } from '../../lib/api';
-import { getTrial, updateTrial, getSponsors, getToken } from '../../lib/api';
+import { getTrial, updateTrial, getSponsors, getToken, fetchWithAuth } from '../../lib/api';
 
 interface InclusionCriteria {
   edad_minima?: number;
@@ -45,13 +46,26 @@ const INITIAL_CRITERIA: InclusionCriteria = {
   otros_criterios: '',
 };
 
+interface PatientIntake {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  age: number;
+  condition: string;
+  created_at: string;
+}
+
 export function TrialEditPage() {
   const [trial, setTrial] = useState<Trial | null>(null);
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+  const [patients, setPatients] = useState<PatientIntake[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingPatients, setLoadingPatients] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   
   // Form data
   const [title, setTitle] = useState('');
@@ -66,9 +80,9 @@ export function TrialEditPage() {
   const [newCondicionExcluida, setNewCondicionExcluida] = useState('');
   const [newMedicamentoProhibido, setNewMedicamentoProhibido] = useState('');
 
-  // Obtener ID del ensayo desde la URL
+  // Obtener ID del ensayo desde el query string
   const trialId = typeof window !== 'undefined' 
-    ? window.location.pathname.split('/')[2] 
+    ? new URLSearchParams(window.location.search).get('id')
     : null;
 
   useEffect(() => {
@@ -104,11 +118,27 @@ export function TrialEditPage() {
       setSponsorId(trialData.sponsor?.id || '');
       setStatus(trialData.status as 'RECRUITING' | 'ACTIVE' | 'CLOSED');
       setCriteria((trialData.inclusion_criteria as InclusionCriteria) || INITIAL_CRITERIA);
+
+      // Cargar pacientes asociados
+      loadPatients();
     } catch (err: any) {
       console.error('Error cargando datos:', err);
       setError('No se pudo cargar el ensayo. Por favor, intenta nuevamente.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPatients = async () => {
+    try {
+      setLoadingPatients(true);
+      const patientsData = await fetchWithAuth<PatientIntake[]>(`/patient-intakes/trial/${trialId}`);
+      setPatients(patientsData);
+    } catch (err: any) {
+      console.error('Error cargando pacientes:', err);
+      // No mostrar error crítico, los pacientes son opcionales
+    } finally {
+      setLoadingPatients(false);
     }
   };
 
@@ -164,9 +194,7 @@ export function TrialEditPage() {
     return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!validateForm()) {
       return;
     }
@@ -182,16 +210,17 @@ export function TrialEditPage() {
         clinic_city: clinicCity.trim(),
         sponsor_id: sponsorId,
         status,
+        max_participants: trial?.max_participants || 30,
+        current_participants: trial?.current_participants || 0,
         inclusion_criteria: criteria,
       };
 
       await updateTrial(trialId!, payload);
       setSuccess(true);
+      setIsEditing(false);
 
-      // Redirigir después de 2 segundos
-      setTimeout(() => {
-        window.location.href = '/trials';
-      }, 2000);
+      // Recargar datos
+      await loadData();
     } catch (err: any) {
       console.error('Error guardando ensayo:', err);
       setError(err.message || 'Error al guardar el ensayo. Por favor, intenta nuevamente.');
@@ -239,22 +268,63 @@ export function TrialEditPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => window.location.href = '/trials'}
-            className="mb-4"
-          >
-            ← Volver a la lista
-          </Button>
-          <h1 className="text-3xl font-bold">Editar Ensayo Clínico</h1>
-          <p className="text-gray-600 mt-2">
-            Modifica la información del ensayo "{trial?.title}"
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#F2F2F2] to-white">
+      <div className="container mx-auto py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => window.location.href = '/dashboard'}
+              className="mb-4 text-[#024959] hover:text-[#04BFAD] hover:bg-[#04BFAD]/10"
+            >
+              <Icons.ChevronDown className="w-5 h-5 mr-2 rotate-90" />
+              Volver al Dashboard
+            </Button>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-[#024959] mb-2">
+                  {isEditing ? 'Editando Ensayo Clínico' : 'Detalles del Ensayo'}
+                </h1>
+                <p className="text-[#4D4D59] text-lg">
+                  {trial?.title}
+                </p>
+              </div>
+              <div className="flex gap-3">
+                {!isEditing ? (
+                  <Button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white"
+                  >
+                    <Icons.FileText className="w-4 h-4 mr-2" />
+                    Editar Ensayo
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditing(false);
+                        loadData();
+                      }}
+                      className="border-[#04BFAD] text-[#024959] hover:bg-[#04BFAD]/10"
+                    >
+                      <Icons.X className="w-4 h-4 mr-2" />
+                      Cancelar
+                    </Button>
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={saving}
+                      className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white"
+                    >
+                      <Icons.CheckCircle className="w-4 h-4 mr-2" />
+                      {saving ? 'Guardando...' : 'Guardar Cambios'}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
 
         {/* Success Message */}
         {success && (
@@ -263,14 +333,15 @@ export function TrialEditPage() {
           </div>
         )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-700">
-            {error}
-          </div>
-        )}
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-700 flex items-start gap-3">
+              <Icons.AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
           {/* Información Básica */}
           <Card>
             <CardHeader>
@@ -620,16 +691,8 @@ export function TrialEditPage() {
             </CardContent>
           </Card>
 
-          {/* Botones de Acción */}
-          <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={handleCancel} disabled={saving}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={saving}>
-              {saving ? 'Guardando...' : 'Guardar Cambios'}
-            </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
