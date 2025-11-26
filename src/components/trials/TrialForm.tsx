@@ -15,6 +15,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import {
   Dialog,
   DialogContent,
@@ -32,8 +33,8 @@ import {
 } from '../ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import type { Trial, CreateTrialPayload, Sponsor } from '../../lib/api';
-import { createTrial, updateTrial, getSponsors } from '../../lib/api';
+import type { Trial, CreateTrialPayload, Sponsor, PatientIntake } from '../../lib/api';
+import { createTrial, updateTrial, getSponsors, fetchWithAuth } from '../../lib/api';
 
 interface TrialFormProps {
   trial?: Trial | null;
@@ -48,6 +49,8 @@ interface FormData {
   clinic_city: string;
   sponsor_id: string;
   status: 'RECRUITING' | 'ACTIVE' | 'CLOSED';
+  max_participants: number;
+  current_participants: number;
   inclusion_criteria: InclusionCriteria;
 }
 
@@ -67,6 +70,8 @@ const INITIAL_FORM_DATA: FormData = {
   clinic_city: '',
   sponsor_id: '',
   status: 'RECRUITING',
+  max_participants: 30,
+  current_participants: 0,
   inclusion_criteria: {
     edad_minima: undefined,
     edad_maxima: undefined,
@@ -81,8 +86,14 @@ const INITIAL_FORM_DATA: FormData = {
 export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps) {
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+  const [patients, setPatients] = useState<PatientIntake[]>([]);
+  const [availablePatients, setAvailablePatients] = useState<PatientIntake[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingSponsors, setLoadingSponsors] = useState(true);
+  const [loadingPatients, setLoadingPatients] = useState(false);
+  const [loadingAvailablePatients, setLoadingAvailablePatients] = useState(false);
+  const [showAddPatientsModal, setShowAddPatientsModal] = useState(false);
+  const [selectedPatientIds, setSelectedPatientIds] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -91,9 +102,84 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
   const [newCondicionExcluida, setNewCondicionExcluida] = useState('');
   const [newMedicamentoProhibido, setNewMedicamentoProhibido] = useState('');
 
+  // Cargar pacientes si estamos editando
+  const loadPatients = async () => {
+    if (!trial?.id) return;
+    
+    setLoadingPatients(true);
+    try {
+      const response = await fetchWithAuth(`/patient-intakes/trial/${trial.id}`);
+      setPatients(Array.isArray(response) ? response : []);
+    } catch (err) {
+      console.error('Error al cargar pacientes:', err);
+      setPatients([]);
+    } finally {
+      setLoadingPatients(false);
+    }
+  };
+
+  // Cargar pacientes disponibles (sin ensayo asignado o que coincidan con la condición)
+  const loadAvailablePatients = async () => {
+    if (!trial?.id) return;
+    
+    setLoadingAvailablePatients(true);
+    try {
+      // Obtener todos los pacientes sin ensayo asignado
+      const response = await fetchWithAuth('/patient-intakes');
+      const allPatients = Array.isArray(response) ? response : [];
+      
+      // Filtrar pacientes que no estén ya en este ensayo
+      const currentPatientIds = new Set(patients.map(p => p.id));
+      const available = allPatients.filter(p => 
+        !p.trialId && !currentPatientIds.has(p.id)
+      );
+      
+      setAvailablePatients(available);
+    } catch (err: any) {
+      console.error('Error al cargar pacientes disponibles:', err);
+      setError(`Error al cargar pacientes: ${err.message || 'Verifica que el endpoint /patient-intakes exista en tu API'}`);
+      setAvailablePatients([]);
+    } finally {
+      setLoadingAvailablePatients(false);
+    }
+  };
+
+  // Agregar pacientes seleccionados localmente (sin guardar en backend aún)
+  const handleAddPatients = () => {
+    if (selectedPatientIds.size === 0) return;
+    
+    // Obtener los pacientes seleccionados de la lista de disponibles
+    const selectedPatients = availablePatients.filter(p => 
+      selectedPatientIds.has(p.id)
+    );
+    
+    // Agregar a la lista local de pacientes
+    setPatients(prev => [...prev, ...selectedPatients]);
+    
+    // Cerrar el modal y limpiar selección
+    setShowAddPatientsModal(false);
+    setSelectedPatientIds(new Set());
+  };
+
+  // Toggle selección de paciente
+  const togglePatientSelection = (patientId: string) => {
+    setSelectedPatientIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(patientId)) {
+        newSet.delete(patientId);
+      } else {
+        newSet.add(patientId);
+      }
+      return newSet;
+    });
+  };
+
   // Cargar sponsors al montar
   useEffect(() => {
     loadSponsors();
+    if (trial?.id) {
+      loadPatients();
+    }
   }, []);
 
   // Cargar datos del ensayo si estamos editando
@@ -105,6 +191,8 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
         clinic_city: trial.clinic_city,
         sponsor_id: trial.sponsor?.id || '',
         status: trial.status as 'RECRUITING' | 'ACTIVE' | 'CLOSED',
+        max_participants: trial.max_participants || 30,
+        current_participants: trial.current_participants || 0,
         inclusion_criteria: trial.inclusion_criteria as InclusionCriteria || INITIAL_FORM_DATA.inclusion_criteria,
       });
     } else if (!trial && isOpen) {
@@ -209,7 +297,17 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
 
   // Función para crear/actualizar el ensayo (solo se ejecuta manualmente)
   const handleCreateTrial = async () => {
-    if (!validateStep(3)) {
+    // Validaciones básicas
+    if (!formData.title.trim()) {
+      setError('El título es obligatorio');
+      return;
+    }
+    if (!formData.public_description.trim()) {
+      setError('La descripción es obligatoria');
+      return;
+    }
+    if (!formData.clinic_city.trim()) {
+      setError('La ciudad es obligatoria');
       return;
     }
 
@@ -217,66 +315,45 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
     setError(null);
 
     try {
-      // Limpiar inclusion_criteria eliminando valores undefined y vacíos
-      const cleanedCriteria: any = {};
-      
-      if (formData.inclusion_criteria.edad_minima !== undefined && formData.inclusion_criteria.edad_minima !== null) {
-        cleanedCriteria.edad_minima = formData.inclusion_criteria.edad_minima;
-      }
-      if (formData.inclusion_criteria.edad_maxima !== undefined && formData.inclusion_criteria.edad_maxima !== null) {
-        cleanedCriteria.edad_maxima = formData.inclusion_criteria.edad_maxima;
-      }
-      if (formData.inclusion_criteria.genero && formData.inclusion_criteria.genero !== 'todos') {
-        cleanedCriteria.genero = formData.inclusion_criteria.genero;
-      }
-      if (formData.inclusion_criteria.condiciones_requeridas && formData.inclusion_criteria.condiciones_requeridas.length > 0) {
-        cleanedCriteria.condiciones_requeridas = formData.inclusion_criteria.condiciones_requeridas;
-      }
-      if (formData.inclusion_criteria.condiciones_excluidas && formData.inclusion_criteria.condiciones_excluidas.length > 0) {
-        cleanedCriteria.condiciones_excluidas = formData.inclusion_criteria.condiciones_excluidas;
-      }
-      if (formData.inclusion_criteria.medicamentos_prohibidos && formData.inclusion_criteria.medicamentos_prohibidos.length > 0) {
-        cleanedCriteria.medicamentos_prohibidos = formData.inclusion_criteria.medicamentos_prohibidos;
-      }
-      if (formData.inclusion_criteria.otros_criterios && formData.inclusion_criteria.otros_criterios.trim()) {
-        cleanedCriteria.otros_criterios = formData.inclusion_criteria.otros_criterios.trim();
-      }
-
       const payload: CreateTrialPayload = {
-        title: formData.title.trim(),
-        public_description: formData.public_description.trim(),
-        clinic_city: formData.clinic_city.trim(),
+        title: formData.title,
+        public_description: formData.public_description,
+        clinic_city: formData.clinic_city,
+        sponsor_id: formData.sponsor_id || undefined,
         status: formData.status,
-        inclusion_criteria: cleanedCriteria,
-        // Solo incluir sponsor_id si tiene un valor
-        ...(formData.sponsor_id && { sponsor_id: formData.sponsor_id }),
+        max_participants: formData.max_participants || undefined,
+        current_participants: formData.current_participants || undefined,
+        inclusion_criteria: formData.inclusion_criteria,
       };
-
-      console.log('Enviando payload:', JSON.stringify(payload, null, 2));
 
       if (trial) {
         await updateTrial(trial.id, payload);
+        
+        // Si hay pacientes nuevos agregados, asignarlos al ensayo
+        const newPatientIds = patients
+          .filter(p => !p.trialId) // Pacientes que aún no tienen trialId
+          .map(p => p.id);
+        
+        if (newPatientIds.length > 0) {
+          const promises = newPatientIds.map(patientId =>
+            fetchWithAuth(`/patient-intakes/${patientId}`, {
+              method: 'PATCH',
+              body: JSON.stringify({ trialId: trial.id })
+            })
+          );
+          await Promise.all(promises);
+        }
+        
+        onSuccess();
       } else {
-        const result = await createTrial(payload);
-        console.log('Ensayo creado:', result);
+        await createTrial(payload);
+        onSuccess();
       }
 
-      onSuccess();
       handleClose();
     } catch (err: any) {
-      console.error('Error guardando ensayo:', err);
-      console.error('Status del error:', err.status);
-      console.error('Detalles del error:', err.response?.data || err);
-      
-      // Detectar errores de autenticación/autorización usando el status code
-      if (err.status === 401 || err.message?.includes('401') || err.message?.includes('Unauthorized')) {
-        setError('Tu sesión ha expirado. Redirigiendo al login...');
-        // El redirect ya se hace automáticamente en fetchWithAuth
-      } else if (err.status === 403 || err.message?.includes('403') || err.message?.includes('Forbidden')) {
-        setError('No tienes permisos para crear ensayos. Verifica que tu usuario tenga rol ADMIN o DOCTOR.');
-      } else {
-        setError(err.response?.data?.message || err.message || 'Error al guardar el ensayo. Por favor, intenta nuevamente.');
-      }
+      console.error('Error al guardar el ensayo:', err);
+      setError(err.message || 'Ocurrió un error al guardar el ensayo');
     } finally {
       setLoading(false);
     }
@@ -292,49 +369,38 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
     onClose();
   };
 
+  // Si no está abierto, no renderizar nada
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-[#024959]">
             {trial ? 'Editar Ensayo Clínico' : 'Crear Nuevo Ensayo Clínico'}
-          </DialogTitle>
-          <DialogDescription>
-            {currentStep === 1 && 'Información básica del ensayo'}
-            {currentStep === 2 && 'Ubicación y patrocinador'}
-            {currentStep === 3 && 'Criterios de inclusión (opcional)'}
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Indicador de pasos */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          {[1, 2, 3].map((step) => (
-            <div key={step} className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step === currentStep
-                    ? 'bg-blue-600 text-white'
-                    : step < currentStep
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                {step < currentStep ? '✓' : step}
-              </div>
-              {step < 3 && (
-                <div
-                  className={`w-12 h-1 ${
-                    step < currentStep ? 'bg-green-600' : 'bg-gray-200'
-                  }`}
-                />
-              )}
-            </div>
-          ))}
+          </h2>
+          <p className="text-gray-600 mt-1">
+            {trial ? 'Modifica la información del ensayo y gestiona los pacientes asociados' : 'Completa la información para crear un nuevo ensayo clínico'}
+          </p>
         </div>
+        <Button
+          variant="ghost"
+          onClick={handleClose}
+          className="text-gray-600 hover:text-gray-900"
+        >
+          ✕ Cerrar
+        </Button>
+      </div>
 
-        <div className="space-y-6">
-          {/* Paso 1: Información Básica */}
-          {currentStep === 1 && (
+      {/* Formulario completo en una sola vista */}
+      <div className="space-y-6">
+        {/* Sección 1: Información Básica */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg text-[#024959]">Información Básica</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-4">
               <div>
                 <Label htmlFor="title">Título del Ensayo *</Label>
@@ -382,10 +448,15 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                 </Select>
               </div>
             </div>
-          )}
+          </CardContent>
+        </Card>
 
-          {/* Paso 2: Ubicación y Sponsor */}
-          {currentStep === 2 && (
+        {/* Sección 2: Ubicación y Patrocinador */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg text-[#024959]">Ubicación y Patrocinador</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-4">
               <div>
                 <Label htmlFor="clinic_city">Ciudad de la Clínica *</Label>
@@ -427,11 +498,51 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                   </p>
                 )}
               </div>
-            </div>
-          )}
 
-          {/* Paso 3: Criterios de Inclusión */}
-          {currentStep === 3 && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="max_participants">Límite de Participantes *</Label>
+                  <Input
+                    id="max_participants"
+                    type="number"
+                    value={formData.max_participants}
+                    onChange={(e) => handleInputChange('max_participants', parseInt(e.target.value) || 30)}
+                    placeholder="30"
+                    min="1"
+                    className="mt-1"
+                    disabled={loading}
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Número máximo de participantes para este ensayo
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="current_participants">Participantes Actuales</Label>
+                  <Input
+                    id="current_participants"
+                    type="number"
+                    value={formData.current_participants}
+                    onChange={(e) => handleInputChange('current_participants', parseInt(e.target.value) || 0)}
+                    placeholder="0"
+                    min="0"
+                    className="mt-1"
+                    disabled={loading}
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Participantes ya reclutados
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sección 3: Criterios de Inclusión */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg text-[#024959]">Criterios de Inclusión (Opcional)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-6">
               <Card>
                 <CardHeader>
@@ -633,59 +744,239 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                 />
               </div>
             </div>
-          )}
+          </CardContent>
+        </Card>
 
-          {/* Mensaje de error */}
-          {error && (
-            <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm">
-              {error}
+        {/* Sección 4: Pacientes (solo en modo edición) */}
+        {trial && (
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg">Pacientes Asociados</CardTitle>
+                      <p className="text-sm text-gray-600">
+                        {patients.length} {patients.length === 1 ? 'paciente asociado' : 'pacientes asociados'} a este ensayo
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setShowAddPatientsModal(true);
+                        loadAvailablePatients();
+                      }}
+                      className="bg-[#04BFAD] hover:bg-[#024959] text-white"
+                    >
+                      + Agregar Pacientes
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {loadingPatients ? (
+                    <div className="text-center py-8 text-gray-500">Cargando pacientes...</div>
+                  ) : patients.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      No hay pacientes asociados a este ensayo aún.
+                    </div>
+                  ) : (
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Nombre</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Teléfono</TableHead>
+                            <TableHead>Edad</TableHead>
+                            <TableHead>Condición</TableHead>
+                            <TableHead>Estado</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {patients.map((patient) => {
+                            let age: string | number = 'N/A';
+                            if (patient.fechaNacimiento) {
+                              try {
+                                const birthDate = new Date(patient.fechaNacimiento);
+                                if (!isNaN(birthDate.getTime())) {
+                                  age = Math.floor((Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+                                }
+                              } catch (e) {
+                                console.error('Error calculando edad:', e);
+                              }
+                            }
+                            
+                            return (
+                              <TableRow key={patient.id}>
+                                <TableCell className="font-medium">
+                                  {patient.nombres || 'N/A'} {patient.apellidos || ''}
+                                </TableCell>
+                                <TableCell>{patient.email || 'N/A'}</TableCell>
+                                <TableCell>{patient.telefono || 'N/A'}</TableCell>
+                                <TableCell>{typeof age === 'number' ? `${age} años` : age}</TableCell>
+                                <TableCell>{patient.condicionPrincipal || 'N/A'}</TableCell>
+                                <TableCell>
+                                  <Badge
+                                    variant={patient.status === 'CONTACTED' ? 'default' : 'secondary'}
+                                  >
+                                    {patient.status || 'RECEIVED'}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
-          )}
+        )}
 
-          {/* Botones de navegación */}
-          <DialogFooter className="flex justify-between">
-            <div className="flex gap-2">
-              {currentStep > 1 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleBack}
-                  disabled={loading}
-                >
-                  Atrás
-                </Button>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                disabled={loading}
-              >
-                Cancelar
-              </Button>
-              {currentStep < 3 ? (
-                <Button
-                  type="button"
-                  onClick={handleNext}
-                  disabled={loading}
-                >
-                  Siguiente
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  onClick={handleCreateTrial}
-                  disabled={loading}
-                >
-                  {loading ? 'Guardando...' : trial ? 'Actualizar Ensayo' : 'Crear Ensayo'}
-                </Button>
-              )}
-            </div>
-          </DialogFooter>
+        {/* Mensaje de error */}
+        {error && (
+          <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm flex items-center gap-2">
+            <span>⚠️</span>
+            {error}
+          </div>
+        )}
+
+        {/* Botones de acción */}
+        <div className="flex justify-end gap-3 pt-4 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleClose}
+            disabled={loading}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            onClick={handleCreateTrial}
+            disabled={loading}
+            className="bg-[#04BFAD] hover:bg-[#024959] text-white"
+          >
+            {loading ? 'Guardando...' : trial ? 'Actualizar Ensayo' : 'Crear Ensayo'}
+          </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+
+      {/* Modal para agregar pacientes */}
+      <Dialog open={showAddPatientsModal} onOpenChange={setShowAddPatientsModal}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Agregar Pacientes al Ensayo</DialogTitle>
+            <DialogDescription>
+              Selecciona los pacientes que deseas agregar a este ensayo clínico
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {loadingAvailablePatients ? (
+              <div className="text-center py-8 text-gray-500">Cargando pacientes disponibles...</div>
+            ) : availablePatients.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No hay pacientes disponibles para agregar.
+              </div>
+            ) : (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">
+                        <input
+                          type="checkbox"
+                          checked={selectedPatientIds.size === availablePatients.length && availablePatients.length > 0}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedPatientIds(new Set(availablePatients.map(p => p.id)));
+                            } else {
+                              setSelectedPatientIds(new Set());
+                            }
+                          }}
+                          className="w-4 h-4"
+                        />
+                      </TableHead>
+                      <TableHead>Nombre</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Teléfono</TableHead>
+                      <TableHead>Edad</TableHead>
+                      <TableHead>Condición</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {availablePatients.map((patient) => {
+                      let age: string | number = 'N/A';
+                      if (patient.fechaNacimiento) {
+                        try {
+                          const birthDate = new Date(patient.fechaNacimiento);
+                          if (!isNaN(birthDate.getTime())) {
+                            age = Math.floor((Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+                          }
+                        } catch (e) {
+                          console.error('Error calculando edad:', e);
+                        }
+                      }
+                      
+                      return (
+                        <TableRow 
+                          key={patient.id}
+                          className={selectedPatientIds.has(patient.id) ? 'bg-[#A7F2EB]/20' : ''}
+                        >
+                          <TableCell>
+                            <input
+                              type="checkbox"
+                              checked={selectedPatientIds.has(patient.id)}
+                              onChange={() => togglePatientSelection(patient.id)}
+                              className="w-4 h-4"
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {patient.nombres || 'N/A'} {patient.apellidos || ''}
+                          </TableCell>
+                          <TableCell>{patient.email || 'N/A'}</TableCell>
+                          <TableCell>{patient.telefono || 'N/A'}</TableCell>
+                          <TableCell>{typeof age === 'number' ? `${age} años` : age}</TableCell>
+                          <TableCell>{patient.condicionPrincipal || 'N/A'}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+
+            {selectedPatientIds.size > 0 && (
+              <div className="p-3 bg-[#A7F2EB]/20 rounded-md text-sm text-[#024959]">
+                ✓ {selectedPatientIds.size} {selectedPatientIds.size === 1 ? 'paciente seleccionado' : 'pacientes seleccionados'}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowAddPatientsModal(false);
+                setSelectedPatientIds(new Set());
+              }}
+              disabled={loading}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={handleAddPatients}
+              disabled={selectedPatientIds.size === 0}
+              className="bg-[#04BFAD] hover:bg-[#024959] text-white"
+            >
+              Agregar {selectedPatientIds.size > 0 ? `(${selectedPatientIds.size})` : ''}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

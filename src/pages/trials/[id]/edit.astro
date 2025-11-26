@@ -3,20 +3,24 @@
  * Página de Edición de Ensayo
  * Ruta dinámica: /trials/[id]/edit
  * 
- * En modo estático, esta página se renderiza del lado del cliente.
- * El componente React maneja la obtención del ID desde la URL.
+ * IMPORTANTE: Esta página requiere SSR para funcionar con rutas dinámicas.
+ * Como estamos en modo static, necesitamos pre-generar todas las rutas posibles
+ * o cambiar a SSR.
  */
-
-// getStaticPaths es requerido para rutas dinámicas en modo estático
-// Retornamos un array vacío porque el routing lo maneja React del lado del cliente
-export function getStaticPaths() {
-  return [];
-}
 
 import Layout from '../../../layouts/Layout.astro';
 import { TrialEditPage } from '../../../components/trials/TrialEditPage';
+
+// Para modo static, necesitamos generar las rutas en build time
+// Pero esto no es práctico para datos dinámicos
+// La solución es usar una ruta sin parámetros y leer el ID del query string
+export function getStaticPaths() {
+  // Retornar fallback: true permitiría generar páginas bajo demanda
+  // pero solo funciona en SSR mode
+  return [];
+}
 ---
 
-<Layout title="Editar Ensayo Clínico">
+<Layout>
   <TrialEditPage client:only="react" />
 </Layout>

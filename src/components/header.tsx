@@ -1,57 +1,74 @@
-import { Button } from "./ui/button";
-import { Icons } from "./ui/icons";
-import { navigate } from "astro:transitions/client";
+import { useState, useEffect } from "react";
+import logoPatients from "../assets/logo-1.svg?url";
+import logoInstitutions from "../assets/logo-2.svg?url";
 
-export function HeaderPage ({activeTab, setActiveTab, showMobileMenu, setShowMobileMenu}: any){
-  
-  const buttonLoginOnclickHandler = () => {
-    navigate("/auth")
+export function HeaderPage({ activeTab, setActiveTab }: any) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const isInstituciones = activeTab === "instituciones"
+
+  const getHeaderOpacity = () => {
+    if (isHovered) return isInstituciones ? "bg-[#004960]/95" : "bg-white/90";
+    if (isScrolled) return isInstituciones ? "bg-[#004960]/30" : "bg-white/30";
+    return isInstituciones ? "bg-[#004960]/95" : "bg-white/90";
+  };
+
+  const headerTheme = isInstituciones
+    ? `${getHeaderOpacity()} border-white/10 text-white`
+    : `${getHeaderOpacity()} border-white/40 text-[#024959]`
+
+  const navTheme = isInstituciones ? "bg-white/10" : "bg-gray-100"
+
+  const logoContainerClasses = isInstituciones
+    ? "flex items-center px-3 py-2 rounded-xl"
+    : "flex items-center"
+
+  const navButton = (tab: string) => {
+    const isActive = activeTab === tab
+    const activeClasses = isInstituciones
+      ? "bg-white text-[#024959] shadow"
+      : "bg-white text-[#024959] shadow"
+    const inactiveClasses = isInstituciones 
+      ? "text-white/70 hover:text-white hover:scale-110" 
+      : "text-gray-600 hover:text-[#024959] hover:scale-110"
+    return `px-6 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${isActive ? activeClasses : inactiveClasses}`
   }
 
+  const logoSrc = isInstituciones ? logoInstitutions : logoPatients
 
   return (
-    <header className="fixed top-4 left-4 right-4 z-50 bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20">
-        <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                    <Icons.Microscope className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse-slow"></div>
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gradient">yoParticipo</h1>
-                  <p className="text-xs text-gray-500">Chile</p>
-                </div>
-              </div>
+    <header 
+      className={`fixed top-4 left-4 right-4 z-50 backdrop-blur-lg rounded-2xl shadow-lg border transition-all duration-300 ${headerTheme}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex items-center justify-between h-16">
+          <div className={logoContainerClasses}>
+            <a href="/">
+              <img src={logoSrc} alt="yoParticipo" className="h-16 w-auto scale-300 origin-left" />
+            </a>
+          </div>
 
-              <nav className="hidden md:flex bg-gray-100 rounded-full p-1">
-                {["pacientes", "instituciones", "medicos"].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                      activeTab === tab ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-blue-600"
-                    }`}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ))}
-              </nav>
-
-              <div className="hidden md:flex items-center gap-3">
-                <Button variant="ghost" onClick={buttonLoginOnclickHandler}>Iniciar Sesión</Button>
-                <Button className="rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                  Comenzar
-                </Button>
-              </div>
-
-              <button className="md:hidden" onClick={() => setShowMobileMenu(!showMobileMenu)}>
-                <Icons.Menu className="w-6 h-6" />
+          <nav className={`absolute left-1/2 -translate-x-1/2 flex rounded-full p-1 ${navTheme}`}>
+            {["pacientes", "instituciones"].map((tab) => (
+              <button key={tab} onClick={() => setActiveTab(tab)} className={navButton(tab)}>
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
-            </div>
+            ))}
+          </nav>
         </div>
+      </div>
     </header>
   )
 }

@@ -19,6 +19,8 @@ interface PatientFormProps {
 
 export default function PatientForm({ condition, onClose, onSubmit, isSubmitting = false }: PatientFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
+  const [condicionSeleccionada, setCondicionSeleccionada] = useState("")
+  const [condicionPersonalizada, setCondicionPersonalizada] = useState("")
   const [formData, setFormData] = useState({
     nombres: "",
     apellidos: "",
@@ -38,6 +40,42 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
     aceptaTerminos: false,
     aceptaPrivacidad: false,
   })
+
+  const condicionesMedicas = [
+    { value: "diabetes_tipo_1", label: "Diabetes Tipo 1" },
+    { value: "diabetes_tipo_2", label: "Diabetes Tipo 2" },
+    { value: "hipertension", label: "Hipertensión Arterial" },
+    { value: "asma", label: "Asma" },
+    { value: "epoc", label: "EPOC (Enfermedad Pulmonar Obstructiva Crónica)" },
+    { value: "artritis_reumatoide", label: "Artritis Reumatoide" },
+    { value: "osteoartritis", label: "Osteoartritis" },
+    { value: "cancer_mama", label: "Cáncer de Mama" },
+    { value: "cancer_pulmon", label: "Cáncer de Pulmón" },
+    { value: "cancer_colon", label: "Cáncer de Colon" },
+    { value: "cancer_prostata", label: "Cáncer de Próstata" },
+    { value: "leucemia", label: "Leucemia" },
+    { value: "linfoma", label: "Linfoma" },
+    { value: "alzheimer", label: "Enfermedad de Alzheimer" },
+    { value: "parkinson", label: "Enfermedad de Parkinson" },
+    { value: "esclerosis_multiple", label: "Esclerosis Múltiple" },
+    { value: "epilepsia", label: "Epilepsia" },
+    { value: "depresion", label: "Depresión" },
+    { value: "ansiedad", label: "Trastorno de Ansiedad" },
+    { value: "bipolar", label: "Trastorno Bipolar" },
+    { value: "esquizofrenia", label: "Esquizofrenia" },
+    { value: "hepatitis_b", label: "Hepatitis B" },
+    { value: "hepatitis_c", label: "Hepatitis C" },
+    { value: "vih", label: "VIH/SIDA" },
+    { value: "lupus", label: "Lupus Eritematoso Sistémico" },
+    { value: "psoriasis", label: "Psoriasis" },
+    { value: "enfermedad_crohn", label: "Enfermedad de Crohn" },
+    { value: "colitis_ulcerosa", label: "Colitis Ulcerosa" },
+    { value: "insuficiencia_renal", label: "Insuficiencia Renal Crónica" },
+    { value: "insuficiencia_cardiaca", label: "Insuficiencia Cardíaca" },
+    { value: "fibromialgia", label: "Fibromialgia" },
+    { value: "migraña", label: "Migraña Crónica" },
+    { value: "otra", label: "Otra condición (especificar)" },
+  ]
 
   const regiones = [
     { value: "metropolitana", label: "Región Metropolitana" },
@@ -95,32 +133,44 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
   }
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900">Registro de Paciente</h2>
-          <p className="text-gray-600 mt-2">
-            Condición: <Badge variant="outline">{condition}</Badge>
-          </p>
+    <div className="p-8 bg-gradient-to-br from-[#F8FFFE] to-[#E8F9F7]">
+      {/* Header con logo y título centrado */}
+      <div className="relative mb-8">
+        <div className="flex items-center justify-center gap-3">
+          <img src="/logo.svg" alt="Yo Participo" className="w-10 h-10" />
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-[#04BFAD] to-[#024959] bg-clip-text text-transparent">
+            Formulario de Postulación
+          </h2>
         </div>
-        <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
-          <Icons.X className="w-5 h-5" />
+        <button 
+          onClick={onClose} 
+          className="absolute top-0 right-0 p-2 hover:bg-[#04BFAD]/10 rounded-full transition-colors"
+        >
+          <Icons.X className="w-5 h-5 text-[#024959]" />
         </button>
       </div>
 
-      {/* Progress */}
+      {/* Progress - Stepper mejorado */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-center gap-4 mb-4">
           {[1, 2, 3, 4].map((step) => (
             <div key={step} className="flex items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step <= currentStep ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
+                className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all ${
+                  currentStep === step
+                    ? "bg-gradient-to-br from-[#04BFAD] to-[#024959] text-white shadow-lg scale-110"
+                    : currentStep > step
+                      ? "bg-[#04BFAD] text-white"
+                      : "bg-gray-200 text-gray-600"
                 }`}
               >
-                {step < currentStep ? <Icons.CheckCircle className="w-5 h-5" /> : step}
+                {currentStep > step ? <Icons.Check className="w-6 h-6" /> : step}
               </div>
-              {step < 4 && <div className={`w-16 h-1 mx-2 ${step < currentStep ? "bg-blue-600" : "bg-gray-200"}`} />}
+              {step < 4 && (
+                <div className={`w-16 h-1 mx-2 rounded-full ${
+                  currentStep > step ? "bg-[#04BFAD]" : "bg-gray-200"
+                }`} />
+              )}
             </div>
           ))}
         </div>
@@ -130,8 +180,8 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
       {currentStep === 1 && (
         <Card className="border-0 shadow-none">
           <CardHeader>
-            <CardTitle>
-              <Icons.User className="w-5 h-5 inline mr-2 text-blue-600" />
+            <CardTitle className="text-[#024959]">
+              <Icons.User className="w-5 h-5 inline mr-2 text-[#04BFAD]" />
               Datos Personales
             </CardTitle>
             <CardDescription>Ingresa tu información personal básica</CardDescription>
@@ -181,8 +231,8 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
       {currentStep === 2 && (
         <Card className="border-0 shadow-none">
           <CardHeader>
-            <CardTitle>
-              <Icons.MapPin className="w-5 h-5 inline mr-2 text-blue-600" />
+            <CardTitle className="text-[#024959]">
+              <Icons.MapPin className="w-5 h-5 inline mr-2 text-[#04BFAD]" />
               Contacto y Ubicación
             </CardTitle>
           </CardHeader>
@@ -230,17 +280,46 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
       {currentStep === 3 && (
         <Card className="border-0 shadow-none">
           <CardHeader>
-            <CardTitle>
-              <Icons.Heart className="w-5 h-5 inline mr-2 text-blue-600" />
+            <CardTitle className="text-[#024959]">
+              <Icons.Heart className="w-5 h-5 inline mr-2 text-[#04BFAD]" />
               Información Médica
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            <SelectWithLabel
+              label="Condición Médica Principal *"
+              options={condicionesMedicas}
+              value={condicionSeleccionada}
+              onValueChange={(value: string) => {
+                setCondicionSeleccionada(value)
+                if (value !== "otra") {
+                  const condicionLabel = condicionesMedicas.find(c => c.value === value)?.label || ""
+                  handleInputChange("condicionPrincipal", condicionLabel)
+                  setCondicionPersonalizada("")
+                } else {
+                  handleInputChange("condicionPrincipal", "")
+                }
+              }}
+              placeholder="Selecciona tu condición médica"
+            />
+            
+            {condicionSeleccionada === "otra" && (
+              <InputWithLabel
+                label="Especifica tu condición *"
+                value={condicionPersonalizada}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setCondicionPersonalizada(e.target.value)
+                  handleInputChange("condicionPrincipal", e.target.value)
+                }}
+                placeholder="Escribe tu condición médica"
+              />
+            )}
+            
             <TextareaWithLabel
               label="Describe tu condición *"
               value={formData.descripcionCondicion}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange("descripcionCondicion", e.target.value)}
-              placeholder="Describe brevemente tu condición..."
+              placeholder="Describe brevemente tu condición, síntomas y tiempo de diagnóstico..."
               className="min-h-[100px]"
             />
             <TextareaWithLabel
@@ -268,8 +347,8 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
       {currentStep === 4 && (
         <Card className="border-0 shadow-none">
           <CardHeader>
-            <CardTitle>
-              <Icons.FileText className="w-5 h-5 inline mr-2 text-blue-600" />
+            <CardTitle className="text-[#024959]">
+              <Icons.FileText className="w-5 h-5 inline mr-2 text-[#04BFAD]" />
               Confirmación
             </CardTitle>
           </CardHeader>
@@ -290,7 +369,7 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
                     <strong>Teléfono:</strong> {formData.telefono}
                   </p>
                   <p>
-                    <strong>Condición:</strong> {condition}
+                    <strong>Condición:</strong> {formData.condicionPrincipal || "No especificada"}
                   </p>
                 </div>
               </div>
@@ -329,14 +408,19 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
 
       {/* Navigation */}
       <div className="flex justify-between mt-8">
-        <Button variant="outline" onClick={() => setCurrentStep((p) => p - 1)} disabled={currentStep === 1}>
+        <Button 
+          variant="outline" 
+          onClick={() => setCurrentStep((p) => p - 1)} 
+          disabled={currentStep === 1}
+          className="border-[#04BFAD] text-[#024959] hover:bg-[#04BFAD]/10"
+        >
           Anterior
         </Button>
         {currentStep < 4 ? (
           <Button
             onClick={() => setCurrentStep((p) => p + 1)}
             disabled={!validateStep(currentStep)}
-            className="bg-gradient-to-r from-blue-600 to-purple-600"
+            className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white"
           >
             Siguiente
           </Button>
@@ -344,7 +428,7 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
           <Button
             onClick={() => onSubmit(formData)}
             disabled={!validateStep(currentStep) || isSubmitting}
-            className="bg-gradient-to-r from-green-600 to-emerald-600"
+            className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white"
           >
             {isSubmitting ? (
               <>
