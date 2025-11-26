@@ -13,15 +13,9 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Verificar si hay un parámetro de sesión expirada en la URL
+  // Limpiar errores al montar el componente
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('sessionExpired') === 'true') {
-      setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-      // Limpiar el parámetro de la URL sin recargar la página
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-    }
+    setError(null);
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
