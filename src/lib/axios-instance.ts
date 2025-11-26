@@ -21,7 +21,7 @@ function removeTokenLocal(): void {
 
 // Crear instancia de Axios con configuración base
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.PUBLIC_API_URL || 'http://Yoparticipo-api-env.eba-pynyf7cb.sa-east-1.elasticbeanstalk.com/api',
+  baseURL: import.meta.env.PUBLIC_API_URL || 'https://api.yoparticipo.cl/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ axiosInstance.interceptors.response.use(
           // Token inválido o expirado
           removeTokenLocal();
           if (typeof window !== 'undefined') {
-            window.location.href = '/auth?sessionExpired=true';
+            window.location.href = '/auth';
           }
           break;
           

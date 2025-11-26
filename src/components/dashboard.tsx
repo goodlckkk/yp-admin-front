@@ -66,7 +66,7 @@ export default function DashboardPage() {
   // Función para cerrar sesión
   const handleLogout = () => {
     removeToken();
-    navigate('/login');
+    navigate('/auth');
   }
   
   // Estado para los filtros de ensayos

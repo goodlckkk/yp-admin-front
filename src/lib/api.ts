@@ -1,7 +1,7 @@
 import axiosInstance from './axios-instance';
 
-// Temporalmente hardcodeado para producción
-const API_BASE_URL = import.meta.env.PUBLIC_API_URL ?? "http://Yoparticipo-api-env.eba-pynyf7cb.sa-east-1.elasticbeanstalk.com/api";
+// URL de producción con HTTPS
+const API_BASE_URL = import.meta.env.PUBLIC_API_URL ?? "https://api.yoparticipo.cl/api";
 
 const TOKEN_KEY = 'authToken';
 const TOKEN_EXPIRES_KEY = 'authTokenExpiresAt';
@@ -150,7 +150,7 @@ async function makeRequest<TResponse>(
     if (includeAuth && status === 401) {
       removeToken();
       if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+        window.location.href = '/auth';
       }
     }
     

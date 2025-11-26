@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { Icons } from "./Icons"
+import { Icons } from "./icons"
 
 interface CheckboxProps {
   checked: boolean

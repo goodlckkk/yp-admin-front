@@ -4,7 +4,7 @@ import { getToken } from '../lib/api';
 // Verificación de autenticación en el cliente
 const token = getToken();
 if (!token && typeof window !== 'undefined') {
-  window.location.href = '/login';
+  window.location.href = '/auth';
 }
 
 // Verificación en el servidor

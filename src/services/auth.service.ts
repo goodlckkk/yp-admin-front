@@ -179,7 +179,7 @@ class AuthService {
     // Programar el cierre de sesión por inactividad
     this.inactivityTimeout = window.setTimeout(() => {
       if (this.isAuthenticated()) {
-        this.logout('/auth?sessionExpired=true');
+        this.logout('/auth');
       }
     }, SESSION_TIMEOUT);
     

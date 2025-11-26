@@ -21,7 +21,7 @@ export function ProtectedRoute({
 
     // Si no está autenticado, redirigir al login
     if (!isAuthenticated) {
-      navigate('/auth?sessionExpired=true');
+      navigate('/auth');
       return;
     }
 
