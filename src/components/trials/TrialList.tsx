@@ -94,13 +94,19 @@ const statusLabels: Record<TrialStatus, string> = {
 
 // --- Componente principal ---
 
-function TrialListContent() {
+interface TrialListContentProps {
+  initialTrials?: Trial[];
+  onTrialChange?: () => void;
+}
+
+function TrialListContent({ initialTrials = [], onTrialChange }: TrialListContentProps) {
   const { showToast } = useToast();
-  const [trials, setTrials] = useState<Trial[]>([]);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [trials, setTrials] = useState<Trial[]>(initialTrials);
+  const [initialLoading, setInitialLoading] = useState(initialTrials.length === 0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [totalItems, setTotalItems] = useState(0);
+  const [totalItems, setTotalItems] = useState(initialTrials.length);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(initialTrials.length > 0);
   const [filters, setFilters] = useState<TrialsFilterParams>({
     page: 1,
     limit: 10,
@@ -139,6 +145,11 @@ function TrialListContent() {
       const data = await getTrials(filters);
       setTrials(data.data);
       setTotalItems(data.totalItems);
+      console.log('fetchTrials finalizado', data);
+      // Notificar al dashboard que los datos cambiaron
+      if (onTrialChange) {
+        onTrialChange();
+      }
       // No actualizar filters aquí para evitar loop infinito
     } catch (err: any) {
       console.error('Error al cargar los ensayos:', err);
@@ -161,21 +172,30 @@ function TrialListContent() {
     }
   }, [filters, showToast]);
 
-  // Carga inicial
+  // Carga inicial solo si no hay datos precargados
   useEffect(() => {
     const token = getToken();
-    if (token && initialLoading) {
+    if (token && initialTrials.length === 0 && !hasLoadedOnce) {
       fetchTrials(true);
+      setHasLoadedOnce(true);
+    } else if (initialTrials.length > 0) {
+      // Si hay datos precargados, marcar como cargado
+      setInitialLoading(false);
     }
   }, []); // Solo en el montaje inicial
 
-  // Cargas subsecuentes cuando cambian los filtros
+  // Cargas subsecuentes cuando cambian los filtros (solo si ya se cargó una vez)
   useEffect(() => {
     const token = getToken();
-    if (token && !initialLoading) {
+    // Solo hacer fetch si:
+    // 1. Ya se cargó una vez
+    // 2. No es la carga inicial
+    // 3. NO hay datos precargados del dashboard (initialTrials vacío significa que TrialList maneja sus propios datos)
+    if (token && hasLoadedOnce && !initialLoading && initialTrials.length === 0) {
       fetchTrials(false);
     }
-  }, [filters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.page, filters.limit, filters.sortBy, filters.sortOrder, filters.status, filters.city, filters.search, filters.startDateFrom, filters.startDateTo]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -241,7 +261,7 @@ function TrialListContent() {
   const handleFormSuccess = () => {
     const message = selectedTrial ? 'Ensayo actualizado exitosamente' : 'Ensayo creado exitosamente';
     showToast(message, 'success');
-    fetchTrials(); // Recargar la lista después de crear/editar
+    fetchTrials(false); // Recargar la lista después de crear/editar
     setSelectedTrial(null);
   };
 
@@ -404,7 +424,9 @@ function TrialListContent() {
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Users className="mr-2 h-4 w-4 text-[#04BFAD]" />
-                          <span>{trial.current_participants || 0} / {trial.target_participants || '∞'} participantes</span>
+                          <span className="font-medium">
+                            {trial.current_participants || 0} / {trial.max_participants || '∞'} participantes
+                          </span>
                         </div>
                       </div>
 
@@ -468,10 +490,10 @@ function TrialListContent() {
   );
 }
 
-export function TrialList() {
+export function TrialList({ initialTrials, onTrialChange }: { initialTrials?: Trial[]; onTrialChange?: () => void }) {
   return (
     <AppProviders>
-      <TrialListContent />
+      <TrialListContent initialTrials={initialTrials} onTrialChange={onTrialChange} />
     </AppProviders>
   );
 }

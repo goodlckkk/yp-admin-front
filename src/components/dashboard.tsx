@@ -245,6 +245,7 @@ export default function DashboardPage() {
     }
   }, [])
 
+  // Cargar TODO una vez al inicio (pacientes, ensayos, stats)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -282,7 +283,6 @@ export default function DashboardPage() {
           setTrends(trendsResponse.value)
         }
       } catch (err) {
-        setError("Error al cargar los ensayos")
         console.error(err)
       } finally {
         setLoading(false)
@@ -293,10 +293,64 @@ export default function DashboardPage() {
       return
     }
 
-    if (activeSection === "ensayos" || activeSection === "overview" || activeSection === "pacientes") {
-      fetchData()
+    // Solo cargar datos una vez al inicio
+    fetchData()
+  }, [isAuthorized])
+
+  // Función para recargar solo los ensayos
+  const refreshTrials = async () => {
+    try {
+      setLoading(true)
+      const response = await getTrials()
+      setTrials(response.data)
+      setError(null)
+    } catch (err) {
+      setError("Error al cargar los ensayos")
+      console.error(err)
+    } finally {
+      setLoading(false)
     }
-  }, [activeSection, isAuthorized])
+  }
+
+  // Función para recargar solo los pacientes
+  const refreshPatients = async () => {
+    try {
+      setLoading(true)
+      const response = await getPatientIntakes()
+      setPatientIntakes(response)
+      setPatientError(null)
+    } catch (err) {
+      setPatientError("Error al cargar las postulaciones")
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Función para recargar stats del dashboard
+  const refreshStats = async () => {
+    try {
+      const [statsResponse, trendsResponse] = await Promise.allSettled([
+        getStats(),
+        getTrends(),
+      ])
+
+      if (statsResponse.status === "fulfilled") {
+        setStats(statsResponse.value)
+      }
+
+      if (trendsResponse.status === "fulfilled") {
+        setTrends(trendsResponse.value)
+      }
+    } catch (err) {
+      console.error("Error al recargar estadísticas", err)
+    }
+  }
+
+  // Callback cuando se crea o actualiza un ensayo
+  const handleTrialChange = () => {
+    refreshTrials()
+  }
 
   const patientsToDisplay = useMemo(() => {
     // Combinar búsqueda del header con filtros avanzados
@@ -588,6 +642,15 @@ export default function DashboardPage() {
                     </div>
                     <Button 
                       variant="outline" 
+                      onClick={refreshPatients}
+                      className="text-[#04BFAD] hover:text-[#024959] hover:bg-[#A7F2EB]/20"
+                      title="Actualizar lista de pacientes"
+                      disabled={loading}
+                    >
+                      <Icons.RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+                    </Button>
+                    <Button 
+                      variant="outline" 
                       onClick={() => setFilters({...filters, showFilters: !filters.showFilters})}
                       className="flex items-center gap-1"
                     >
@@ -786,7 +849,10 @@ export default function DashboardPage() {
 
           {/* Ensayos */}
           {activeSection === "ensayos" && (
-            <TrialList />
+            <TrialList 
+              initialTrials={trials}
+              onTrialChange={handleTrialChange}
+            />
           )}
         </main>
       </div>
@@ -807,18 +873,8 @@ export default function DashboardPage() {
         onSuccess={() => {
           setIsTrialFormOpen(false);
           setSelectedTrial(null);
-          // Recargar los ensayos después de crear uno nuevo
-          if (activeSection === "ensayos" || activeSection === "overview") {
-            const fetchData = async () => {
-              try {
-                const trialsResponse = await getTrials();
-                setTrials(trialsResponse.data);
-              } catch (err) {
-                console.error('Error al recargar ensayos:', err);
-              }
-            };
-            fetchData();
-          }
+          // Recargar los ensayos después de crear/actualizar uno
+          refreshTrials();
         }}
       />
 
