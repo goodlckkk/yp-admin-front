@@ -94,6 +94,9 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
   const [loadingAvailablePatients, setLoadingAvailablePatients] = useState(false);
   const [showAddPatientsModal, setShowAddPatientsModal] = useState(false);
   const [selectedPatientIds, setSelectedPatientIds] = useState<Set<string>>(new Set());
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [patientToConfirm, setPatientToConfirm] = useState<PatientIntake | null>(null);
+  const [patientsWithConflict, setPatientsWithConflict] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -118,21 +121,19 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
     }
   };
 
-  // Cargar pacientes disponibles (sin ensayo asignado o que coincidan con la condición)
+  // Cargar TODOS los pacientes disponibles (incluyendo los que están en otros ensayos)
   const loadAvailablePatients = async () => {
     if (!trial?.id) return;
     
     setLoadingAvailablePatients(true);
     try {
-      // Obtener todos los pacientes sin ensayo asignado
+      // Obtener TODOS los pacientes
       const response = await fetchWithAuth('/patient-intakes');
       const allPatients = Array.isArray(response) ? response : [];
       
-      // Filtrar pacientes que no estén ya en este ensayo
+      // Filtrar solo los que NO estén ya en ESTE ensayo
       const currentPatientIds = new Set(patients.map(p => p.id));
-      const available = allPatients.filter(p => 
-        !p.trialId && !currentPatientIds.has(p.id)
-      );
+      const available = allPatients.filter(p => !currentPatientIds.has(p.id));
       
       setAvailablePatients(available);
     } catch (err: any) {
@@ -153,12 +154,82 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
       selectedPatientIds.has(p.id)
     );
     
-    // Agregar a la lista local de pacientes
-    setPatients(prev => [...prev, ...selectedPatients]);
+    // Identificar pacientes que ya están en otro ensayo
+    const patientsInOtherTrials = selectedPatients.filter(p => p.trialId && p.trialId !== trial?.id);
     
-    // Cerrar el modal y limpiar selección
+    if (patientsInOtherTrials.length > 0) {
+      // Guardar los IDs de pacientes con conflicto
+      setPatientsWithConflict(new Set(patientsInOtherTrials.map(p => p.id)));
+      // Mostrar modal de confirmación para el primer paciente con conflicto
+      setPatientToConfirm(patientsInOtherTrials[0]);
+      setShowConfirmModal(true);
+    } else {
+      // Si no hay conflictos, agregar directamente
+      addPatientsToList(selectedPatients);
+    }
+  };
+  
+  // Función auxiliar para agregar pacientes a la lista
+  const addPatientsToList = (patientsToAdd: PatientIntake[]) => {
+    setPatients(prev => [...prev, ...patientsToAdd]);
     setShowAddPatientsModal(false);
     setSelectedPatientIds(new Set());
+    setPatientsWithConflict(new Set());
+  };
+  
+  // Confirmar agregar paciente que está en otro ensayo
+  const handleConfirmAddPatient = () => {
+    if (!patientToConfirm) return;
+    
+    // Obtener todos los pacientes seleccionados
+    const selectedPatients = availablePatients.filter(p => selectedPatientIds.has(p.id));
+    
+    // Agregar todos los pacientes seleccionados (incluyendo los que tienen conflicto)
+    addPatientsToList(selectedPatients);
+    setShowConfirmModal(false);
+    setPatientToConfirm(null);
+  };
+  
+  // Cancelar agregar paciente con conflicto
+  const handleCancelAddPatient = () => {
+    if (!patientToConfirm) return;
+    
+    // Remover el paciente con conflicto de la selección
+    setSelectedPatientIds(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(patientToConfirm.id);
+      return newSet;
+    });
+    
+    // Verificar si hay más pacientes con conflicto
+    const remainingConflicts = availablePatients.filter(p => 
+      selectedPatientIds.has(p.id) && 
+      p.trialId && 
+      p.trialId !== trial?.id &&
+      p.id !== patientToConfirm.id
+    );
+    
+    if (remainingConflicts.length > 0) {
+      // Mostrar el siguiente paciente con conflicto
+      setPatientToConfirm(remainingConflicts[0]);
+    } else {
+      // Si no hay más conflictos, agregar los pacientes restantes
+      setShowConfirmModal(false);
+      setPatientToConfirm(null);
+      
+      const selectedPatients = availablePatients.filter(p => selectedPatientIds.has(p.id));
+      if (selectedPatients.length > 0) {
+        addPatientsToList(selectedPatients);
+      } else {
+        setShowAddPatientsModal(false);
+        setSelectedPatientIds(new Set());
+      }
+    }
+  };
+  
+  // Quitar paciente de la tabla (solo de la lista local, no de BD)
+  const handleRemovePatient = (patientId: string) => {
+    setPatients(prev => prev.filter(p => p.id !== patientId));
   };
 
   // Toggle selección de paciente
@@ -329,19 +400,46 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
       if (trial) {
         await updateTrial(trial.id, payload);
         
-        // Si hay pacientes nuevos agregados, asignarlos al ensayo
+        // Cargar los pacientes originales del ensayo para comparar
+        const originalPatientsResponse = await fetchWithAuth(`/patient-intakes/trial/${trial.id}`);
+        const originalPatients = Array.isArray(originalPatientsResponse) ? originalPatientsResponse : [];
+        
+        // IDs de pacientes actuales y originales
+        const currentPatientIds = new Set(patients.map(p => p.id));
+        const originalPatientIds = new Set(originalPatients.map(p => p.id));
+        
+        // Pacientes NUEVOS agregados (están en current pero no en original)
         const newPatientIds = patients
-          .filter(p => !p.trialId) // Pacientes que aún no tienen trialId
+          .filter(p => !originalPatientIds.has(p.id))
           .map(p => p.id);
         
+        // Pacientes QUITADOS (están en original pero no en current)
+        const removedPatientIds = originalPatients
+          .filter(p => !currentPatientIds.has(p.id))
+          .map(p => p.id);
+        
+        // Agregar nuevos pacientes al ensayo
         if (newPatientIds.length > 0) {
-          const promises = newPatientIds.map(patientId =>
+          console.log(`Agregando ${newPatientIds.length} pacientes al ensayo ${trial.id}:`, newPatientIds);
+          const addPromises = newPatientIds.map(patientId =>
             fetchWithAuth(`/patient-intakes/${patientId}`, {
               method: 'PATCH',
               body: JSON.stringify({ trialId: trial.id })
             })
           );
-          await Promise.all(promises);
+          await Promise.all(addPromises);
+          console.log('Pacientes agregados exitosamente');
+        }
+        
+        // Quitar pacientes removidos del ensayo (poner trialId en null)
+        if (removedPatientIds.length > 0) {
+          const removePromises = removedPatientIds.map(patientId =>
+            fetchWithAuth(`/patient-intakes/${patientId}`, {
+              method: 'PATCH',
+              body: JSON.stringify({ trialId: null })
+            })
+          );
+          await Promise.all(removePromises);
         }
         
         onSuccess();
@@ -789,6 +887,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                             <TableHead>Edad</TableHead>
                             <TableHead>Condición</TableHead>
                             <TableHead>Estado</TableHead>
+                            <TableHead className="text-right">Acciones</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -820,6 +919,18 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                                   >
                                     {patient.status || 'RECEIVED'}
                                   </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleRemovePatient(patient.id)}
+                                    className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                                    title="Quitar paciente de este ensayo"
+                                  >
+                                    ✕
+                                  </Button>
                                 </TableCell>
                               </TableRow>
                             );
@@ -903,6 +1014,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                       <TableHead>Teléfono</TableHead>
                       <TableHead>Edad</TableHead>
                       <TableHead>Condición</TableHead>
+                      <TableHead>Ensayo Actual</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -939,6 +1051,17 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                           <TableCell>{patient.telefono || 'N/A'}</TableCell>
                           <TableCell>{typeof age === 'number' ? `${age} años` : age}</TableCell>
                           <TableCell>{patient.condicionPrincipal || 'N/A'}</TableCell>
+                          <TableCell>
+                            {patient.trialId ? (
+                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
+                                En otro ensayo
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+                                Disponible
+                              </Badge>
+                            )}
+                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -973,6 +1096,70 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
               className="bg-[#04BFAD] hover:bg-[#024959] text-white"
             >
               Agregar {selectedPatientIds.size > 0 ? `(${selectedPatientIds.size})` : ''}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de confirmación para pacientes en otros ensayos */}
+      <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-yellow-700 flex items-center gap-2">
+              <span className="text-2xl">⚠️</span>
+              Paciente en otro ensayo
+            </DialogTitle>
+            <DialogDescription>
+              El paciente que intentas agregar ya está asignado a otro ensayo clínico.
+            </DialogDescription>
+          </DialogHeader>
+
+          {patientToConfirm && (
+            <div className="space-y-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="space-y-2">
+                  <div>
+                    <span className="font-semibold text-gray-700">Paciente:</span>
+                    <p className="text-gray-900">
+                      {patientToConfirm.nombres} {patientToConfirm.apellidos}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">Email:</span>
+                    <p className="text-gray-900">{patientToConfirm.email || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">Estado actual:</span>
+                    <p className="text-yellow-700 font-medium">
+                      Ya está en otro ensayo clínico
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-sm text-gray-600">
+                ¿Deseas agregar este paciente de todos modos? Esto podría causar conflictos 
+                si el paciente está activamente participando en otro ensayo.
+              </p>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancelAddPatient}
+              disabled={loading}
+            >
+              No agregar
+            </Button>
+            <Button
+              type="button"
+              onClick={handleConfirmAddPatient}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white"
+              disabled={loading}
+            >
+              Sí, agregar de todos modos
             </Button>
           </DialogFooter>
         </DialogContent>
