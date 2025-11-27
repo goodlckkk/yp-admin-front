@@ -145,7 +145,6 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
       const data = await getTrials(filters);
       setTrials(data.data);
       setTotalItems(data.totalItems);
-      console.log('fetchTrials finalizado', data);
       // Notificar al dashboard que los datos cambiaron
       if (onTrialChange) {
         onTrialChange();

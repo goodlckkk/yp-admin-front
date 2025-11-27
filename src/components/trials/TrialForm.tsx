@@ -420,7 +420,6 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
         
         // Agregar nuevos pacientes al ensayo
         if (newPatientIds.length > 0) {
-          console.log(`Agregando ${newPatientIds.length} pacientes al ensayo ${trial.id}:`, newPatientIds);
           const addPromises = newPatientIds.map(patientId =>
             fetchWithAuth(`/patient-intakes/${patientId}`, {
               method: 'PATCH',
@@ -428,7 +427,6 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
             })
           );
           await Promise.all(addPromises);
-          console.log('Pacientes agregados exitosamente');
         }
         
         // Quitar pacientes removidos del ensayo (poner trialId en null)
