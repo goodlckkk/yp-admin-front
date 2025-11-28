@@ -23,6 +23,7 @@ import type { PatientIntake, Trial, DashboardStats, TrendData } from "../lib/api
 import { TrialForm } from './trials/TrialForm';
 import { PatientDetailsForm } from './patients/PatientDetailsForm';
 import { TrialList } from "./trials/TrialList"
+import * as XLSX from 'xlsx';
 
 // Función de navegación para Astro - siempre recarga la página
 const navigate = (path: string) => {
@@ -122,6 +123,62 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Error al calcular la edad:', error);
       return 0;
+    }
+  };
+
+  // Función para exportar pacientes a Excel
+  const exportPatientsToExcel = () => {
+    try {
+      // Preparar los datos para exportar
+      const dataToExport = patientsToDisplay.map((patient) => ({
+        'RUT': patient.rut || 'N/A',
+        'Nombres': patient.nombres || 'N/A',
+        'Apellidos': patient.apellidos || 'N/A',
+        'Email': patient.email || 'N/A',
+        'Teléfono': patient.telefono || 'N/A',
+        'Fecha de Nacimiento': formatDate(patient.fechaNacimiento),
+        'Edad': calculateAge(patient.fechaNacimiento),
+        'Sexo': patient.sexo || 'N/A',
+        'Región': patient.region || 'N/A',
+        'Comuna': patient.comuna || 'N/A',
+        'Condición Principal': patient.condicionPrincipal || 'N/A',
+        'Medicamentos Actuales': patient.medicamentosActuales || 'N/A',
+        'Ensayo Asignado': patient.trial?.title || 'Sin asignar',
+        'Estado': patient.status || 'RECEIVED',
+        'Fecha de Registro': formatDate(patient.createdAt),
+      }));
+
+      // Crear un libro de trabajo (workbook)
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Pacientes');
+
+      // Ajustar el ancho de las columnas automáticamente
+      const maxWidth = 50;
+      const colWidths = Object.keys(dataToExport[0] || {}).map(key => ({
+        wch: Math.min(
+          Math.max(
+            key.length,
+            ...dataToExport.map(row => String(row[key as keyof typeof row]).length)
+          ),
+          maxWidth
+        )
+      }));
+      worksheet['!cols'] = colWidths;
+
+      // Generar el archivo con la fecha actual
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+      const fileName = `pacientes_yoparticipo_${dateStr}.xlsx`;
+
+      // Descargar el archivo
+      XLSX.writeFile(workbook, fileName);
+
+      // Mostrar mensaje de éxito (opcional)
+      console.log(`✅ Archivo exportado: ${fileName}`);
+    } catch (error) {
+      console.error('Error al exportar a Excel:', error);
+      alert('Error al exportar los datos. Por favor, intente nuevamente.');
     }
   };
 
@@ -662,8 +719,14 @@ export default function DashboardPage() {
                         </span>
                       )}
                     </Button>
-                    <Button className="text-white" style={{ background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' }}>
-                      <Icons.ChevronDown className="w-4 h-4 mr-2" />
+                    <Button 
+                      onClick={exportPatientsToExcel}
+                      className="text-white" 
+                      style={{ background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' }}
+                      disabled={patientsToDisplay.length === 0}
+                      title={patientsToDisplay.length === 0 ? 'No hay pacientes para exportar' : `Exportar ${patientsToDisplay.length} paciente(s) a Excel`}
+                    >
+                      <Icons.Download className="w-4 h-4 mr-2" />
                       <span className="hidden sm:inline">Exportar</span>
                     </Button>
                   </div>
