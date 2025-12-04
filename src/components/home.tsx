@@ -5,10 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { FooterPage } from "./footer"
 import { HeaderPage } from "./header"
 import { Input } from "./ui/input"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useScrollAnimation } from "../hooks/useScrollAnimation"
 import PatientForm from "./ui/patientform"
 import TrialPage from "./trials"
 import { Icons } from "./ui/icons"
+import HeroSlider from "./home/HeroSlider"
+import PatientJourney from "./home/PatientJourney"
+import SuccessStories from "./home/SuccessStories"
+import PrivacySecurity from "./home/PrivacySecurity"
+import FAQ from "./home/FAQ"
 import { createPatientIntake, getTrials, getPublicStats } from "@/lib/api"
 import type { Trial, PublicStats } from "@/lib/api"
 import {
@@ -21,6 +27,9 @@ import {
 } from "./ui/dialog"
 
 export default function HomePage() {
+  const { elementRef: studiesRef, isVisible: studiesVisible } = useScrollAnimation({ threshold: 0.2 });
+  const { elementRef: testimonialsRef, isVisible: testimonialsVisible } = useScrollAnimation({ threshold: 0.2 });
+  
   const [activeTab, setActiveTab] = useState("pacientes")
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showPatientForm, setShowPatientForm] = useState(false)
@@ -35,10 +44,10 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Intentar cargar ensayos
+        // Intentar cargar estudios clínicos
         const paginatedTrials = await getTrials({ page: 1, limit: 3, status: 'RECRUITING' });
         setTrials(paginatedTrials.data);
-        console.log("Ensayos cargados:", paginatedTrials.data);
+        console.log("Estudios clínicos cargados:", paginatedTrials.data);
       } catch (error) {
         console.error("Error fetching trials:", error);
       }
@@ -65,7 +74,7 @@ export default function HomePage() {
   // Data para Pacientes
   const estadisticasPacientes = [
     { numero: publicStats ? publicStats.patientsConnected.toLocaleString() : "...", label: "Pacientes Incluidos", Icono: Icons.Users, color: "text-blue-600" },
-    { numero: publicStats ? publicStats.activeTrials.toString() : "...", label: "Ensayos Reclutando", Icono: Icons.Microscope, color: "text-green-600" },
+    { numero: publicStats ? publicStats.activeTrials.toString() : "...", label: "Estudios Clínicos Reclutando", Icono: Icons.Microscope, color: "text-green-600" },
     { numero: publicStats ? publicStats.medicalCenters.toString() : "...", label: "Centros Médicos", Icono: Icons.Shield, color: "text-purple-600" },
   ]
 
@@ -75,7 +84,7 @@ export default function HomePage() {
       edad: 52,
       condicion: "Artritis Reumatoide",
       testimonio:
-        "La plataforma me conectó con un ensayo que cambió mi vida. Ahora puedo volver a hacer las cosas que amo.",
+        "La plataforma me conectó con un estudio clínico que cambió mi vida. Ahora puedo volver a hacer las cosas que amo.",
       rating: 5,
       ubicacion: "Región Metropolitana",
       avatar: "PS",
@@ -93,7 +102,7 @@ export default function HomePage() {
       nombre: "Carmen López",
       edad: 43,
       condicion: "Esclerosis Múltiple",
-      testimonio: "Gracias a este ensayo tengo acceso a tratamientos que antes eran imposibles de conseguir.",
+      testimonio: "Gracias a este estudio clínico tengo acceso a tratamientos que antes eran imposibles de conseguir.",
       rating: 4,
       ubicacion: "Región del Biobío",
       avatar: "CL",
@@ -146,87 +155,40 @@ export default function HomePage() {
         </div>
       )}
       {/* Header */}
-      <HeaderPage activeTab={activeTab} setActiveTab={setActiveTab} />
+      <HeaderPage 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab}
+        onPostularClick={() => {
+          setSelectedCondition("");
+          setShowPatientForm(true);
+        }}
+      />
 
       {/* CONTENIDO PARA PACIENTES */}
       {activeTab === "pacientes" && (
         <>
-          {/* Hero Pacientes */}
-          <section className="relative pt-32 pb-20 px-4 overflow-hidden">
-            <div className="pointer-events-none absolute -top-20 -right-10 w-96 h-96 bg-gradient-to-br from-[#A7F2EB] to-[#04BFAD] opacity-15 blur-3xl" />
-            <div className="pointer-events-none absolute top-40 -left-24 w-96 h-96 bg-gradient-to-br from-[#04BFAD]/30 to-transparent opacity-60 blur-3xl" />
+          {/* Hero Slider Dinámico */}
+          <HeroSlider autoPlayInterval={5000} />
 
-            <div className="relative max-w-7xl mx-auto">
-              <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 bg-[#A7F2EB] text-[#024959] px-4 py-2 rounded-full text-sm font-medium mb-6">
-                  <Icons.Heart className="w-4 h-4" />
-                  Tu salud es nuestra prioridad
-                </div>
-                <h1 className="text-5xl lg:text-7xl font-bold mb-6">
-                  <span className="text-gradient">Encuentra</span> el ensayo
-                  <br />
-                  <span className="text-[#024959]">perfecto para ti</span>
-                </h1>
-                <p className="text-xl text-[#4D4D59] max-w-3xl mx-auto mb-12 leading-relaxed">
-                  Accede a tratamientos innovadores y sé parte del futuro de la medicina. Miles de pacientes ya
-                  confiaron en nosotros.
-                </p>
+          {/* Camino del Paciente */}
+          <PatientJourney onPostularClick={() => setShowPatientForm(true)} />
 
-                <div className="max-w-3xl mx-auto mb-12">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#04BFAD] to-[#024959] rounded-3xl blur-xl opacity-30"></div>
-                    <div className="relative bg-white rounded-3xl p-8 md:p-12 shadow-2xl border-2 border-[#A7F2EB]/50">
-                      <div className="text-center space-y-6">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#04BFAD] to-[#024959] rounded-full mb-4">
-                          <Icons.Heart className="w-8 h-8 text-white" />
-                        </div>
-                        <h3 className="text-2xl md:text-3xl font-bold text-[#024959]">
-                          ¿Estás interesado en que te contactemos?
-                        </h3>
-                        <p className="text-lg text-[#4D4D59] max-w-xl mx-auto">
-                          Completa un breve formulario y nuestro equipo médico se pondrá en contacto contigo para evaluar tu elegibilidad
-                        </p>
-                        <Button
-                          onClick={() => {
-                            setSelectedCondition("");
-                            setShowPatientForm(true);
-                          }}
-                          className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white h-16 px-12 text-xl rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-                        >
-                          <Icons.Target className="w-6 h-6 mr-3" />
-                          Postula Aquí
-                        </Button>
-                        <p className="text-sm text-[#4D4D59]/70 flex items-center justify-center gap-2">
-                          <Icons.Shield className="w-4 h-4 text-[#04BFAD]" />
-                          Tus datos están protegidos y son confidenciales
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          {/* Historias que Inspiran */}
+          <SuccessStories />
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                  {estadisticasPacientes.map((stat, index) => (
-                    <div key={index} className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-[#A7F2EB]/40">
-                      <div className="flex items-center justify-center mb-3">
-                        <div className="w-12 h-12 rounded-xl bg-[#04BFAD]/15 flex items-center justify-center">
-                          <stat.Icono className={`w-6 h-6 ${stat.color}`} />
-                        </div>
-                      </div>
-                      <div className="text-2xl font-bold text-[#024959] mb-1">{stat.numero}</div>
-                      <div className="text-sm text-[#4D4D59]">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
+          {/* Privacidad y Seguridad */}
+          <PrivacySecurity />
 
-          {/* Ensayos Destacados */}
-          <section className="py-20 bg-[#F2F2F2]">
+          {/* Estudios Clínicos Destacados */}
+          <section 
+            ref={studiesRef as any}
+            className={`min-h-screen flex items-center py-20 bg-[#F2F2F2] transition-all duration-1000 ${
+              studiesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
+          >
             <div className="container mx-auto px-4">
               <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold text-[#024959] mb-4">Ensayos Clínicos Destacados</h2>
+                <h2 className="text-4xl font-bold text-[#024959] mb-4">Estudios Clínicos Destacados</h2>
                 <p className="text-xl text-[#4D4D59] max-w-3xl mx-auto">
                   Descubre oportunidades únicas de investigación médica
                 </p>
@@ -261,7 +223,7 @@ export default function HomePage() {
                       <CardContent className="space-y-4">
                         <div className="flex items-center gap-2 text-sm text-[#4D4D59] bg-[#F2F2F2] p-3 rounded-lg">
                           <Icons.MapPin className="w-4 h-4 text-[#04BFAD] flex-shrink-0" />
-                          <span className="font-medium">{trial.clinic_city}</span>
+                          <span className="font-medium">{trial.researchSite?.nombre || 'No especificado'}</span>
                         </div>
 
                         {/* Barra de progreso de participantes */}
@@ -285,7 +247,7 @@ export default function HomePage() {
                 ) : (
                   <div className="col-span-3 text-center py-12">
                     <Icons.Microscope className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                    <p className="text-xl text-gray-600">Cargando ensayos disponibles...</p>
+                    <p className="text-xl text-gray-600">Cargando estudios clínicos disponibles...</p>
                     <p className="text-sm text-gray-500 mt-2">Si este mensaje persiste, verifica la conexión con la API</p>
                   </div>
                 )}
@@ -294,7 +256,12 @@ export default function HomePage() {
           </section>
 
           {/* Testimonios */}
-          <section className="py-20 px-4 bg-gradient-to-r from-[#024959] to-[#04BFAD]">
+          <section 
+            ref={testimonialsRef as any}
+            className={`min-h-screen flex items-center py-20 px-4 bg-gradient-to-r from-[#024959] to-[#04BFAD] transition-all duration-1000 ${
+              testimonialsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
+          >
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-4xl font-bold text-white mb-4">Historias que Inspiran</h2>
               <p className="text-xl text-[#F2F2F2] mb-12">
@@ -347,6 +314,9 @@ export default function HomePage() {
               </div>
             </div>
           </section>
+
+          {/* Preguntas Frecuentes */}
+          <FAQ />
         </>
       )}
 

@@ -30,7 +30,7 @@ export function FooterPage({ activeTab }: FooterPageProps){
                             <img src={logoSrc} alt="yoParticipo" className="h-12 w-auto scale-500 origin-left" />
                         </div>
                     <p className={`${textSecondary} mb-6 max-w-md`}>
-                        Revolucionamos el acceso a ensayos clínicos en Chile, conectando pacientes con innovación médica.
+                        Revolucionamos el acceso a estudios clínicos en Chile, conectando pacientes con innovación médica.
                     </p>
                     <div className={`flex flex-col gap-2 ${textSecondary}`}>
                         <div className="flex items-center gap-2">
@@ -39,7 +39,7 @@ export function FooterPage({ activeTab }: FooterPageProps){
                         </div>
                         <div className="flex items-center gap-2">
                             <Icons.Mail className="w-4 h-4" />
-                            <span className="text-sm">contacto@yoparticipo.cl</span>
+                            <span className="text-sm">contacto@participo.cl</span>
                         </div>
                     </div>
                     </div>

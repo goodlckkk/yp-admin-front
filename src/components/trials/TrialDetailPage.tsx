@@ -13,7 +13,8 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Badge } from '../ui/badge';
 import type { Trial } from '../../lib/api';
-import { getTrial, deleteTrial, getToken } from '../../lib/api';
+import { getTrial, deleteTrial } from '../../lib/api';
+import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { TrialPatients } from './TrialPatients';
 import { 
   Calendar,
@@ -79,13 +80,10 @@ export function TrialDetailPage() {
     ? window.location.pathname.split('/')[2] 
     : null;
 
+  // Verificar autenticación
+  useRequireAuth();
+
   useEffect(() => {
-    // Verificar autenticación
-    const token = getToken();
-    if (!token) {
-      window.location.href = '/auth';
-      return;
-    }
 
     if (trialId) {
       loadTrial();

@@ -14,6 +14,9 @@ import {
   updateLastActivityTimestamp,
   getStats,
   getTrends,
+  createPatientIntake,
+  updatePatientIntake,
+  getUserEmailFromToken,
 } from "../lib/api"
 import { Icons } from "./ui/icons"
 import { CustomIcons } from "./ui/custom-icons"
@@ -21,8 +24,12 @@ import { Input } from "./ui/input"
 import { useEffect, useMemo, useState } from "react"
 import type { PatientIntake, Trial, DashboardStats, TrendData } from "../lib/api"
 import { TrialForm } from './trials/TrialForm';
-import { PatientDetailsForm } from './patients/PatientDetailsForm';
+import { PatientEditForm } from './patients/PatientEditForm';
+import { ManualPatientForm } from './patients/ManualPatientForm';
 import { TrialList } from "./trials/TrialList"
+import HeroSlidesManager from './dashboard/HeroSlidesManager';
+import SuccessStoriesManager from './dashboard/SuccessStoriesManager';
+import { Cie10SingleAutocomplete } from './ui/Cie10SingleAutocomplete';
 import * as XLSX from 'xlsx';
 
 // Función de navegación para Astro - siempre recarga la página
@@ -31,9 +38,9 @@ const navigate = (path: string) => {
 };
 
 // Tipos de sección
-type Section = "overview" | "pacientes" | "ensayos"
+type Section = "overview" | "pacientes" | "estudios" | "slider" | "historias"
 
-// Tipos de filtros para ensayos
+// Tipos de filtros para estudios clínicos
 type TrialFilters = {
   status: string;
   searchQuery: string;
@@ -48,7 +55,9 @@ type PatientFilters = {
   ageMin: string;
   ageMax: string;
   condition: string;
+  conditionCode: string; // Código CIE-10 de la condición
   status: string;
+  source: string; // Filtro por origen: 'WEB', 'MANUAL', o '' (todos)
   searchQuery: string;
   showFilters: boolean;
   page: number;
@@ -68,11 +77,12 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [trends, setTrends] = useState<TrendData[]>([])
   
-  // Estado para el modal de creación de ensayos
+  // Estado para el modal de creación de estudios clínicos
   const [selectedTrial, setSelectedTrial] = useState<Trial | null>(null);
   const [isTrialFormOpen, setIsTrialFormOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<PatientIntake | null>(null);
   const [isPatientDetailsOpen, setIsPatientDetailsOpen] = useState(false);
+  const [isManualPatientFormOpen, setIsManualPatientFormOpen] = useState(false);
   
   // Función para cerrar sesión
   const handleLogout = () => {
@@ -80,7 +90,7 @@ export default function DashboardPage() {
     navigate('/auth');
   }
   
-  // Estado para los filtros de ensayos
+  // Estado para los filtros de estudios clínicos
   const [trialFilters, setTrialFilters] = useState<TrialFilters>({
     status: '',
     searchQuery: '',
@@ -93,11 +103,13 @@ export default function DashboardPage() {
     ageMin: '',
     ageMax: '',
     condition: '',
+    conditionCode: '', // Código CIE-10
     status: '',
+    source: '', // Filtro por origen: WEB, MANUAL, o '' (todos)
     searchQuery: '',
     showFilters: false,
     page: 1,
-    limit: 20
+    limit: 10 // Límite de 10 pacientes por página con paginación
   })
 
   const INACTIVITY_LIMIT_MS = 15 * 60 * 1000
@@ -143,7 +155,7 @@ export default function DashboardPage() {
         'Comuna': patient.comuna || 'N/A',
         'Condición Principal': patient.condicionPrincipal || 'N/A',
         'Medicamentos Actuales': patient.medicamentosActuales || 'N/A',
-        'Ensayo Asignado': patient.trial?.title || 'Sin asignar',
+        'Estudio Clínico Asignado': patient.trial?.title || 'Sin asignar',
         'Estado': patient.status || 'RECEIVED',
         'Fecha de Registro': formatDate(patient.createdAt),
       }));
@@ -183,7 +195,7 @@ export default function DashboardPage() {
   };
 
   // Filtrar pacientes según los filtros aplicados
-  // Filtrar ensayos según los filtros aplicados
+  // Filtrar estudios clínicos según los filtros aplicados
   const filteredTrials = useMemo(() => {
     return trials.filter((trial) => {
       // Filtro por búsqueda
@@ -217,7 +229,7 @@ export default function DashboardPage() {
     });
   }, [trials, trialFilters]);
 
-  // Función para manejar cambios en los filtros de ensayos
+  // Función para manejar cambios en los filtros de estudios clínicos
   const handleTrialFilterChange = (updates: Partial<TrialFilters>) => {
     setTrialFilters(prev => ({
       ...prev,
@@ -225,7 +237,7 @@ export default function DashboardPage() {
     }));
   };
 
-  // Función para limpiar todos los filtros de ensayos
+  // Función para limpiar todos los filtros de estudios clínicos
   const clearTrialFilters = () => {
     setTrialFilters({
       status: '',
@@ -241,9 +253,10 @@ export default function DashboardPage() {
   useEffect(() => {
     let redirecting = false
 
-    const handleUnauthorized = () => {
+    const handleUnauthorized = (reason: string) => {
       if (redirecting) return
       redirecting = true
+      console.log(`[Auth] Sesión cerrada: ${reason}`)
       removeToken()
       setIsAuthorized(false)
       window.location.href = "/auth"
@@ -252,19 +265,20 @@ export default function DashboardPage() {
     const ensureAuthenticated = () => {
       const token = getToken()
       if (!token) {
-        handleUnauthorized()
+        handleUnauthorized('Token no encontrado')
         return false
       }
 
       const expiration = getTokenExpiration()
       if (expiration && Date.now() >= expiration) {
-        handleUnauthorized()
+        handleUnauthorized('Token expirado')
         return false
       }
 
       const lastActivity = getLastActivityTimestamp()
       if (lastActivity && Date.now() - lastActivity >= INACTIVITY_LIMIT_MS) {
-        handleUnauthorized()
+        const inactiveMinutes = Math.floor((Date.now() - lastActivity) / 60000)
+        handleUnauthorized(`Inactividad detectada (${inactiveMinutes} minutos)`)
         return false
       }
 
@@ -290,11 +304,17 @@ export default function DashboardPage() {
       updateLastActivityTimestamp()
     }
 
-    activityEvents.forEach((event) => window.addEventListener(event, registerActivity))
+    // Registrar eventos de actividad
+    activityEvents.forEach((event) => window.addEventListener(event, registerActivity, { passive: true }))
 
+    // Verificar autenticación cada 30 segundos (reducido de 60)
     const intervalId = window.setInterval(() => {
-      ensureAuthenticated()
-    }, 60_000)
+      if (!ensureAuthenticated()) {
+        console.log('[Auth] Verificación de autenticación falló')
+      }
+    }, 30_000)
+
+    console.log('[Auth] Sistema de inactividad iniciado (15 minutos)')
 
     return () => {
       activityEvents.forEach((event) => window.removeEventListener(event, registerActivity))
@@ -302,7 +322,7 @@ export default function DashboardPage() {
     }
   }, [])
 
-  // Cargar TODO una vez al inicio (pacientes, ensayos, stats)
+  // Cargar TODO una vez al inicio (pacientes, estudios clínicos, stats)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -318,7 +338,7 @@ export default function DashboardPage() {
           setTrials(trialsResponse.value.data)
           setError(null)
         } else {
-          setError(trialsResponse.reason instanceof Error ? trialsResponse.reason.message : "Error al cargar los ensayos")
+          setError(trialsResponse.reason instanceof Error ? trialsResponse.reason.message : "Error al cargar los estudios clínicos")
         }
 
         if (intakesResponse.status === "fulfilled") {
@@ -354,7 +374,7 @@ export default function DashboardPage() {
     fetchData()
   }, [isAuthorized])
 
-  // Función para recargar solo los ensayos
+  // Función para recargar solo los estudios clínicos
   const refreshTrials = async () => {
     try {
       setLoading(true)
@@ -362,7 +382,7 @@ export default function DashboardPage() {
       setTrials(response.data)
       setError(null)
     } catch (err) {
-      setError("Error al cargar los ensayos")
+      setError("Error al cargar los estudios clínicos")
       console.error(err)
     } finally {
       setLoading(false)
@@ -404,7 +424,7 @@ export default function DashboardPage() {
     }
   }
 
-  // Callback cuando se crea o actualiza un ensayo
+  // Callback cuando se crea o actualiza un estudio clínico
   const handleTrialChange = () => {
     refreshTrials()
   }
@@ -426,11 +446,14 @@ export default function DashboardPage() {
          patient.comuna?.toLowerCase().includes(searchLower) ||
          patient.trial?.title?.toLowerCase().includes(searchLower));
 
-      // Filtro por rango de edad
-      const age = calculateAge(patient.fechaNacimiento);
-      const ageMin = filters.ageMin ? parseInt(filters.ageMin) : 0;
-      const ageMax = filters.ageMax ? parseInt(filters.ageMax) : 120;
-      const matchesAge = age >= ageMin && age <= ageMax;
+      // Filtro por rango de edad (solo aplicar si hay valores)
+      const matchesAge = (() => {
+        if (!filters.ageMin && !filters.ageMax) return true; // Sin filtro de edad
+        const age = calculateAge(patient.fechaNacimiento);
+        const ageMin = filters.ageMin ? parseInt(filters.ageMin) : 0;
+        const ageMax = filters.ageMax ? parseInt(filters.ageMax) : 999;
+        return age >= ageMin && age <= ageMax;
+      })();
 
       // Filtro por condición médica
       const matchesCondition = !filters.condition || 
@@ -439,7 +462,10 @@ export default function DashboardPage() {
       // Filtro por estado
       const matchesStatus = !filters.status || patient.status === filters.status;
 
-      return matchesSearch && matchesAge && matchesCondition && matchesStatus;
+      // Filtro por origen (WEB/MANUAL)
+      const matchesSource = !filters.source || patient.source === filters.source;
+
+      return matchesSearch && matchesAge && matchesCondition && matchesStatus && matchesSource;
     });
   }, [patientIntakes, searchQuery, filters])
 
@@ -470,8 +496,8 @@ export default function DashboardPage() {
         bg: "bg-amber-100",
       },
       {
-        label: "Ensayos Activos",
-        value: (stats?.activeTrials || trials.filter((trial) => trial.status === "RECRUITING" || trial.status === "ACTIVE").length).toString(),
+        label: "Estudios Clínicos Activos",
+        value: (stats?.activeTrials || trials.filter((trial) => trial.status === "RECRUITING" || trial.status === "FOLLOW_UP").length).toString(),
         change: `+${trials.filter((trial) => trial.status === "RECRUITING").length}`,
         icon: Icons.Microscope,
         color: "text-green-600",
@@ -496,7 +522,9 @@ export default function DashboardPage() {
   const menuItems = [
     { id: "overview" as Section, label: "Vista General", icon: Icons.Activity },
     { id: "pacientes" as Section, label: "Pacientes", icon: Icons.Users },
-    { id: "ensayos" as Section, label: "Ensayos", icon: Icons.Microscope },
+    { id: "estudios" as Section, label: "Estudios Clínicos", icon: Icons.Microscope },
+    { id: "slider" as Section, label: "Slider Principal", icon: Icons.Image },
+    { id: "historias" as Section, label: "Historias que Inspiran", icon: Icons.Heart },
   ]
 
   if (!isAuthorized) {
@@ -554,7 +582,7 @@ export default function DashboardPage() {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">Admin</p>
-                <p className="text-xs text-gray-500 truncate">admin@yoparticipo.cl</p>
+                <p className="text-xs text-gray-500 truncate">{getUserEmailFromToken() || 'admin@yoparticipo.cl'}</p>
               </div>
             </div>
             <Button 
@@ -587,22 +615,19 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="relative hidden md:block">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Icons.Search className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <Input
-                    placeholder="Buscar..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 w-64"
-                  />
-                </div>
-                <Button variant="ghost" className="relative">
-                  <Icons.Bell className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                <Button 
+                  variant="ghost" 
+                  className="relative hover:bg-[#A7F2EB]/20"
+                  title="Notificaciones"
+                >
+                  <Icons.Bell className="w-5 h-5 text-[#024959]" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-[#04BFAD] rounded-full"></span>
                 </Button>
-                <Button variant="outline" onClick={() => (window.location.href = "/")}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => (window.location.href = "/")}
+                  className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20"
+                >
                   <Icons.Globe className="w-5 h-5 mr-2" />
                   Ver Sitio
                 </Button>
@@ -684,7 +709,8 @@ export default function DashboardPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Lista de Pacientes</h3>
                     <p className="text-sm text-gray-500">
-                      {patientsToDisplay.length} {patientsToDisplay.length === 1 ? 'paciente' : 'pacientes'} encontrados
+                      {patientsToDisplay.length} de {patientIntakes.length} {patientIntakes.length === 1 ? 'paciente' : 'pacientes'}
+                      {patientsToDisplay.length !== patientIntakes.length && ' (filtrados)'}
                     </p>
                   </div>
                   <div className="flex gap-2 w-full sm:w-auto">
@@ -697,6 +723,13 @@ export default function DashboardPage() {
                         onChange={(e) => setFilters({...filters, searchQuery: e.target.value})}
                       />
                     </div>
+                    <Button
+                      onClick={() => setIsManualPatientFormOpen(true)}
+                      className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
+                    >
+                      <Icons.Plus className="w-4 h-4 mr-2" />
+                      Agregar Paciente
+                    </Button>
                     <Button 
                       variant="outline" 
                       onClick={refreshPatients}
@@ -707,17 +740,14 @@ export default function DashboardPage() {
                       <Icons.RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
                     </Button>
                     <Button 
-                      variant="outline" 
-                      onClick={() => setFilters({...filters, showFilters: !filters.showFilters})}
-                      className="flex items-center gap-1"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setFilters({...filters, showFilters: !filters.showFilters});
+                      }}
+                      className="text-[#04BFAD] hover:text-[#024959] hover:bg-[#A7F2EB]/20"
                     >
-                      <Icons.Users className="h-4 w-4" />
-                      <span className="hidden sm:inline">Filtros</span>
-                      {(filters.ageMin || filters.ageMax || filters.condition || filters.status) && (
-                        <span className="ml-1 rounded-full bg-primary text-primary-foreground h-5 w-5 text-xs flex items-center justify-center">
-                          !
-                        </span>
-                      )}
+                      {filters.showFilters ? 'Ocultar Filtros ▲' : 'Mostrar Filtros ▼'}
                     </Button>
                     <Button 
                       onClick={exportPatientsToExcel}
@@ -735,7 +765,7 @@ export default function DashboardPage() {
                 {/* Filtros desplegables */}
                 {filters.showFilters && (
                   <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Edad Mínima</label>
                         <Input
@@ -759,11 +789,14 @@ export default function DashboardPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Condición Médica</label>
-                        <Input
-                          placeholder="Ej: Diabetes, Hipertensión..."
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Condición Médica (CIE-10)</label>
+                        <Cie10SingleAutocomplete
                           value={filters.condition}
-                          onChange={(e) => setFilters({...filters, condition: e.target.value})}
+                          selectedCode={filters.conditionCode}
+                          onChange={(value, code) => {
+                            setFilters({...filters, condition: value, conditionCode: code});
+                          }}
+                          placeholder="Buscar condición médica..."
                         />
                       </div>
                       <div>
@@ -780,6 +813,18 @@ export default function DashboardPage() {
                           <option value="DISCARDED">Descartado</option>
                         </select>
                       </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Origen</label>
+                        <select
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          value={filters.source}
+                          onChange={(e) => setFilters({...filters, source: e.target.value})}
+                        >
+                          <option value="">Todos los orígenes</option>
+                          <option value="WEB_FORM">🌐 Formulario Web</option>
+                          <option value="MANUAL_ENTRY">👤 Creado Manual</option>
+                        </select>
+                      </div>
                     </div>
                     <div className="flex justify-end mt-4">
                       <Button
@@ -790,7 +835,9 @@ export default function DashboardPage() {
                           ageMin: '',
                           ageMax: '',
                           condition: '',
+                          conditionCode: '',
                           status: '',
+                          source: '',
                           showFilters: false
                         })}
                       >
@@ -810,9 +857,9 @@ export default function DashboardPage() {
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Nombre</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">RUT</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Fecha de Nacimiento</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Edad</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Condición</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Ensayo</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Estudio Clínico</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Estado</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Acciones</th>
                         </tr>
@@ -832,14 +879,28 @@ export default function DashboardPage() {
                                       .join("")}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span className="text-sm font-medium text-gray-900">
-                                  {paciente.nombres} {paciente.apellidos}
-                                </span>
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium text-gray-900">
+                                    {paciente.nombres} {paciente.apellidos}
+                                  </span>
+                                  {paciente.source && (
+                                    <Badge 
+                                      variant="outline" 
+                                      className={`text-xs w-fit mt-1 ${
+                                        paciente.source === 'MANUAL_ENTRY' 
+                                          ? 'bg-purple-50 text-purple-700 border-purple-200' 
+                                          : 'bg-blue-50 text-blue-700 border-blue-200'
+                                      }`}
+                                    >
+                                      {paciente.source === 'MANUAL_ENTRY' ? '👤 Manual' : '🌐 Web'}
+                                    </Badge>
+                                  )}
+                                </div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{paciente.rut}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                              {formatDate(paciente.fechaNacimiento)}
+                              {calculateAge(paciente.fechaNacimiento)} años
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <Badge variant="outline">{paciente.condicionPrincipal}</Badge>
@@ -857,7 +918,11 @@ export default function DashboardPage() {
                                         : "bg-[#dfe3e3] text-[#044c64]"
                                 }
                               >
-                                {paciente.status ?? "RECEIVED"}
+                                {paciente.status === 'RECEIVED' ? 'Recibido' :
+                                 paciente.status === 'REVIEWING' ? 'En Revisión' :
+                                 paciente.status === 'CONTACTED' ? 'Contactado' :
+                                 paciente.status === 'DISCARDED' ? 'Descartado' :
+                                 'Recibido'}
                               </Badge>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -910,12 +975,22 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Ensayos */}
-          {activeSection === "ensayos" && (
+          {/* Estudios Clínicos */}
+          {activeSection === "estudios" && (
             <TrialList 
               initialTrials={trials}
               onTrialChange={handleTrialChange}
             />
+          )}
+
+          {/* Slider Principal */}
+          {activeSection === "slider" && (
+            <HeroSlidesManager />
+          )}
+
+          {/* Historias que Inspiran */}
+          {activeSection === "historias" && (
+            <SuccessStoriesManager />
           )}
         </main>
       </div>
@@ -925,7 +1000,7 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setShowMobileMenu(false)} />
       )}
 
-      {/* Modal de formulario de ensayo */}
+      {/* Modal de formulario de estudio clínico */}
       <TrialForm
         trial={selectedTrial}
         isOpen={isTrialFormOpen}
@@ -936,8 +1011,17 @@ export default function DashboardPage() {
         onSuccess={() => {
           setIsTrialFormOpen(false);
           setSelectedTrial(null);
-          // Recargar los ensayos después de crear/actualizar uno
+          // Recargar los estudios clínicos después de crear/actualizar uno
           refreshTrials();
+        }}
+      />
+
+      {/* Modal de formulario manual de paciente */}
+      <ManualPatientForm
+        isOpen={isManualPatientFormOpen}
+        onClose={() => setIsManualPatientFormOpen(false)}
+        onSuccess={() => {
+          refreshPatients(); // Recargar lista de pacientes
         }}
       />
 
@@ -946,7 +1030,7 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto p-4">
           <div className="bg-white rounded-lg w-full max-w-4xl my-8">
             <div className="p-6">
-              <PatientDetailsForm
+              <PatientEditForm
                 patient={selectedPatient}
                 isOpen={isPatientDetailsOpen}
                 onClose={() => {

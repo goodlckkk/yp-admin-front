@@ -1,13 +1,13 @@
 /**
- * Formulario para crear y editar ensayos clínicos
+ * Formulario para crear y editar estudios clínicos
  * 
  * Este componente maneja:
- * - Creación de nuevos ensayos
- * - Edición de ensayos existentes
+ * - Creación de nuevos estudios clínicos
+ * - Edición de estudios clínicos existentes
  * - Validación de campos
  * - Gestión de criterios de inclusión
  * - Selección de sponsor
- * - Estados del ensayo
+ * - Estados del estudio clínico
  */
 
 import { useState, useEffect } from 'react';
@@ -33,6 +33,10 @@ import {
 } from '../ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { SponsorAutocomplete } from '../ui/sponsor-autocomplete';
+import { ResearchSiteAutocomplete } from '../ui/research-site-autocomplete';
+import { AddInstitutionModal } from './AddInstitutionModal';
+import { AddSponsorModal } from './AddSponsorModal';
 import type { Trial, CreateTrialPayload, Sponsor, PatientIntake } from '../../lib/api';
 import { createTrial, updateTrial, getSponsors, fetchWithAuth } from '../../lib/api';
 
@@ -46,11 +50,12 @@ interface TrialFormProps {
 interface FormData {
   title: string;
   public_description: string;
-  clinic_city: string;
+  research_site_id: string; // ID del sitio de investigación
   sponsor_id: string;
-  status: 'RECRUITING' | 'ACTIVE' | 'CLOSED';
+  status: 'PREPARATION' | 'RECRUITING' | 'FOLLOW_UP' | 'CLOSED';
   max_participants: number;
   current_participants: number;
+  recruitment_deadline: string;
   inclusion_criteria: InclusionCriteria;
 }
 
@@ -67,11 +72,12 @@ interface InclusionCriteria {
 const INITIAL_FORM_DATA: FormData = {
   title: '',
   public_description: '',
-  clinic_city: '',
+  research_site_id: '',
   sponsor_id: '',
   status: 'RECRUITING',
   max_participants: 30,
   current_participants: 0,
+  recruitment_deadline: '',
   inclusion_criteria: {
     edad_minima: undefined,
     edad_maxima: undefined,
@@ -104,6 +110,18 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
   const [newCondicionRequerida, setNewCondicionRequerida] = useState('');
   const [newCondicionExcluida, setNewCondicionExcluida] = useState('');
   const [newMedicamentoProhibido, setNewMedicamentoProhibido] = useState('');
+
+  // Estados para modales de agregar institución y sponsor
+  const [isInstitutionModalOpen, setIsInstitutionModalOpen] = useState(false);
+  const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
+
+  // Estados para errores de campos específicos
+  const [fieldErrors, setFieldErrors] = useState<{
+    title?: string;
+    public_description?: string;
+    research_site_id?: string;
+    sponsor_id?: string;
+  }>({});
 
   // Cargar pacientes si estamos editando
   const loadPatients = async () => {
@@ -245,9 +263,10 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
     });
   };
 
-  // Cargar sponsors al montar
+  // Cargar datos al montar
   useEffect(() => {
-    loadSponsors();
+    // NO cargar sponsors automáticamente para evitar rate limiting
+    // Los sponsors se cargan bajo demanda en el autocomplete
     if (trial?.id) {
       loadPatients();
     }
@@ -259,11 +278,12 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
       setFormData({
         title: trial.title,
         public_description: trial.public_description,
-        clinic_city: trial.clinic_city,
+        research_site_id: trial.researchSite?.id || '',
         sponsor_id: trial.sponsor?.id || '',
-        status: trial.status as 'RECRUITING' | 'ACTIVE' | 'CLOSED',
+        status: trial.status,
         max_participants: trial.max_participants || 30,
         current_participants: trial.current_participants || 0,
+        recruitment_deadline: trial.recruitment_deadline || '',
         inclusion_criteria: trial.inclusion_criteria as InclusionCriteria || INITIAL_FORM_DATA.inclusion_criteria,
       });
     } else if (!trial && isOpen) {
@@ -289,6 +309,8 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
   const handleInputChange = (field: keyof FormData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setError(null);
+    // Limpiar error del campo específico
+    setFieldErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
   const handleCriteriaChange = (field: keyof InclusionCriteria, value: any) => {
@@ -334,8 +356,8 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
         return true;
       
       case 2:
-        if (!formData.clinic_city.trim()) {
-          setError('La ciudad de la clínica es obligatoria');
+        if (!formData.research_site_id.trim()) {
+          setError('El sitio de investigación es obligatorio');
           return false;
         }
         // Sponsor es opcional
@@ -368,17 +390,27 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
 
   // Función para crear/actualizar el ensayo (solo se ejecuta manualmente)
   const handleCreateTrial = async () => {
+    // Limpiar errores previos
+    setFieldErrors({});
+    setError(null);
+
     // Validaciones básicas
+    const errors: typeof fieldErrors = {};
+    
     if (!formData.title.trim()) {
-      setError('El título es obligatorio');
-      return;
+      errors.title = 'El título es obligatorio';
     }
     if (!formData.public_description.trim()) {
-      setError('La descripción es obligatoria');
-      return;
+      errors.public_description = 'La descripción es obligatoria';
     }
-    if (!formData.clinic_city.trim()) {
-      setError('La ciudad es obligatoria');
+    if (!formData.research_site_id.trim()) {
+      errors.research_site_id = 'Debes seleccionar un sitio de investigación. Si no existe, créalo primero.';
+    }
+
+    // Si hay errores, mostrarlos y detener
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError('Por favor, completa todos los campos obligatorios correctamente');
       return;
     }
 
@@ -389,11 +421,12 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
       const payload: CreateTrialPayload = {
         title: formData.title,
         public_description: formData.public_description,
-        clinic_city: formData.clinic_city,
+        research_site_id: formData.research_site_id,
         sponsor_id: formData.sponsor_id || undefined,
         status: formData.status,
         max_participants: formData.max_participants || undefined,
         current_participants: formData.current_participants || undefined,
+        recruitment_deadline: formData.recruitment_deadline || undefined,
         inclusion_criteria: formData.inclusion_criteria,
       };
 
@@ -474,10 +507,10 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-[#024959]">
-            {trial ? 'Editar Ensayo Clínico' : 'Crear Nuevo Ensayo Clínico'}
+            {trial ? 'Editar Estudio Clínico' : 'Crear Nuevo Estudio Clínico'}
           </h2>
           <p className="text-gray-600 mt-1">
-            {trial ? 'Modifica la información del ensayo y gestiona los pacientes asociados' : 'Completa la información para crear un nuevo ensayo clínico'}
+            {trial ? 'Modifica la información del estudio clínico y gestiona los pacientes asociados' : 'Completa la información para crear un nuevo estudio clínico'}
           </p>
         </div>
         <Button
@@ -499,35 +532,42 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
           <CardContent className="space-y-4">
             <div className="space-y-4">
               <div>
-                <Label htmlFor="title">Título del Ensayo *</Label>
+                <Label htmlFor="title" className={fieldErrors.title ? "text-red-500" : ""}>Título del Estudio Clínico *</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
                   placeholder="Ej: Estudio de eficacia de nuevo tratamiento para diabetes tipo 2"
-                  className="mt-1"
+                  className={`mt-1 ${fieldErrors.title ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                   disabled={loading}
                 />
+                {fieldErrors.title && (
+                  <p className="text-sm text-red-500 font-medium mt-1">{fieldErrors.title}</p>
+                )}
               </div>
 
               <div>
-                <Label htmlFor="public_description">Descripción Pública *</Label>
+                <Label htmlFor="public_description" className={fieldErrors.public_description ? "text-red-500" : ""}>Descripción Pública *</Label>
                 <Textarea
                   id="public_description"
                   value={formData.public_description}
                   onChange={(e) => handleInputChange('public_description', e.target.value)}
-                  placeholder="Descripción detallada del ensayo que será visible para los pacientes..."
+                  placeholder="Descripción detallada del estudio clínico que será visible para los pacientes..."
                   rows={6}
-                  className="mt-1"
+                  className={`mt-1 ${fieldErrors.public_description ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                   disabled={loading}
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Esta descripción será visible para los pacientes interesados
-                </p>
+                {fieldErrors.public_description ? (
+                  <p className="text-sm text-red-500 font-medium mt-1">{fieldErrors.public_description}</p>
+                ) : (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Esta descripción será visible para los pacientes interesados
+                  </p>
+                )}
               </div>
 
               <div>
-                <Label htmlFor="status">Estado del Ensayo</Label>
+                <Label htmlFor="status">Estado del Estudio Clínico</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value: any) => handleInputChange('status', value)}
@@ -537,8 +577,9 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="RECRUITING">Reclutando</SelectItem>
-                    <SelectItem value="ACTIVE">Activo</SelectItem>
+                    <SelectItem value="PREPARATION">En Preparación</SelectItem>
+                    <SelectItem value="RECRUITING">Reclutamiento Activo</SelectItem>
+                    <SelectItem value="FOLLOW_UP">En Seguimiento</SelectItem>
                     <SelectItem value="CLOSED">Cerrado</SelectItem>
                   </SelectContent>
                 </Select>
@@ -555,44 +596,62 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
           <CardContent className="space-y-4">
             <div className="space-y-4">
               <div>
-                <Label htmlFor="clinic_city">Ciudad de la Clínica *</Label>
-                <Input
-                  id="clinic_city"
-                  value={formData.clinic_city}
-                  onChange={(e) => handleInputChange('clinic_city', e.target.value)}
-                  placeholder="Ej: Santiago, Valparaíso, Concepción"
-                  className="mt-1"
+                <ResearchSiteAutocomplete
+                  value={formData.research_site_id}
+                  initialName={trial?.researchSite?.nombre}
+                  onSelect={(siteId, siteName) => {
+                    handleInputChange('research_site_id', siteId);
+                  }}
+                  onAddNew={() => setIsInstitutionModalOpen(true)}
                   disabled={loading}
+                  label="Sitio de Investigación"
+                  placeholder="Buscar institución..."
+                  required={true}
+                  error={fieldErrors.research_site_id}
+                  hasError={!!fieldErrors.research_site_id}
                 />
+                {!fieldErrors.research_site_id && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Centro médico donde se realizará el estudio clínico
+                  </p>
+                )}
               </div>
 
               <div>
-                <Label htmlFor="sponsor_id">Sponsor / Patrocinador (Opcional)</Label>
-                {loadingSponsors ? (
-                  <div className="mt-1 p-2 border rounded">Cargando sponsors...</div>
-                ) : (
-                  <Select
-                    value={formData.sponsor_id}
-                    onValueChange={(value) => handleInputChange('sponsor_id', value)}
-                    disabled={loading}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Selecciona un sponsor" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sponsors.map((sponsor) => (
-                        <SelectItem key={sponsor.id} value={sponsor.id}>
-                          {sponsor.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-                {sponsors.length === 0 && !loadingSponsors && (
+                <SponsorAutocomplete
+                  value={formData.sponsor_id}
+                  initialName={trial?.sponsor?.name}
+                  initialType={trial?.sponsor?.sponsor_type}
+                  onSelect={(sponsorId, sponsorName) => {
+                    handleInputChange('sponsor_id', sponsorId);
+                  }}
+                  onAddNew={() => setIsSponsorModalOpen(true)}
+                  disabled={loading}
+                  label="Sponsor / Patrocinador (Opcional)"
+                  placeholder="Buscar o crear sponsor..."
+                  error={fieldErrors.sponsor_id}
+                  hasError={!!fieldErrors.sponsor_id}
+                />
+                {!fieldErrors.sponsor_id && (
                   <p className="text-sm text-gray-500 mt-1">
-                    No hay sponsors disponibles. Puedes crear el ensayo sin sponsor y asignarlo después.
+                    Organización que patrocina el estudio clínico
                   </p>
                 )}
+              </div>
+
+              <div>
+                <Label htmlFor="recruitment_deadline">Fecha Límite de Reclutamiento (Opcional)</Label>
+                <Input
+                  id="recruitment_deadline"
+                  type="date"
+                  value={formData.recruitment_deadline}
+                  onChange={(e) => handleInputChange('recruitment_deadline', e.target.value)}
+                  className="mt-1"
+                  disabled={loading}
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Fecha límite para aceptar nuevos participantes
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -609,7 +668,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                     disabled={loading}
                   />
                   <p className="text-sm text-gray-500 mt-1">
-                    Número máximo de participantes para este ensayo
+                    Número máximo de participantes para este estudio clínico
                   </p>
                 </div>
                 <div>
@@ -852,7 +911,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                     <div>
                       <CardTitle className="text-lg">Pacientes Asociados</CardTitle>
                       <p className="text-sm text-gray-600">
-                        {patients.length} {patients.length === 1 ? 'paciente asociado' : 'pacientes asociados'} a este ensayo
+                        {patients.length} {patients.length === 1 ? 'paciente asociado' : 'pacientes asociados'} a este estudio clínico
                       </p>
                     </div>
                     <Button
@@ -872,7 +931,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                     <div className="text-center py-8 text-gray-500">Cargando pacientes...</div>
                   ) : patients.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
-                      No hay pacientes asociados a este ensayo aún.
+                      No hay pacientes asociados a este estudio clínico aún.
                     </div>
                   ) : (
                     <div className="rounded-md border">
@@ -925,7 +984,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                                     size="sm"
                                     onClick={() => handleRemovePatient(patient.id)}
                                     className="text-red-600 hover:text-red-800 hover:bg-red-50"
-                                    title="Quitar paciente de este ensayo"
+                                    title="Quitar paciente de este estudio clínico"
                                   >
                                     ✕
                                   </Button>
@@ -966,7 +1025,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
             disabled={loading}
             className="bg-[#04BFAD] hover:bg-[#024959] text-white"
           >
-            {loading ? 'Guardando...' : trial ? 'Actualizar Ensayo' : 'Crear Ensayo'}
+            {loading ? 'Guardando...' : trial ? 'Actualizar Estudio Clínico' : 'Crear Estudio Clínico'}
           </Button>
         </div>
       </div>
@@ -1162,6 +1221,27 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Modales para agregar institución y sponsor */}
+      <AddInstitutionModal
+        isOpen={isInstitutionModalOpen}
+        onClose={() => setIsInstitutionModalOpen(false)}
+        onSuccess={(newSite) => {
+          setIsInstitutionModalOpen(false);
+          // Actualizar el formulario con la nueva institución
+          handleInputChange('research_site_id', newSite.id);
+        }}
+      />
+
+      <AddSponsorModal
+        isOpen={isSponsorModalOpen}
+        onClose={() => setIsSponsorModalOpen(false)}
+        onSuccess={(newSponsor) => {
+          setIsSponsorModalOpen(false);
+          // Actualizar el formulario con el nuevo sponsor
+          handleInputChange('sponsor_id', newSponsor.id);
+        }}
+      />
     </div>
   );
 }

@@ -1,23 +1,6 @@
 import axios from 'axios';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
-
-// Funciones de token locales para evitar importación circular
-const TOKEN_KEY = 'authToken';
-
-function getTokenLocal(): string | null {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem(TOKEN_KEY);
-  }
-  return null;
-}
-
-function removeTokenLocal(): void {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem('authTokenExpiresAt');
-    localStorage.removeItem('authLastActivity');
-  }
-}
+import { TokenService } from '../services/token.service';
 
 // Crear instancia de Axios con configuración base
 const axiosInstance = axios.create({
@@ -31,7 +14,7 @@ const axiosInstance = axios.create({
 // Interceptor de Request - Añadir token automáticamente
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = getTokenLocal();
+    const token = TokenService.getToken();
     
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -56,7 +39,7 @@ axiosInstance.interceptors.response.use(
       switch (status) {
         case 401:
           // Token inválido o expirado
-          removeTokenLocal();
+          TokenService.removeToken();
           if (typeof window !== 'undefined') {
             window.location.href = '/auth';
           }

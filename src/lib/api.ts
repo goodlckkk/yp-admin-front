@@ -1,80 +1,56 @@
 import axiosInstance from './axios-instance';
+import { TokenService } from '../services/token.service';
 
 // URL de producción con HTTPS
 const API_BASE_URL = import.meta.env.PUBLIC_API_URL ?? "https://api.yoparticipo.cl/api";
 
-const TOKEN_KEY = 'authToken';
-const TOKEN_EXPIRES_KEY = 'authTokenExpiresAt';
-const LAST_ACTIVITY_KEY = 'authLastActivity';
-
-// Token management
-export function saveToken(token: string, expiresAt: string) {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(TOKEN_EXPIRES_KEY, expiresAt);
-    localStorage.setItem(LAST_ACTIVITY_KEY, Date.now().toString());
-  }
+/**
+ * Re-exportar funciones del TokenService para mantener compatibilidad
+ * con código existente. Estas funciones ahora delegan al TokenService.
+ */
+export function saveToken(token: string, expiresAt: string): void {
+  TokenService.saveToken(token, expiresAt);
 }
 
 export function getToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  const token = localStorage.getItem(TOKEN_KEY);
-  const expiresAt = localStorage.getItem(TOKEN_EXPIRES_KEY);
-
-  if (!token || !expiresAt) {
-    removeToken();
-    return null;
-  }
-
-  const expiresAtTime = Date.parse(expiresAt);
-  if (Number.isNaN(expiresAtTime) || Date.now() >= expiresAtTime) {
-    removeToken();
-    return null;
-  }
-
-  return token;
+  return TokenService.getToken();
 }
 
 export function getTokenExpiration(): number | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  const expiresAt = localStorage.getItem(TOKEN_EXPIRES_KEY);
-  if (!expiresAt) {
-    return null;
-  }
-  const expiresAtTime = Date.parse(expiresAt);
-  return Number.isNaN(expiresAtTime) ? null : expiresAtTime;
+  return TokenService.getExpiration();
 }
 
-export function updateLastActivityTimestamp() {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(LAST_ACTIVITY_KEY, Date.now().toString());
-  }
+export function updateLastActivityTimestamp(): void {
+  TokenService.updateActivity();
 }
 
 export function getLastActivityTimestamp(): number | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  const value = localStorage.getItem(LAST_ACTIVITY_KEY);
-  if (!value) {
-    return null;
-  }
-  const parsed = Number(value);
-  return Number.isNaN(parsed) ? null : parsed;
+  return TokenService.getLastActivity();
 }
 
-export function removeToken() {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(TOKEN_EXPIRES_KEY);
-    localStorage.removeItem(LAST_ACTIVITY_KEY);
+export function removeToken(): void {
+  TokenService.removeToken();
+}
+
+/**
+ * Decodificar el JWT y obtener el email del usuario
+ */
+export function getUserEmailFromToken(): string | null {
+  const token = getToken();
+  if (!token) return null;
+  
+  try {
+    // Decodificar el JWT (formato: header.payload.signature)
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.email || decoded.sub || null;
+  } catch (error) {
+    console.error('Error al decodificar el token:', error);
+    return null;
   }
 }
+
+export type PatientIntakeSource = 'WEB_FORM' | 'MANUAL_ENTRY' | 'REFERRAL' | 'OTHER';
 
 export interface CreatePatientIntakePayload {
   nombres?: string;
@@ -82,19 +58,30 @@ export interface CreatePatientIntakePayload {
   rut?: string;
   fechaNacimiento?: string;
   sexo?: string;
-  telefono?: string;
+  
+  // Teléfono: puede ser completo (legacy) o separado (nuevo)
+  telefono?: string; // Legacy: "+56 9 1234 5678"
+  telefonoCodigoPais?: string; // Nuevo: "+56"
+  telefonoNumero?: string; // Nuevo: "912345678"
+  
   email?: string;
   region?: string;
   comuna?: string;
   direccion?: string;
   condicionPrincipal?: string;
-  descripcionCondicion?: string;
+  condicionPrincipalCodigo?: string; // Código CIE-10 de la condición principal
+  patologias?: string[]; // Checkboxes de patologías prevalentes
+  otrasEnfermedades?: string;
+  codigos_cie10?: string[];
+  // Campos opcionales que se llenan después por admin
   medicamentosActuales?: string;
   alergias?: string;
   cirugiasPrevias?: string;
+  descripcionCondicion?: string; // ← Mantener por compatibilidad
   aceptaTerminos?: boolean;
   aceptaPrivacidad?: boolean;
   trialId?: string;
+  source?: PatientIntakeSource; // Origen: WEB (formulario público) o MANUAL (dashboard)
 }
 
 export interface PatientIntake extends CreatePatientIntakePayload {
@@ -181,6 +168,13 @@ export async function createPatientIntake(payload: CreatePatientIntakePayload) {
   });
 }
 
+export async function updatePatientIntake(id: string, payload: Partial<CreatePatientIntakePayload>): Promise<PatientIntake> {
+  return fetchWithAuth<PatientIntake>(`/patient-intakes/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function getPatientIntakes(): Promise<PatientIntake[]> {
   return fetchWithAuth<PatientIntake[]>(`/patient-intakes`);
 }
@@ -193,28 +187,58 @@ export async function getSponsors(): Promise<Sponsor[]> {
 	return fetchWithAuth<Sponsor[]>(`/sponsors`);
 }
 
+export async function searchSponsors(query: string): Promise<Sponsor[]> {
+	return fetchWithAuth<Sponsor[]>(`/sponsors/search?q=${encodeURIComponent(query)}`);
+}
+
+export async function createSponsor(data: { name: string; description?: string; web_site?: string; sponsor_type?: SponsorType }): Promise<Sponsor> {
+	return fetchWithAuth<Sponsor>(`/sponsors`, {
+		method: 'POST',
+		body: JSON.stringify(data),
+	});
+}
+
+export interface TrialSuggestion {
+	trial: Trial;
+	matchScore: number;
+	matchReasons: string[];
+}
+
+export async function getTrialSuggestions(patientId: string): Promise<TrialSuggestion[]> {
+	return fetchWithAuth<TrialSuggestion[]>(`/trials/suggestions/${patientId}`);
+}
+
+export type SponsorType = 'SPONSOR' | 'CRO';
+
 export interface Sponsor {
   id: string;
   name: string;
+  description?: string;
+  web_site?: string;
+  sponsor_type: SponsorType;
+  created_at: string;
+  updated_at: string;
 }
 
-export type TrialStatus = 'RECRUITING' | 'ACTIVE' | 'CLOSED' | 'DRAFT';
+export type TrialStatus = 'PREPARATION' | 'RECRUITING' | 'FOLLOW_UP' | 'CLOSED';
 
 export interface Trial {
   id: string;
   title: string;
   public_description: string;
+  inclusion_criteria: object;
   status: TrialStatus;
-  clinic_city: string;
-  sponsor: Sponsor;
+  researchSite?: ResearchSite; // Sitio de investigación completo (camelCase como lo devuelve el backend)
+  sponsor?: Sponsor; // Sponsor completo
+  phase?: string; // Fase del estudio (I, II, III, IV)
+  max_participants?: number;
+  current_participants?: number;
+  recruitment_deadline?: string; // Fecha límite de reclutamiento (ISO 8601)
   created_at: string;
   updated_at: string;
   start_date?: string;
   end_date?: string;
   target_participants?: number;
-  current_participants?: number;
-  max_participants?: number;
-  inclusion_criteria?: Record<string, unknown> | null;
 }
 
 export interface TrialsResponse {
@@ -241,11 +265,12 @@ export interface CreateTrialPayload {
   title: string;
   public_description: string;
   inclusion_criteria: object;
-  clinic_city: string;
+  research_site_id: string; // ID del sitio de investigación (obligatorio)
   sponsor_id?: string; // Sponsor es opcional
-  status?: 'RECRUITING' | 'ACTIVE' | 'CLOSED';
+  status?: TrialStatus;
   max_participants?: number; // Límite de participantes
   current_participants?: number; // Participantes actuales
+  recruitment_deadline?: string; // Fecha límite de reclutamiento (ISO 8601)
 }
 
 export interface Paginated<T> {
@@ -406,6 +431,53 @@ export async function getStats(): Promise<DashboardStats> {
 export async function getTrends(): Promise<TrendData[]> {
   return fetchWithAuth<TrendData[]>(`/stats/trends`);
 }
+
+// ==================== RESEARCH SITES (INSTITUCIONES) ====================
+
+export interface ResearchSite {
+  id: string;
+  nombre: string;
+  direccion?: string;
+  ciudad?: string;
+  comuna?: string;
+  region?: string;
+  telefono?: string;
+  email?: string;
+  sitio_web?: string;
+  descripcion?: string;
+  activo: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateResearchSitePayload {
+  nombre: string;
+  direccion?: string;
+  ciudad?: string;
+  comuna?: string;
+  region?: string;
+  telefono?: string;
+  email?: string;
+  sitio_web?: string;
+  descripcion?: string;
+}
+
+export async function getResearchSites() {
+  return fetchWithAuth<ResearchSite[]>(`/research-sites`);
+}
+
+export async function searchResearchSites(query: string) {
+  return fetchWithAuth<ResearchSite[]>(`/research-sites/search?q=${encodeURIComponent(query)}`);
+}
+
+export async function createResearchSite(payload: CreateResearchSitePayload) {
+  return fetchWithAuth<ResearchSite>(`/research-sites`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+// Sponsors ya están definidos arriba en el archivo
 
 export interface PublicStats {
   patientsConnected: number;
