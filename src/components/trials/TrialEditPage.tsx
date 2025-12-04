@@ -24,7 +24,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui
 import { Badge } from '../ui/badge';
 import { Icons } from '../ui/icons';
 import type { Trial, CreateTrialPayload, Sponsor } from '../../lib/api';
-import { getTrial, updateTrial, getSponsors, getToken, fetchWithAuth } from '../../lib/api';
+import { getTrial, updateTrial, getSponsors, fetchWithAuth } from '../../lib/api';
+import { useRequireAuth } from '../../hooks/useRequireAuth';
 
 interface InclusionCriteria {
   edad_minima?: number;
@@ -85,13 +86,10 @@ export function TrialEditPage() {
     ? new URLSearchParams(window.location.search).get('id')
     : null;
 
+  // Verificar autenticación
+  useRequireAuth();
+
   useEffect(() => {
-    // Verificar autenticación
-    const token = getToken();
-    if (!token) {
-      window.location.href = '/auth';
-      return;
-    }
 
     if (trialId) {
       loadData();

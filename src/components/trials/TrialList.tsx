@@ -4,11 +4,14 @@ import { Button } from '../ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Badge } from '../ui/badge';
 import type { Trial, TrialStatus, TrialsFilterParams } from '../../lib/api';
-import { getTrials, deleteTrial, getToken } from '../../lib/api';
+import { getTrials, deleteTrial } from '../../lib/api';
 import { TrialFilters } from './TrialFilters';
 import { TrialForm } from './TrialForm';
+import { AddInstitutionModal } from './AddInstitutionModal';
+import { AddSponsorModal } from './AddSponsorModal';
 import { AppProviders } from '../AppProviders';
 import { useToast } from '../../contexts/ToastContext';
+import { useRequireAuth } from '../../hooks/useRequireAuth';
 // Función de utilidad para combinar clases
 export const cn = (...classes: (string | undefined)[]) => {
   return classes.filter(Boolean).join(' ');
@@ -114,17 +117,14 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
     sortOrder: 'DESC',
   });
   
-  // Estados para el formulario de ensayos
+  // Estados para el formulario de estudios clínicos
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedTrial, setSelectedTrial] = useState<Trial | null>(null);
+  const [editingTrial, setEditingTrial] = useState<Trial | null>(null);
+  const [isInstitutionModalOpen, setIsInstitutionModalOpen] = useState(false);
+  const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
 
   // Verificar autenticación al montar
-  useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      window.location.href = '/auth';
-    }
-  }, []);
+  useRequireAuth();
 
   const totalPages = Math.ceil(totalItems / (filters.limit || 10));
   const currentPage = filters.page || 1;
@@ -151,9 +151,9 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
       }
       // No actualizar filters aquí para evitar loop infinito
     } catch (err: any) {
-      console.error('Error al cargar los ensayos:', err);
+      console.error('Error al cargar los estudios clínicos:', err);
       
-      let errorMsg = 'No se pudieron cargar los ensayos. Por favor, intente nuevamente.';
+      let errorMsg = 'No se pudieron cargar los estudios clínicos. Por favor, intente nuevamente.';
       
       // Manejo específico para error 429 (Too Many Requests)
       if (err?.message?.includes('429') || err?.message?.includes('Too Many Requests')) {
@@ -173,8 +173,7 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
 
   // Carga inicial solo si no hay datos precargados
   useEffect(() => {
-    const token = getToken();
-    if (token && initialTrials.length === 0 && !hasLoadedOnce) {
+    if (initialTrials.length === 0 && !hasLoadedOnce) {
       fetchTrials(true);
       setHasLoadedOnce(true);
     } else if (initialTrials.length > 0) {
@@ -185,12 +184,11 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
 
   // Cargas subsecuentes cuando cambian los filtros (solo si ya se cargó una vez)
   useEffect(() => {
-    const token = getToken();
     // Solo hacer fetch si:
     // 1. Ya se cargó una vez
     // 2. No es la carga inicial
     // 3. NO hay datos precargados del dashboard (initialTrials vacío significa que TrialList maneja sus propios datos)
-    if (token && hasLoadedOnce && !initialLoading && initialTrials.length === 0) {
+    if (hasLoadedOnce && !initialLoading && initialTrials.length === 0) {
       fetchTrials(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -229,7 +227,7 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
   };
 
   const handleCreateNew = () => {
-    setSelectedTrial(null);
+    setEditingTrial(null);
     setIsFormOpen(true);
   };
 
@@ -237,36 +235,36 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
     // Abrir modal de edición en lugar de redirigir
     const trial = trials.find(t => t.id === trialId);
     if (trial) {
-      setSelectedTrial(trial);
+      setEditingTrial(trial);
       setIsFormOpen(true);
     }
   };
 
   const handleDelete = async (trialId: string) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar este ensayo? Esta acción no se puede deshacer.')) {
+    if (!confirm('¿Estás seguro de que deseas eliminar este estudio clínico? Esta acción no se puede deshacer.')) {
       return;
     }
     
     try {
       await deleteTrial(trialId);
-      showToast('Ensayo eliminado exitosamente', 'success');
+      showToast('Estudio clínico eliminado exitosamente', 'success');
       fetchTrials(); // Recargar la lista
     } catch (err) {
-      console.error('Error al eliminar ensayo:', err);
-      showToast('No se pudo eliminar el ensayo. Por favor, intenta nuevamente.', 'error');
+      console.error('Error al eliminar estudio clínico:', err);
+      showToast('No se pudo eliminar el estudio clínico. Por favor, intenta nuevamente.', 'error');
     }
   };
 
   const handleFormSuccess = () => {
-    const message = selectedTrial ? 'Ensayo actualizado exitosamente' : 'Ensayo creado exitosamente';
+    const message = editingTrial ? 'Estudio clínico actualizado exitosamente' : 'Estudio clínico creado exitosamente';
     showToast(message, 'success');
     fetchTrials(false); // Recargar la lista después de crear/editar
-    setSelectedTrial(null);
+    setEditingTrial(null);
   };
 
   const handleFormClose = () => {
     setIsFormOpen(false);
-    setSelectedTrial(null);
+    setEditingTrial(null);
   };
 
   // Loading inicial fullscreen
@@ -284,7 +282,7 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
               }}
             ></div>
           </div>
-          <h3 className="text-lg font-semibold text-[#024959] mb-2">Cargando ensayos clínicos</h3>
+          <h3 className="text-lg font-semibold text-[#024959] mb-2">Cargando estudios clínicos</h3>
           <p className="text-sm text-gray-500">Por favor espera un momento...</p>
         </div>
       </div>
@@ -312,7 +310,7 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
     return (
       <div className="animate-in fade-in-50 duration-300">
         <TrialForm
-          trial={selectedTrial}
+          trial={editingTrial}
           isOpen={isFormOpen}
           onClose={handleFormClose}
           onSuccess={handleFormSuccess}
@@ -328,9 +326,9 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Lista de Ensayos</CardTitle>
+              <CardTitle>Lista de Estudios Clínicos</CardTitle>
               <CardDescription>
-                {totalItems} {totalItems === 1 ? 'ensayo encontrado' : 'ensayos encontrados'}
+                {totalItems} {totalItems === 1 ? 'estudio clínico encontrado' : 'estudios clínicos encontrados'}
               </CardDescription>
             </div>
             <div className="flex gap-2">
@@ -339,7 +337,23 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
                 className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Nuevo Ensayo
+                Nuevo Estudio Clínico
+              </Button>
+              <Button 
+                onClick={() => setIsInstitutionModalOpen(true)}
+                variant="outline"
+                className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Agregar Institución
+              </Button>
+              <Button 
+                onClick={() => setIsSponsorModalOpen(true)}
+                variant="outline"
+                className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Agregar Sponsor
               </Button>
               <Button 
                 variant="ghost" 
@@ -380,7 +394,7 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
               </div>
             ) : trials.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
-                <p className="text-lg">No se encontraron ensayos que coincidan con los filtros.</p>
+                <p className="text-lg">No se encontraron estudios clínicos que coincidan con los filtros.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -484,6 +498,25 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
           )}
         </CardContent>
       </Card>
+
+      {/* Modales */}
+      <AddInstitutionModal
+        isOpen={isInstitutionModalOpen}
+        onClose={() => setIsInstitutionModalOpen(false)}
+        onSuccess={() => {
+          setIsInstitutionModalOpen(false);
+          showToast('Institución agregada exitosamente', 'success');
+        }}
+      />
+
+      <AddSponsorModal
+        isOpen={isSponsorModalOpen}
+        onClose={() => setIsSponsorModalOpen(false)}
+        onSuccess={() => {
+          setIsSponsorModalOpen(false);
+          showToast('Patrocinador agregado exitosamente', 'success');
+        }}
+      />
 
     </div>
   );

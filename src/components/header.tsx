@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import logoPatients from "../assets/logo-1.svg?url";
 import logoInstitutions from "../assets/logo-2.svg?url";
+import { Button } from "./ui/button";
+import { Icons } from "./ui/icons";
 
-export function HeaderPage({ activeTab, setActiveTab }: any) {
+export function HeaderPage({ activeTab, setActiveTab, onPostularClick }: any) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -67,6 +69,16 @@ export function HeaderPage({ activeTab, setActiveTab }: any) {
               </button>
             ))}
           </nav>
+
+          {activeTab === "pacientes" && onPostularClick && (
+            <Button
+              onClick={onPostularClick}
+              className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-2"
+            >
+              <img src="/logo-blanco.svg" alt="yoParticipo" className="h-5 w-auto" />
+              Participa Aquí
+            </Button>
+          )}
         </div>
       </div>
     </header>
