@@ -1,0 +1,1250 @@
+[
+  {
+    "codigo": "E11",
+    "nombre": "Diabetes mellitus tipo 2"
+  },
+  {
+    "codigo": "E10",
+    "nombre": "Diabetes mellitus tipo 1"
+  },
+  {
+    "codigo": "I10",
+    "nombre": "Hipertensión arterial esencial (primaria)"
+  },
+  {
+    "codigo": "I25",
+    "nombre": "Enfermedad isquémica crónica del corazón"
+  },
+  {
+    "codigo": "I50",
+    "nombre": "Insuficiencia cardíaca"
+  },
+  {
+    "codigo": "I21",
+    "nombre": "Infarto agudo del miocardio"
+  },
+  {
+    "codigo": "I63",
+    "nombre": "Infarto cerebral"
+  },
+  {
+    "codigo": "I64",
+    "nombre": "Accidente vascular encefálico"
+  },
+  {
+    "codigo": "J45",
+    "nombre": "Asma"
+  },
+  {
+    "codigo": "J44",
+    "nombre": "Enfermedad pulmonar obstructiva crónica (EPOC)"
+  },
+  {
+    "codigo": "J18",
+    "nombre": "Neumonía"
+  },
+  {
+    "codigo": "J20",
+    "nombre": "Bronquitis aguda"
+  },
+  {
+    "codigo": "J40",
+    "nombre": "Bronquitis crónica"
+  },
+  {
+    "codigo": "N18",
+    "nombre": "Enfermedad renal crónica"
+  },
+  {
+    "codigo": "N17",
+    "nombre": "Insuficiencia renal aguda"
+  },
+  {
+    "codigo": "N20",
+    "nombre": "Cálculo del riñón y del uréter"
+  },
+  {
+    "codigo": "K21",
+    "nombre": "Enfermedad por reflujo gastroesofágico"
+  },
+  {
+    "codigo": "K29",
+    "nombre": "Gastritis y duodenitis"
+  },
+  {
+    "codigo": "K80",
+    "nombre": "Colelitiasis (cálculos biliares)"
+  },
+  {
+    "codigo": "K76",
+    "nombre": "Enfermedad hepática"
+  },
+  {
+    "codigo": "K74",
+    "nombre": "Cirrosis hepática"
+  },
+  {
+    "codigo": "M15",
+    "nombre": "Poliartrosis"
+  },
+  {
+    "codigo": "M17",
+    "nombre": "Gonartrosis (artrosis de rodilla)"
+  },
+  {
+    "codigo": "M19",
+    "nombre": "Otras artrosis"
+  },
+  {
+    "codigo": "M05",
+    "nombre": "Artritis reumatoide seropositiva"
+  },
+  {
+    "codigo": "M06",
+    "nombre": "Otras artritis reumatoides"
+  },
+  {
+    "codigo": "M54",
+    "nombre": "Dorsalgia (dolor de espalda)"
+  },
+  {
+    "codigo": "M79",
+    "nombre": "Fibromialgia"
+  },
+  {
+    "codigo": "E66",
+    "nombre": "Obesidad"
+  },
+  {
+    "codigo": "E78",
+    "nombre": "Trastornos del metabolismo de las lipoproteínas (colesterol alto)"
+  },
+  {
+    "codigo": "E04",
+    "nombre": "Bocio no tóxico"
+  },
+  {
+    "codigo": "E03",
+    "nombre": "Hipotiroidismo"
+  },
+  {
+    "codigo": "E05",
+    "nombre": "Tirotoxicosis (hipertiroidismo)"
+  },
+  {
+    "codigo": "F32",
+    "nombre": "Episodio depresivo"
+  },
+  {
+    "codigo": "F33",
+    "nombre": "Trastorno depresivo recurrente"
+  },
+  {
+    "codigo": "F41",
+    "nombre": "Otros trastornos de ansiedad"
+  },
+  {
+    "codigo": "F31",
+    "nombre": "Trastorno afectivo bipolar"
+  },
+  {
+    "codigo": "F20",
+    "nombre": "Esquizofrenia"
+  },
+  {
+    "codigo": "F10",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de alcohol"
+  },
+  {
+    "codigo": "G40",
+    "nombre": "Epilepsia"
+  },
+  {
+    "codigo": "G43",
+    "nombre": "Migraña"
+  },
+  {
+    "codigo": "G44",
+    "nombre": "Otros síndromes de cefalea"
+  },
+  {
+    "codigo": "G20",
+    "nombre": "Enfermedad de Parkinson"
+  },
+  {
+    "codigo": "G30",
+    "nombre": "Enfermedad de Alzheimer"
+  },
+  {
+    "codigo": "G35",
+    "nombre": "Esclerosis múltiple"
+  },
+  {
+    "codigo": "C50",
+    "nombre": "Cáncer de mama"
+  },
+  {
+    "codigo": "C34",
+    "nombre": "Cáncer de bronquios y pulmón"
+  },
+  {
+    "codigo": "C18",
+    "nombre": "Cáncer de colon"
+  },
+  {
+    "codigo": "C20",
+    "nombre": "Cáncer de recto"
+  },
+  {
+    "codigo": "C61",
+    "nombre": "Cáncer de próstata"
+  },
+  {
+    "codigo": "C53",
+    "nombre": "Cáncer de cuello uterino"
+  },
+  {
+    "codigo": "C16",
+    "nombre": "Cáncer de estómago"
+  },
+  {
+    "codigo": "C25",
+    "nombre": "Cáncer de páncreas"
+  },
+  {
+    "codigo": "C22",
+    "nombre": "Cáncer de hígado"
+  },
+  {
+    "codigo": "C67",
+    "nombre": "Cáncer de vejiga"
+  },
+  {
+    "codigo": "C91",
+    "nombre": "Leucemia linfoide"
+  },
+  {
+    "codigo": "C92",
+    "nombre": "Leucemia mieloide"
+  },
+  {
+    "codigo": "C81",
+    "nombre": "Enfermedad de Hodgkin (linfoma)"
+  },
+  {
+    "codigo": "C82",
+    "nombre": "Linfoma no Hodgkin folicular"
+  },
+  {
+    "codigo": "C85",
+    "nombre": "Linfoma no Hodgkin"
+  },
+  {
+    "codigo": "B18",
+    "nombre": "Hepatitis viral crónica"
+  },
+  {
+    "codigo": "B16",
+    "nombre": "Hepatitis aguda tipo B"
+  },
+  {
+    "codigo": "B17",
+    "nombre": "Otras hepatitis virales agudas"
+  },
+  {
+    "codigo": "B24",
+    "nombre": "VIH/SIDA"
+  },
+  {
+    "codigo": "A09",
+    "nombre": "Diarrea y gastroenteritis de presunto origen infeccioso"
+  },
+  {
+    "codigo": "L40",
+    "nombre": "Psoriasis"
+  },
+  {
+    "codigo": "L20",
+    "nombre": "Dermatitis atópica"
+  },
+  {
+    "codigo": "L50",
+    "nombre": "Urticaria"
+  },
+  {
+    "codigo": "M32",
+    "nombre": "Lupus eritematoso sistémico"
+  },
+  {
+    "codigo": "K50",
+    "nombre": "Enfermedad de Crohn"
+  },
+  {
+    "codigo": "K51",
+    "nombre": "Colitis ulcerosa"
+  },
+  {
+    "codigo": "H25",
+    "nombre": "Catarata senil"
+  },
+  {
+    "codigo": "H40",
+    "nombre": "Glaucoma"
+  },
+  {
+    "codigo": "H35",
+    "nombre": "Retinopatía"
+  },
+  {
+    "codigo": "H90",
+    "nombre": "Hipoacusia (pérdida auditiva)"
+  },
+  {
+    "codigo": "N40",
+    "nombre": "Hiperplasia de la próstata"
+  },
+  {
+    "codigo": "N39",
+    "nombre": "Infección de vías urinarias"
+  },
+  {
+    "codigo": "N80",
+    "nombre": "Endometriosis"
+  },
+  {
+    "codigo": "N92",
+    "nombre": "Menstruación excesiva, frecuente e irregular"
+  },
+  {
+    "codigo": "O80",
+    "nombre": "Parto único espontáneo"
+  },
+  {
+    "codigo": "E27",
+    "nombre": "Insuficiencia suprarrenal"
+  },
+  {
+    "codigo": "D50",
+    "nombre": "Anemia por deficiencia de hierro"
+  },
+  {
+    "codigo": "D64",
+    "nombre": "Otras anemias"
+  },
+  {
+    "codigo": "I80",
+    "nombre": "Flebitis y tromboflebitis"
+  },
+  {
+    "codigo": "I83",
+    "nombre": "Várices de los miembros inferiores"
+  },
+  {
+    "codigo": "R10",
+    "nombre": "Dolor abdominal y pélvico"
+  },
+  {
+    "codigo": "R51",
+    "nombre": "Cefalea"
+  },
+  {
+    "codigo": "R50",
+    "nombre": "Fiebre de origen desconocido"
+  },
+  {
+    "codigo": "Z51",
+    "nombre": "Atención médica por otras terapias"
+  },
+  {
+    "codigo": "E14",
+    "nombre": "Diabetes mellitus no especificada"
+  },
+  {
+    "codigo": "I11",
+    "nombre": "Enfermedad cardíaca hipertensiva"
+  },
+  {
+    "codigo": "I20",
+    "nombre": "Angina de pecho"
+  },
+  {
+    "codigo": "I48",
+    "nombre": "Fibrilación y aleteo auricular"
+  },
+  {
+    "codigo": "I49",
+    "nombre": "Otras arritmias cardíacas"
+  },
+  {
+    "codigo": "I70",
+    "nombre": "Aterosclerosis"
+  },
+  {
+    "codigo": "J00",
+    "nombre": "Rinofaringitis aguda (resfriado común)"
+  },
+  {
+    "codigo": "J06",
+    "nombre": "Infecciones agudas de las vías respiratorias superiores"
+  },
+  {
+    "codigo": "J30",
+    "nombre": "Rinitis alérgica"
+  },
+  {
+    "codigo": "J32",
+    "nombre": "Sinusitis crónica"
+  },
+  {
+    "codigo": "J42",
+    "nombre": "Bronquitis crónica no especificada"
+  },
+  {
+    "codigo": "J47",
+    "nombre": "Bronquiectasia"
+  },
+  {
+    "codigo": "K25",
+    "nombre": "Úlcera gástrica"
+  },
+  {
+    "codigo": "K26",
+    "nombre": "Úlcera duodenal"
+  },
+  {
+    "codigo": "K35",
+    "nombre": "Apendicitis aguda"
+  },
+  {
+    "codigo": "K40",
+    "nombre": "Hernia inguinal"
+  },
+  {
+    "codigo": "K44",
+    "nombre": "Hernia diafragmática"
+  },
+  {
+    "codigo": "K58",
+    "nombre": "Síndrome del intestino irritable"
+  },
+  {
+    "codigo": "K59",
+    "nombre": "Estreñimiento"
+  },
+  {
+    "codigo": "K70",
+    "nombre": "Enfermedad alcohólica del hígado"
+  },
+  {
+    "codigo": "K85",
+    "nombre": "Pancreatitis aguda"
+  },
+  {
+    "codigo": "K86",
+    "nombre": "Pancreatitis crónica"
+  },
+  {
+    "codigo": "M10",
+    "nombre": "Gota"
+  },
+  {
+    "codigo": "M16",
+    "nombre": "Coxartrosis (artrosis de cadera)"
+  },
+  {
+    "codigo": "M23",
+    "nombre": "Trastorno interno de la rodilla"
+  },
+  {
+    "codigo": "M25",
+    "nombre": "Otros trastornos articulares"
+  },
+  {
+    "codigo": "M41",
+    "nombre": "Escoliosis"
+  },
+  {
+    "codigo": "M42",
+    "nombre": "Osteocondrosis de la columna vertebral"
+  },
+  {
+    "codigo": "M47",
+    "nombre": "Espondilosis"
+  },
+  {
+    "codigo": "M48",
+    "nombre": "Otras espondilopatías"
+  },
+  {
+    "codigo": "M50",
+    "nombre": "Trastornos de disco cervical"
+  },
+  {
+    "codigo": "M51",
+    "nombre": "Otros trastornos de los discos intervertebrales"
+  },
+  {
+    "codigo": "M75",
+    "nombre": "Lesiones del hombro"
+  },
+  {
+    "codigo": "M77",
+    "nombre": "Otras entesopatías"
+  },
+  {
+    "codigo": "M80",
+    "nombre": "Osteoporosis con fractura patológica"
+  },
+  {
+    "codigo": "M81",
+    "nombre": "Osteoporosis sin fractura patológica"
+  },
+  {
+    "codigo": "N00",
+    "nombre": "Síndrome nefrítico agudo"
+  },
+  {
+    "codigo": "N03",
+    "nombre": "Síndrome nefrítico crónico"
+  },
+  {
+    "codigo": "N04",
+    "nombre": "Síndrome nefrótico"
+  },
+  {
+    "codigo": "N10",
+    "nombre": "Nefritis tubulointersticial aguda"
+  },
+  {
+    "codigo": "N11",
+    "nombre": "Nefritis tubulointersticial crónica"
+  },
+  {
+    "codigo": "N13",
+    "nombre": "Uropatía obstructiva y por reflujo"
+  },
+  {
+    "codigo": "N19",
+    "nombre": "Insuficiencia renal no especificada"
+  },
+  {
+    "codigo": "N30",
+    "nombre": "Cistitis"
+  },
+  {
+    "codigo": "N41",
+    "nombre": "Enfermedades inflamatorias de la próstata"
+  },
+  {
+    "codigo": "N70",
+    "nombre": "Salpingitis y ooforitis"
+  },
+  {
+    "codigo": "N73",
+    "nombre": "Otras enfermedades pélvicas inflamatorias femeninas"
+  },
+  {
+    "codigo": "N81",
+    "nombre": "Prolapso genital femenino"
+  },
+  {
+    "codigo": "N83",
+    "nombre": "Trastornos no inflamatorios del ovario"
+  },
+  {
+    "codigo": "N95",
+    "nombre": "Trastornos menopáusicos y perimenopáusicos"
+  },
+  {
+    "codigo": "O00",
+    "nombre": "Embarazo ectópico"
+  },
+  {
+    "codigo": "O03",
+    "nombre": "Aborto espontáneo"
+  },
+  {
+    "codigo": "O10",
+    "nombre": "Hipertensión preexistente que complica el embarazo"
+  },
+  {
+    "codigo": "O13",
+    "nombre": "Hipertensión gestacional"
+  },
+  {
+    "codigo": "O14",
+    "nombre": "Preeclampsia"
+  },
+  {
+    "codigo": "O15",
+    "nombre": "Eclampsia"
+  },
+  {
+    "codigo": "O24",
+    "nombre": "Diabetes mellitus en el embarazo"
+  },
+  {
+    "codigo": "P07",
+    "nombre": "Trastornos relacionados con duración corta de la gestación"
+  },
+  {
+    "codigo": "Q21",
+    "nombre": "Malformaciones congénitas de los tabiques cardíacos"
+  },
+  {
+    "codigo": "Q90",
+    "nombre": "Síndrome de Down"
+  },
+  {
+    "codigo": "R05",
+    "nombre": "Tos"
+  },
+  {
+    "codigo": "R06",
+    "nombre": "Anormalidades de la respiración"
+  },
+  {
+    "codigo": "R07",
+    "nombre": "Dolor de garganta y en el pecho"
+  },
+  {
+    "codigo": "R11",
+    "nombre": "Náusea y vómito"
+  },
+  {
+    "codigo": "R19",
+    "nombre": "Otros síntomas y signos que involucran el sistema digestivo"
+  },
+  {
+    "codigo": "R42",
+    "nombre": "Mareo y desvanecimiento"
+  },
+  {
+    "codigo": "R52",
+    "nombre": "Dolor no clasificado en otra parte"
+  },
+  {
+    "codigo": "R53",
+    "nombre": "Malestar y fatiga"
+  },
+  {
+    "codigo": "R55",
+    "nombre": "Síncope y colapso"
+  },
+  {
+    "codigo": "S06",
+    "nombre": "Traumatismo intracraneal"
+  },
+  {
+    "codigo": "S52",
+    "nombre": "Fractura del antebrazo"
+  },
+  {
+    "codigo": "S72",
+    "nombre": "Fractura del fémur"
+  },
+  {
+    "codigo": "S82",
+    "nombre": "Fractura de la pierna"
+  },
+  {
+    "codigo": "T14",
+    "nombre": "Traumatismo de región no especificada del cuerpo"
+  },
+  {
+    "codigo": "T78",
+    "nombre": "Efectos adversos no clasificados en otra parte"
+  },
+  {
+    "codigo": "Z00",
+    "nombre": "Examen general e investigación de personas sin quejas"
+  },
+  {
+    "codigo": "Z01",
+    "nombre": "Otros exámenes especiales e investigaciones"
+  },
+  {
+    "codigo": "Z11",
+    "nombre": "Examen de pesquisa especial para enfermedades infecciosas"
+  },
+  {
+    "codigo": "Z12",
+    "nombre": "Examen de pesquisa especial para tumores"
+  },
+  {
+    "codigo": "Z13",
+    "nombre": "Examen de pesquisa especial para otros trastornos"
+  },
+  {
+    "codigo": "Z23",
+    "nombre": "Necesidad de inmunización contra enfermedad bacteriana única"
+  },
+  {
+    "codigo": "Z30",
+    "nombre": "Atención para la anticoncepción"
+  },
+  {
+    "codigo": "Z34",
+    "nombre": "Supervisión de embarazo normal"
+  },
+  {
+    "codigo": "Z35",
+    "nombre": "Supervisión de embarazo de alto riesgo"
+  },
+  {
+    "codigo": "Z38",
+    "nombre": "Nacidos vivos según lugar de nacimiento"
+  },
+  {
+    "codigo": "Z48",
+    "nombre": "Otra atención de seguimiento quirúrgico"
+  },
+  {
+    "codigo": "Z50",
+    "nombre": "Atención por el uso de procedimientos de rehabilitación"
+  },
+  {
+    "codigo": "Z71",
+    "nombre": "Personas en contacto con los servicios de salud por consejo"
+  },
+  {
+    "codigo": "Z72",
+    "nombre": "Problemas relacionados con el estilo de vida"
+  },
+  {
+    "codigo": "Z80",
+    "nombre": "Historia familiar de tumor maligno"
+  },
+  {
+    "codigo": "Z82",
+    "nombre": "Historia familiar de enfermedades crónicas"
+  },
+  {
+    "codigo": "Z85",
+    "nombre": "Historia personal de tumor maligno"
+  },
+  {
+    "codigo": "Z86",
+    "nombre": "Historia personal de otras enfermedades"
+  },
+  {
+    "codigo": "Z87",
+    "nombre": "Historia personal de otras enfermedades y afecciones"
+  },
+  {
+    "codigo": "Z90",
+    "nombre": "Ausencia adquirida de órganos"
+  },
+  {
+    "codigo": "Z92",
+    "nombre": "Historia personal de tratamiento médico"
+  },
+  {
+    "codigo": "Z94",
+    "nombre": "Órgano o tejido transplantado"
+  },
+  {
+    "codigo": "Z95",
+    "nombre": "Presencia de implantes e injertos cardiovasculares"
+  },
+  {
+    "codigo": "Z96",
+    "nombre": "Presencia de otros implantes funcionales"
+  },
+  {
+    "codigo": "Z98",
+    "nombre": "Otros estados postquirúrgicos"
+  },
+  {
+    "codigo": "Z99",
+    "nombre": "Dependencia de máquinas y dispositivos capacitantes"
+  },
+  {
+    "codigo": "C43",
+    "nombre": "Melanoma maligno de la piel"
+  },
+  {
+    "codigo": "C44",
+    "nombre": "Otros tumores malignos de la piel"
+  },
+  {
+    "codigo": "C54",
+    "nombre": "Cáncer del cuerpo del útero"
+  },
+  {
+    "codigo": "C56",
+    "nombre": "Cáncer de ovario"
+  },
+  {
+    "codigo": "C64",
+    "nombre": "Cáncer de riñón"
+  },
+  {
+    "codigo": "C71",
+    "nombre": "Tumor maligno del encéfalo"
+  },
+  {
+    "codigo": "C73",
+    "nombre": "Cáncer de tiroides"
+  },
+  {
+    "codigo": "C78",
+    "nombre": "Tumor maligno secundario de los órganos respiratorios"
+  },
+  {
+    "codigo": "C79",
+    "nombre": "Tumor maligno secundario de otros sitios"
+  },
+  {
+    "codigo": "C80",
+    "nombre": "Tumor maligno de sitio no especificado"
+  },
+  {
+    "codigo": "D05",
+    "nombre": "Carcinoma in situ de mama"
+  },
+  {
+    "codigo": "D12",
+    "nombre": "Tumor benigno del colon"
+  },
+  {
+    "codigo": "D25",
+    "nombre": "Leiomioma del útero (mioma)"
+  },
+  {
+    "codigo": "D27",
+    "nombre": "Tumor benigno del ovario"
+  },
+  {
+    "codigo": "D32",
+    "nombre": "Tumor benigno de las meninges"
+  },
+  {
+    "codigo": "D33",
+    "nombre": "Tumor benigno del encéfalo"
+  },
+  {
+    "codigo": "D35",
+    "nombre": "Tumor benigno de otras glándulas endocrinas"
+  },
+  {
+    "codigo": "D48",
+    "nombre": "Tumor de comportamiento incierto"
+  },
+  {
+    "codigo": "D51",
+    "nombre": "Anemia por deficiencia de vitamina B12"
+  },
+  {
+    "codigo": "D52",
+    "nombre": "Anemia por deficiencia de folato"
+  },
+  {
+    "codigo": "D53",
+    "nombre": "Otras anemias nutricionales"
+  },
+  {
+    "codigo": "D56",
+    "nombre": "Talasemia"
+  },
+  {
+    "codigo": "D58",
+    "nombre": "Otras anemias hemolíticas hereditarias"
+  },
+  {
+    "codigo": "D59",
+    "nombre": "Anemia hemolítica adquirida"
+  },
+  {
+    "codigo": "D61",
+    "nombre": "Otras anemias aplásticas"
+  },
+  {
+    "codigo": "D68",
+    "nombre": "Otros defectos de la coagulación"
+  },
+  {
+    "codigo": "D69",
+    "nombre": "Púrpura y otras afecciones hemorrágicas"
+  },
+  {
+    "codigo": "D72",
+    "nombre": "Otros trastornos de los leucocitos"
+  },
+  {
+    "codigo": "D75",
+    "nombre": "Otras enfermedades de la sangre"
+  },
+  {
+    "codigo": "D86",
+    "nombre": "Sarcoidosis"
+  },
+  {
+    "codigo": "E00",
+    "nombre": "Síndrome de deficiencia congénita de yodo"
+  },
+  {
+    "codigo": "E01",
+    "nombre": "Trastornos tiroideos relacionados con deficiencia de yodo"
+  },
+  {
+    "codigo": "E06",
+    "nombre": "Tiroiditis"
+  },
+  {
+    "codigo": "E07",
+    "nombre": "Otros trastornos de la tiroides"
+  },
+  {
+    "codigo": "E16",
+    "nombre": "Otros trastornos de la secreción pancreática interna"
+  },
+  {
+    "codigo": "E20",
+    "nombre": "Hipoparatiroidismo"
+  },
+  {
+    "codigo": "E21",
+    "nombre": "Hiperparatiroidismo"
+  },
+  {
+    "codigo": "E22",
+    "nombre": "Hiperfunción de la glándula pituitaria"
+  },
+  {
+    "codigo": "E23",
+    "nombre": "Hipofunción de la glándula pituitaria"
+  },
+  {
+    "codigo": "E24",
+    "nombre": "Síndrome de Cushing"
+  },
+  {
+    "codigo": "E25",
+    "nombre": "Trastornos adrenogenitales"
+  },
+  {
+    "codigo": "E28",
+    "nombre": "Disfunción ovárica"
+  },
+  {
+    "codigo": "E29",
+    "nombre": "Disfunción testicular"
+  },
+  {
+    "codigo": "E34",
+    "nombre": "Otros trastornos endocrinos"
+  },
+  {
+    "codigo": "E55",
+    "nombre": "Deficiencia de vitamina D"
+  },
+  {
+    "codigo": "E61",
+    "nombre": "Deficiencia de otros elementos nutricionales"
+  },
+  {
+    "codigo": "E63",
+    "nombre": "Otras deficiencias nutricionales"
+  },
+  {
+    "codigo": "E83",
+    "nombre": "Trastornos del metabolismo de los minerales"
+  },
+  {
+    "codigo": "E84",
+    "nombre": "Fibrosis quística"
+  },
+  {
+    "codigo": "E85",
+    "nombre": "Amiloidosis"
+  },
+  {
+    "codigo": "E86",
+    "nombre": "Depleción del volumen"
+  },
+  {
+    "codigo": "E87",
+    "nombre": "Otros trastornos del equilibrio de líquidos y electrolitos"
+  },
+  {
+    "codigo": "E88",
+    "nombre": "Otros trastornos metabólicos"
+  },
+  {
+    "codigo": "F00",
+    "nombre": "Demencia en la enfermedad de Alzheimer"
+  },
+  {
+    "codigo": "F01",
+    "nombre": "Demencia vascular"
+  },
+  {
+    "codigo": "F02",
+    "nombre": "Demencia en otras enfermedades"
+  },
+  {
+    "codigo": "F03",
+    "nombre": "Demencia no especificada"
+  },
+  {
+    "codigo": "F04",
+    "nombre": "Síndrome amnésico orgánico"
+  },
+  {
+    "codigo": "F05",
+    "nombre": "Delirio"
+  },
+  {
+    "codigo": "F06",
+    "nombre": "Otros trastornos mentales debidos a lesión cerebral"
+  },
+  {
+    "codigo": "F07",
+    "nombre": "Trastornos de la personalidad y del comportamiento"
+  },
+  {
+    "codigo": "F11",
+    "nombre": "Trastornos mentales por uso de opioides"
+  },
+  {
+    "codigo": "F12",
+    "nombre": "Trastornos mentales por uso de cannabinoides"
+  },
+  {
+    "codigo": "F13",
+    "nombre": "Trastornos mentales por uso de sedantes"
+  },
+  {
+    "codigo": "F14",
+    "nombre": "Trastornos mentales por uso de cocaína"
+  },
+  {
+    "codigo": "F15",
+    "nombre": "Trastornos mentales por uso de otros estimulantes"
+  },
+  {
+    "codigo": "F17",
+    "nombre": "Trastornos mentales por uso de tabaco"
+  },
+  {
+    "codigo": "F19",
+    "nombre": "Trastornos mentales por uso de múltiples drogas"
+  },
+  {
+    "codigo": "F25",
+    "nombre": "Trastornos esquizoafectivos"
+  },
+  {
+    "codigo": "F29",
+    "nombre": "Psicosis no orgánica no especificada"
+  },
+  {
+    "codigo": "F34",
+    "nombre": "Trastornos del humor persistentes"
+  },
+  {
+    "codigo": "F40",
+    "nombre": "Trastornos fóbicos de ansiedad"
+  },
+  {
+    "codigo": "F42",
+    "nombre": "Trastorno obsesivo-compulsivo"
+  },
+  {
+    "codigo": "F43",
+    "nombre": "Reacción al estrés grave y trastornos de adaptación"
+  },
+  {
+    "codigo": "F44",
+    "nombre": "Trastornos disociativos"
+  },
+  {
+    "codigo": "F45",
+    "nombre": "Trastornos somatomorfos"
+  },
+  {
+    "codigo": "F48",
+    "nombre": "Otros trastornos neuróticos"
+  },
+  {
+    "codigo": "F50",
+    "nombre": "Trastornos de la conducta alimentaria"
+  },
+  {
+    "codigo": "F51",
+    "nombre": "Trastornos del sueño no orgánicos"
+  },
+  {
+    "codigo": "F52",
+    "nombre": "Disfunción sexual no orgánica"
+  },
+  {
+    "codigo": "F60",
+    "nombre": "Trastornos específicos de la personalidad"
+  },
+  {
+    "codigo": "F70",
+    "nombre": "Retraso mental leve"
+  },
+  {
+    "codigo": "F80",
+    "nombre": "Trastornos específicos del desarrollo del habla"
+  },
+  {
+    "codigo": "F84",
+    "nombre": "Trastornos generalizados del desarrollo"
+  },
+  {
+    "codigo": "F90",
+    "nombre": "Trastornos hipercinéticos (TDAH)"
+  },
+  {
+    "codigo": "F91",
+    "nombre": "Trastornos de la conducta"
+  },
+  {
+    "codigo": "F98",
+    "nombre": "Otros trastornos emocionales y del comportamiento"
+  },
+  {
+    "codigo": "G00",
+    "nombre": "Meningitis bacteriana"
+  },
+  {
+    "codigo": "G03",
+    "nombre": "Meningitis debida a otras causas"
+  },
+  {
+    "codigo": "G04",
+    "nombre": "Encefalitis, mielitis y encefalomielitis"
+  },
+  {
+    "codigo": "G06",
+    "nombre": "Absceso y granuloma intracraneales"
+  },
+  {
+    "codigo": "G10",
+    "nombre": "Enfermedad de Huntington"
+  },
+  {
+    "codigo": "G11",
+    "nombre": "Ataxia hereditaria"
+  },
+  {
+    "codigo": "G12",
+    "nombre": "Atrofia muscular espinal"
+  },
+  {
+    "codigo": "G23",
+    "nombre": "Otras enfermedades degenerativas de los ganglios basales"
+  },
+  {
+    "codigo": "G24",
+    "nombre": "Distonía"
+  },
+  {
+    "codigo": "G25",
+    "nombre": "Otros trastornos extrapiramidales y del movimiento"
+  },
+  {
+    "codigo": "G31",
+    "nombre": "Otras enfermedades degenerativas del sistema nervioso"
+  },
+  {
+    "codigo": "G36",
+    "nombre": "Otras desmielinizaciones diseminadas agudas"
+  },
+  {
+    "codigo": "G37",
+    "nombre": "Otras enfermedades desmielinizantes del sistema nervioso"
+  },
+  {
+    "codigo": "G45",
+    "nombre": "Accidentes isquémicos cerebrales transitorios"
+  },
+  {
+    "codigo": "G47",
+    "nombre": "Trastornos del sueño"
+  },
+  {
+    "codigo": "G50",
+    "nombre": "Trastornos del nervio trigémino"
+  },
+  {
+    "codigo": "G51",
+    "nombre": "Trastornos del nervio facial"
+  },
+  {
+    "codigo": "G54",
+    "nombre": "Trastornos de las raíces y de los plexos nerviosos"
+  },
+  {
+    "codigo": "G56",
+    "nombre": "Mononeuropatías del miembro superior"
+  },
+  {
+    "codigo": "G57",
+    "nombre": "Mononeuropatías del miembro inferior"
+  },
+  {
+    "codigo": "G58",
+    "nombre": "Otras mononeuropatías"
+  },
+  {
+    "codigo": "G60",
+    "nombre": "Neuropatía hereditaria e idiopática"
+  },
+  {
+    "codigo": "G61",
+    "nombre": "Polineuropatía inflamatoria"
+  },
+  {
+    "codigo": "G62",
+    "nombre": "Otras polineuropatías"
+  },
+  {
+    "codigo": "G70",
+    "nombre": "Miastenia gravis y otros trastornos neuromusculares"
+  },
+  {
+    "codigo": "G71",
+    "nombre": "Trastornos musculares primarios"
+  },
+  {
+    "codigo": "G72",
+    "nombre": "Otras miopatías"
+  },
+  {
+    "codigo": "G80",
+    "nombre": "Parálisis cerebral"
+  },
+  {
+    "codigo": "G81",
+    "nombre": "Hemiplejía"
+  },
+  {
+    "codigo": "G82",
+    "nombre": "Paraplejía y cuadriplejía"
+  },
+  {
+    "codigo": "G83",
+    "nombre": "Otros síndromes paralíticos"
+  },
+  {
+    "codigo": "G90",
+    "nombre": "Trastornos del sistema nervioso autónomo"
+  },
+  {
+    "codigo": "G91",
+    "nombre": "Hidrocéfalo"
+  },
+  {
+    "codigo": "G93",
+    "nombre": "Otros trastornos del encéfalo"
+  },
+  {
+    "codigo": "G95",
+    "nombre": "Otras enfermedades de la médula espinal"
+  }
+]

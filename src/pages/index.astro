@@ -1,8 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Home from '../components/home.tsx';
 import Mantenimiento from '../components/mantenimiento.tsx';
 ---
 
 <Layout>
-	<Mantenimiento client:load />
+
+	<!-- Dashboard de Administración con shadcn/ui -->
+	<Home client:load />
 </Layout>

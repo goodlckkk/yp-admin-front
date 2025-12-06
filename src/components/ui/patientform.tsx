@@ -52,10 +52,13 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
     "Hipertensión",
     "Diabetes",
     "Enfermedad pulmonar",
+    "EPOC (Enfermedad Pulmonar Obstructiva Crónica)",
     "Enfermedad coronaria (infarto agudo al miocardio)",
     "Insuficiencia cardíaca",
     "Enfermedad renal crónica",
-    "Asma"
+    "Asma",
+    "Obesidad",
+    "Fumador/a"
   ]
 
   // Manejar selección de patologías
@@ -68,17 +71,9 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
     })
   }
 
-  // Códigos de país más comunes
+  // Solo código de país de Chile
   const codigosPais = [
     { codigo: "+56", pais: "CL" },
-    { codigo: "+54", pais: "AR" },
-    { codigo: "+55", pais: "BR" },
-    { codigo: "+57", pais: "CO" },
-    { codigo: "+51", pais: "PE" },
-    { codigo: "+52", pais: "MX" },
-    { codigo: "+1", pais: "US" },
-    { codigo: "+34", pais: "ES" },
-    { codigo: "+44", pais: "UK" },
   ]
 
   const condicionesMedicas = [
@@ -267,12 +262,26 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
   }
 
 
+  // Función para validar formato de email
+  const isValidEmail = (email: string): boolean => {
+    // Regex para validar email: debe tener @ y un dominio válido
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
   const validateStep = (step: number) => {
     switch (step) {
       case 1:
         return !!(formData.nombres && formData.apellidos && formData.rut && formData.fechaNacimiento && formData.sexo)
       case 2:
-        return !!(formData.telefonoNumero && formData.email && formData.region && formData.comuna)
+        // Validar que tenga teléfono, email válido, región y comuna
+        return !!(
+          formData.telefonoNumero && 
+          formData.email && 
+          isValidEmail(formData.email) && 
+          formData.region && 
+          formData.comuna
+        )
       case 3:
         // Validar que tenga condición principal
         return !!formData.condicionPrincipal
@@ -388,6 +397,8 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
                 type="date"
                 value={formData.fechaNacimiento}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("fechaNacimiento", e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+                min={new Date(new Date().setFullYear(new Date().getFullYear() - 150)).toISOString().split('T')[0]}
               />
             </div>
             <SelectWithLabel
@@ -442,13 +453,22 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
                   Ejemplo: {formData.telefonoCodigoPais} 912345678
                 </p>
               </div>
-              <InputWithLabel
-                label="Email *"
-                type="email"
-                value={formData.email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("email", e.target.value)}
-                placeholder="maria@email.com"
-              />
+              <div className="space-y-2">
+                <InputWithLabel
+                  label="Email *"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("email", e.target.value)}
+                  placeholder="maria@email.com"
+                  className={formData.email && !isValidEmail(formData.email) ? "border-red-500" : ""}
+                />
+                {formData.email && !isValidEmail(formData.email) && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <Icons.AlertCircle className="w-3 h-3" />
+                    El email debe tener un formato válido (ejemplo: usuario@dominio.com)
+                  </p>
+                )}
+              </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               <SelectWithLabel

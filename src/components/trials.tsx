@@ -69,7 +69,7 @@ const trialsPage = () => {
   };
 
   return (
-    <div className="pt-32 pb-20 px-4 min-h-screen bg-gradient-to-b from-[#001B28] via-[#013C52] to-[#001021] text-white">
+    <div id="instituciones" className="pt-32 pb-20 px-4 min-h-screen bg-gradient-to-b from-[#001B28] via-[#013C52] to-[#001021] text-white">
       <div className="max-w-7xl mx-auto">
         {/* Hero Instituciones */}
         <div className="text-center mb-20">
@@ -191,14 +191,10 @@ const trialsPage = () => {
             <div className="bg-white/10 rounded-2xl p-8 border border-white/20 backdrop-blur-sm">
               <h3 className="text-xl font-semibold text-white mb-4">¿Necesitas ayuda?</h3>
               <p className="text-white/80 mb-6">Nuestro equipo está listo para responder tus consultas</p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
-                <div className="flex items-center gap-2 text-white/80">
-                  <Icons.Phone className="w-4 h-4 text-[#04BFAD]" />
-                  <span>+56 2 3456 7890</span>
-                </div>
+              <div className="flex justify-center text-sm">
                 <div className="flex items-center gap-2 text-white/80">
                   <Icons.Mail className="w-4 h-4 text-[#04BFAD]" />
-                  <span>instituciones@yoparticipo.cl</span>
+                  <span>contacto@yoparticipo.cl</span>
                 </div>
               </div>
             </div>

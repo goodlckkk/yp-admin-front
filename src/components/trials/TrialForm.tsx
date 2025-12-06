@@ -37,6 +37,10 @@ import { SponsorAutocomplete } from '../ui/sponsor-autocomplete';
 import { ResearchSiteAutocomplete } from '../ui/research-site-autocomplete';
 import { AddInstitutionModal } from './AddInstitutionModal';
 import { AddSponsorModal } from './AddSponsorModal';
+// Componentes CIE-10 para condiciones médicas estructuradas
+import { Cie10SingleAutocompleteComplete } from '../ui/Cie10SingleAutocompleteComplete';
+import { Cie10MultipleAutocomplete } from '../ui/Cie10MultipleAutocomplete';
+import { MedicamentoSimpleAutocomplete } from '../ui/MedicamentoSimpleAutocomplete';
 import type { Trial, CreateTrialPayload, Sponsor, PatientIntake } from '../../lib/api';
 import { createTrial, updateTrial, getSponsors, fetchWithAuth } from '../../lib/api';
 
@@ -63,6 +67,29 @@ interface InclusionCriteria {
   edad_minima?: number;
   edad_maxima?: number;
   genero?: string;
+  // Condición principal del ensayo (con código y nombre CIE-10)
+  condicionPrincipal?: {
+    codigo: string;
+    nombre: string;
+  };
+  // Condiciones requeridas estructuradas (código + nombre)
+  condicionesRequeridas?: Array<{
+    codigo: string;
+    nombre: string;
+  }>;
+  // Condiciones excluidas estructuradas (código + nombre)
+  condicionesExcluidas?: Array<{
+    codigo: string;
+    nombre: string;
+  }>;
+  // Alergias excluidas estructuradas (código + nombre)
+  alergiasExcluidas?: Array<{
+    codigo: string;
+    nombre: string;
+  }>;
+  // Medicamentos prohibidos estructurados (solo nombres)
+  medicamentosProhibidosEstructurados?: string[];
+  // Legacy fields (mantener por compatibilidad)
   condiciones_requeridas?: string[];
   condiciones_excluidas?: string[];
   medicamentos_prohibidos?: string[];
@@ -82,6 +109,12 @@ const INITIAL_FORM_DATA: FormData = {
     edad_minima: undefined,
     edad_maxima: undefined,
     genero: '',
+    condicionPrincipal: undefined,
+    condicionesRequeridas: [],
+    condicionesExcluidas: [],
+    alergiasExcluidas: [],
+    medicamentosProhibidosEstructurados: [],
+    // Legacy fields
     condiciones_requeridas: [],
     condiciones_excluidas: [],
     medicamentos_prohibidos: [],
@@ -758,130 +791,89 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Condiciones Médicas</CardTitle>
+                  <CardTitle className="text-lg">Condiciones Médicas (CIE-10)</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Condiciones Requeridas */}
+                  {/* Condición Principal del Ensayo */}
                   <div>
-                    <Label>Condiciones Requeridas</Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        value={newCondicionRequerida}
-                        onChange={(e) => setNewCondicionRequerida(e.target.value)}
-                        placeholder="Ej: Diabetes tipo 2"
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            addToArray('condiciones_requeridas', newCondicionRequerida);
-                          }
-                        }}
-                        disabled={loading}
-                      />
-                      <Button
-                        type="button"
-                        onClick={() => addToArray('condiciones_requeridas', newCondicionRequerida)}
-                        disabled={loading || !newCondicionRequerida.trim()}
-                      >
-                        Añadir
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.inclusion_criteria.condiciones_requeridas?.map((condicion, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                          {condicion}
-                          <button
-                            type="button"
-                            onClick={() => removeFromArray('condiciones_requeridas', index)}
-                            className="ml-1 hover:text-red-600"
-                            disabled={loading}
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
+                    <Cie10SingleAutocompleteComplete
+                      label="Condición Médica Principal del Ensayo *"
+                      value={formData.inclusion_criteria.condicionPrincipal?.nombre || ''}
+                      selectedCode={formData.inclusion_criteria.condicionPrincipal?.codigo || ''}
+                      onChange={(nombre: string, codigo: string) => {
+                        handleCriteriaChange('condicionPrincipal', { codigo, nombre });
+                      }}
+                      placeholder="Buscar enfermedad por nombre o código CIE-10..."
+                      required
+                      disabled={loading}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Esta es la condición médica principal que el ensayo está investigando
+                    </p>
                   </div>
 
-                  {/* Condiciones Excluidas */}
+                  {/* Condiciones Requeridas (Adicionales) */}
                   <div>
-                    <Label>Condiciones Excluidas</Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        value={newCondicionExcluida}
-                        onChange={(e) => setNewCondicionExcluida(e.target.value)}
-                        placeholder="Ej: Insuficiencia renal"
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            addToArray('condiciones_excluidas', newCondicionExcluida);
-                          }
-                        }}
-                        disabled={loading}
-                      />
-                      <Button
-                        type="button"
-                        onClick={() => addToArray('condiciones_excluidas', newCondicionExcluida)}
-                        disabled={loading || !newCondicionExcluida.trim()}
-                      >
-                        Añadir
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.inclusion_criteria.condiciones_excluidas?.map((condicion, index) => (
-                        <Badge key={index} variant="destructive" className="flex items-center gap-1">
-                          {condicion}
-                          <button
-                            type="button"
-                            onClick={() => removeFromArray('condiciones_excluidas', index)}
-                            className="ml-1 hover:text-white"
-                            disabled={loading}
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
+                    <Cie10MultipleAutocomplete
+                      label="Condiciones Requeridas Adicionales (CIE-10)"
+                      value={formData.inclusion_criteria.condicionesRequeridas || []}
+                      onChange={(condiciones) => {
+                        handleCriteriaChange('condicionesRequeridas', condiciones);
+                      }}
+                      placeholder="Buscar condiciones adicionales requeridas..."
+                      disabled={loading}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Otras condiciones médicas que el paciente debe tener para participar
+                    </p>
                   </div>
 
-                  {/* Medicamentos Prohibidos */}
+                  {/* Condiciones Excluidas (Enfermedades) */}
                   <div>
-                    <Label>Medicamentos Prohibidos</Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        value={newMedicamentoProhibido}
-                        onChange={(e) => setNewMedicamentoProhibido(e.target.value)}
-                        placeholder="Ej: Metformina"
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            addToArray('medicamentos_prohibidos', newMedicamentoProhibido);
-                          }
-                        }}
-                        disabled={loading}
-                      />
-                      <Button
-                        type="button"
-                        onClick={() => addToArray('medicamentos_prohibidos', newMedicamentoProhibido)}
-                        disabled={loading || !newMedicamentoProhibido.trim()}
-                      >
-                        Añadir
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.inclusion_criteria.medicamentos_prohibidos?.map((medicamento, index) => (
-                        <Badge key={index} variant="outline" className="flex items-center gap-1">
-                          {medicamento}
-                          <button
-                            type="button"
-                            onClick={() => removeFromArray('medicamentos_prohibidos', index)}
-                            className="ml-1 hover:text-red-600"
-                            disabled={loading}
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
+                    <Cie10MultipleAutocomplete
+                      label="Enfermedades Excluyentes (CIE-10)"
+                      value={formData.inclusion_criteria.condicionesExcluidas || []}
+                      onChange={(condiciones) => {
+                        handleCriteriaChange('condicionesExcluidas', condiciones);
+                      }}
+                      placeholder="Buscar enfermedades que excluyen al paciente..."
+                      disabled={loading}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Enfermedades que descalifican al paciente para participar en el ensayo
+                    </p>
+                  </div>
+
+                  {/* Alergias Excluidas */}
+                  <div>
+                    <Cie10MultipleAutocomplete
+                      label="Alergias Excluyentes (CIE-10)"
+                      value={formData.inclusion_criteria.alergiasExcluidas || []}
+                      onChange={(alergias) => {
+                        handleCriteriaChange('alergiasExcluidas', alergias);
+                      }}
+                      placeholder="Buscar alergias que excluyen al paciente..."
+                      disabled={loading}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Alergias que descalifican al paciente para participar en el ensayo
+                    </p>
+                  </div>
+
+                  {/* Medicamentos Prohibidos (Solo Nombres) */}
+                  <div>
+                    <MedicamentoSimpleAutocomplete
+                      label="Medicamentos Prohibidos"
+                      value={formData.inclusion_criteria.medicamentosProhibidosEstructurados || []}
+                      onChange={(medicamentos) => {
+                        handleCriteriaChange('medicamentosProhibidosEstructurados', medicamentos);
+                      }}
+                      placeholder="Buscar medicamento prohibido o escribir uno personalizado..."
+                      disabled={loading}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Medicamentos que el paciente NO debe estar tomando para participar en el ensayo
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -972,7 +964,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                                 <TableCell>{patient.condicionPrincipal || 'N/A'}</TableCell>
                                 <TableCell>
                                   <Badge
-                                    variant={patient.status === 'CONTACTED' ? 'default' : 'secondary'}
+                                    variant={patient.status === 'STUDY_ASSIGNED' ? 'default' : 'secondary'}
                                   >
                                     {patient.status || 'RECEIVED'}
                                   </Badge>

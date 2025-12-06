@@ -50,12 +50,12 @@ export function HeaderPage({ activeTab, setActiveTab, onPostularClick }: any) {
 
   return (
     <header 
-      className={`fixed top-4 left-4 right-4 z-50 backdrop-blur-lg rounded-2xl shadow-lg border transition-all duration-300 ${headerTheme}`}
+      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-lg shadow-lg border-b transition-all duration-300 ${headerTheme}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           <div className={logoContainerClasses}>
             <a href="/">
               <img src={logoSrc} alt="yoParticipo" className="h-16 w-auto scale-300 origin-left" />

@@ -78,9 +78,14 @@ export interface CreatePatientIntakePayload {
   alergias?: string;
   cirugiasPrevias?: string;
   descripcionCondicion?: string; // ← Mantener por compatibilidad
+  // Campos estructurados (nuevos)
+  medicamentosEstructurados?: string[]; // Solo nombres de medicamentos
+  alergiasEstructuradas?: Array<{ codigo: string; nombre: string }>; // CIE-10
+  otrasEnfermedadesEstructuradas?: Array<{ codigo: string; nombre: string }>; // CIE-10
   aceptaTerminos?: boolean;
   aceptaPrivacidad?: boolean;
   trialId?: string;
+  referralResearchSiteId?: string; // ID del sitio/institución que derivó al paciente
   source?: PatientIntakeSource; // Origen: WEB (formulario público) o MANUAL (dashboard)
 }
 
@@ -88,7 +93,7 @@ export interface PatientIntake extends CreatePatientIntakePayload {
   id: string;
   createdAt?: string;
   trial?: Trial | null;
-  status?: 'RECEIVED' | 'REVIEWING' | 'CONTACTED' | 'DISCARDED';
+  status?: 'RECEIVED' | 'VERIFIED' | 'STUDY_ASSIGNED' | 'AWAITING_STUDY' | 'PENDING_CONTACT' | 'DISCARDED';
 }
 
 // Función base para hacer requests HTTP
@@ -432,7 +437,7 @@ export async function getTrends(): Promise<TrendData[]> {
   return fetchWithAuth<TrendData[]>(`/stats/trends`);
 }
 
-// ==================== RESEARCH SITES (INSTITUCIONES) ====================
+// ==================== RESEARCH SITES (SITIOS DE INVESTIGACIÓN / INSTITUCIONES) ====================
 
 export interface ResearchSite {
   id: string;
@@ -470,12 +475,30 @@ export async function searchResearchSites(query: string) {
   return fetchWithAuth<ResearchSite[]>(`/research-sites/search?q=${encodeURIComponent(query)}`);
 }
 
+export async function getResearchSite(id: string) {
+  return fetchWithAuth<ResearchSite>(`/research-sites/${id}`);
+}
+
 export async function createResearchSite(payload: CreateResearchSitePayload) {
   return fetchWithAuth<ResearchSite>(`/research-sites`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });
 }
+
+export async function updateResearchSite(id: string, payload: Partial<CreateResearchSitePayload>) {
+  return fetchWithAuth<ResearchSite>(`/research-sites/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteResearchSite(id: string) {
+  return fetchWithAuth<{ message: string }>(`/research-sites/${id}`, {
+    method: 'DELETE',
+  });
+}
+
 
 // Sponsors ya están definidos arriba en el archivo
 

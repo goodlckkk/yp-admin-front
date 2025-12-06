@@ -7,42 +7,26 @@
  * - Callback onSuccess para actualizar la lista
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { createResearchSite, type CreateResearchSitePayload } from '../../lib/api';
+import { createResearchSite, updateResearchSite, getResearchSite, type CreateResearchSitePayload } from '../../lib/api';
+import { regionesChile, getComunasByRegion } from '../../lib/regiones-comunas';
 
-// Regiones de Chile
-const REGIONES_CHILE = [
-  "Arica y Parinacota",
-  "Tarapacá",
-  "Antofagasta",
-  "Atacama",
-  "Coquimbo",
-  "Valparaíso",
-  "Metropolitana de Santiago",
-  "O'Higgins",
-  "Maule",
-  "Ñuble",
-  "Biobío",
-  "La Araucanía",
-  "Los Ríos",
-  "Los Lagos",
-  "Aysén",
-  "Magallanes"
-];
+// Las regiones y comunas ahora se importan desde el archivo compartido
 
 interface AddInstitutionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (newSite: any) => void;
   initialName?: string;
+  siteId?: string | null; // ID del sitio a editar
 }
 
-export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = '' }: AddInstitutionModalProps) {
+export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = '', siteId = null }: AddInstitutionModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CreateResearchSitePayload>({
@@ -52,19 +36,61 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
     direccion: '',
   });
 
+  // Cargar datos del sitio si estamos editando
+  useEffect(() => {
+    if (isOpen && siteId) {
+      setLoading(true);
+      getResearchSite(siteId)
+        .then((site) => {
+          setFormData({
+            nombre: site.nombre,
+            region: site.region || '',
+            comuna: site.comuna || '',
+            direccion: site.direccion || '',
+            ciudad: site.ciudad || '',
+            telefono: site.telefono || '',
+            email: site.email || '',
+            sitio_web: site.sitio_web || '',
+            descripcion: site.descripcion || '',
+          });
+        })
+        .catch((err) => {
+          setError('Error al cargar los datos del sitio');
+          console.error(err);
+        })
+        .finally(() => setLoading(false));
+    } else if (isOpen && !siteId) {
+      // Reset form para nuevo sitio
+      setFormData({
+        nombre: initialName,
+        region: '',
+        comuna: '',
+        direccion: '',
+      });
+    }
+  }, [isOpen, siteId, initialName]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const newSite = await createResearchSite(formData);
+      let result;
+      if (siteId) {
+        // Actualizar sitio existente
+        result = await updateResearchSite(siteId, formData);
+      } else {
+        // Crear nuevo sitio
+        result = await createResearchSite(formData);
+      }
+      
       // Reset form
       setFormData({ nombre: '', region: '', comuna: '', direccion: '' });
-      onSuccess(newSite);
+      onSuccess(result);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Error al crear la institución');
+      setError(err.message || `Error al ${siteId ? 'actualizar' : 'crear'} la institución`);
     } finally {
       setLoading(false);
     }
@@ -74,7 +100,9 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-[#04BFAD]">Agregar Nueva Institución</DialogTitle>
+          <DialogTitle className="text-2xl text-[#04BFAD]">
+            {siteId ? 'Editar Institución' : 'Agregar Nueva Institución'}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -96,16 +124,18 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
               <Label htmlFor="region">Región *</Label>
               <Select
                 value={formData.region}
-                onValueChange={(value) => setFormData({ ...formData, region: value })}
+                onValueChange={(value) => {
+                  setFormData({ ...formData, region: value, comuna: '' }); // Limpiar comuna al cambiar región
+                }}
                 disabled={loading}
               >
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Seleccionar región" />
                 </SelectTrigger>
                 <SelectContent>
-                  {REGIONES_CHILE.map((region) => (
-                    <SelectItem key={region} value={region}>
-                      {region}
+                  {regionesChile.map((region) => (
+                    <SelectItem key={region.value} value={region.value}>
+                      {region.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -114,15 +144,22 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
 
             <div>
               <Label htmlFor="comuna">Comuna *</Label>
-              <Input
-                id="comuna"
+              <Select
                 value={formData.comuna}
-                onChange={(e) => setFormData({ ...formData, comuna: e.target.value })}
-                placeholder="Ej: Santiago"
-                required
-                disabled={loading}
-                className="mt-1"
-              />
+                onValueChange={(value) => setFormData({ ...formData, comuna: value })}
+                disabled={loading || !formData.region}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder={formData.region ? "Seleccionar comuna" : "Primero selecciona región"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {formData.region && getComunasByRegion(formData.region).map((comuna) => (
+                    <SelectItem key={comuna.value} value={comuna.value}>
+                      {comuna.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -158,7 +195,7 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
               disabled={loading}
               className="bg-[#04BFAD] hover:bg-[#024959] text-white"
             >
-              {loading ? 'Guardando...' : 'Guardar Institución'}
+              {loading ? 'Guardando...' : (siteId ? 'Actualizar Institución' : 'Guardar Institución')}
             </Button>
           </div>
         </form>

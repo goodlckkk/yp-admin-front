@@ -6,7 +6,8 @@
 import { useState, useEffect, useRef } from "react"
 import { Input } from "./input"
 import { Icons } from "./icons"
-import cie10Data from "../../data/cie10-es.json"
+// Usar lista curada de enfermedades comunes en Chile (300 enfermedades)
+import cie10Data from "../../data/cie10-chile-comunes.json"
 
 interface Cie10Code {
   codigo: string
