@@ -637,7 +637,10 @@ export default function DashboardPage() {
                         {item.items.map((subItem) => (
                           <button
                             key={subItem.id}
-                            onClick={() => setActiveSection(subItem.id)}
+                            onClick={() => {
+                              setActiveSection(subItem.id);
+                              setShowMobileMenu(false);
+                            }}
                             className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                               activeSection === subItem.id
                                 ? "text-white shadow-lg"
@@ -659,7 +662,10 @@ export default function DashboardPage() {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveSection(item.id)}
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setShowMobileMenu(false);
+                  }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                     activeSection === item.id
                       ? "text-white shadow-lg"
@@ -951,7 +957,8 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              <Card className="border-0 shadow-md">
+              {/* Vista de tabla para desktop */}
+              <Card className="border-0 shadow-md hidden md:block">
                 <CardContent className="p-0">
                   <div className="overflow-x-auto">
                     <table className="w-full">
@@ -1055,6 +1062,98 @@ export default function DashboardPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Vista de tarjetas para mobile */}
+              <div className="md:hidden space-y-4">
+                {patientsToDisplay.slice((filters.page - 1) * filters.limit, filters.page * filters.limit).map((paciente) => (
+                  <Card key={paciente.id} className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        <Avatar className="w-12 h-12">
+                          <AvatarFallback>
+                            {`${paciente.nombres} ${paciente.apellidos}`
+                              .split(" ")
+                              .filter(Boolean)
+                              .slice(0, 2)
+                              .map((n) => n[0]?.toUpperCase())
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">
+                            {paciente.nombres} {paciente.apellidos}
+                          </h3>
+                          <p className="text-sm text-gray-600">{paciente.rut}</p>
+                          {paciente.source && (
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs w-fit mt-1 ${
+                                paciente.source === 'MANUAL_ENTRY' 
+                                  ? 'bg-purple-50 text-purple-700 border-purple-200' 
+                                  : 'bg-blue-50 text-blue-700 border-blue-200'
+                              }`}
+                            >
+                              {paciente.source === 'MANUAL_ENTRY' ? '👤 Manual' : '🌐 Web'}
+                            </Badge>
+                          )}
+                        </div>
+                        <Badge
+                          className={
+                            paciente.status === "RECEIVED"
+                              ? "bg-blue-100 text-blue-700"
+                              : paciente.status === "VERIFIED"
+                                ? "bg-green-100 text-green-700"
+                                : paciente.status === "STUDY_ASSIGNED"
+                                  ? "bg-purple-100 text-purple-700"
+                                  : paciente.status === "AWAITING_STUDY"
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : paciente.status === "PENDING_CONTACT"
+                                      ? "bg-orange-100 text-orange-700"
+                                      : paciente.status === "DISCARDED"
+                                        ? "bg-rose-100 text-rose-700"
+                                        : "bg-blue-100 text-blue-700"
+                          }
+                        >
+                          {paciente.status === 'RECEIVED' ? '📥' :
+                           paciente.status === 'VERIFIED' ? '✅' :
+                           paciente.status === 'STUDY_ASSIGNED' ? '🔬' :
+                           paciente.status === 'AWAITING_STUDY' ? '⏳' :
+                           paciente.status === 'PENDING_CONTACT' ? '📞' :
+                           paciente.status === 'DISCARDED' ? '🗑️' :
+                           '📥'}
+                        </Badge>
+                      </div>
+                      
+                      <div className="space-y-2 text-sm mb-3">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Edad:</span>
+                          <span className="font-medium">{calculateAge(paciente.fechaNacimiento)} años</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Condición:</span>
+                          <Badge variant="outline" className="text-xs">{paciente.condicionPrincipal}</Badge>
+                        </div>
+                        <div className="flex justify-between items-start">
+                          <span className="text-gray-600">Estudio:</span>
+                          <span className="font-medium text-right text-xs max-w-[60%]">{paciente.trial?.title ?? "Sin asignar"}</span>
+                        </div>
+                      </div>
+
+                      <Button 
+                        size="sm"
+                        style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)' }}
+                        className="w-full text-white hover:opacity-90 transition-opacity"
+                        onClick={() => {
+                          setSelectedPatient(paciente);
+                          setIsPatientDetailsOpen(true);
+                        }}
+                      >
+                        Ver Detalles
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
 
               {/* Paginación */}
               {patientsToDisplay.length > filters.limit && (

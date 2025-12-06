@@ -43,7 +43,7 @@ export function HeaderPage({ activeTab, setActiveTab, onPostularClick }: any) {
     const inactiveClasses = isInstituciones 
       ? "text-white/70 hover:text-white hover:scale-110" 
       : "text-gray-600 hover:text-[#024959] hover:scale-110"
-    return `px-6 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${isActive ? activeClasses : inactiveClasses}`
+    return `px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${isActive ? activeClasses : inactiveClasses}`
   }
 
   const logoSrc = isInstituciones ? logoInstitutions : logoPatients
@@ -54,29 +54,42 @@ export function HeaderPage({ activeTab, setActiveTab, onPostularClick }: any) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6">
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          {/* Logo */}
           <div className={logoContainerClasses}>
             <a href="/">
-              <img src={logoSrc} alt="yoParticipo" className="h-16 w-auto scale-300 origin-left" />
+              <img 
+                src={logoSrc} 
+                alt="yoParticipo" 
+                className="h-10 sm:h-12 md:h-16 w-auto scale-150 sm:scale-200 md:scale-300 origin-left" 
+              />
             </a>
           </div>
 
-          <nav className={`absolute left-1/2 -translate-x-1/2 flex rounded-full p-1 ${navTheme}`}>
+          {/* Navigation Tabs - Centrado en desktop, debajo del logo en mobile */}
+          <nav className={`absolute left-1/2 -translate-x-1/2 flex rounded-full p-0.5 sm:p-1 ${navTheme}`}>
             {["pacientes", "instituciones"].map((tab) => (
-              <button key={tab} onClick={() => setActiveTab(tab)} className={navButton(tab)}>
+              <button 
+                key={tab} 
+                onClick={() => setActiveTab(tab)} 
+                className={navButton(tab)}
+                style={{ fontSize: 'clamp(0.7rem, 2vw, 0.875rem)' }}
+              >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
           </nav>
 
+          {/* Botón Participa - Responsive */}
           {activeTab === "pacientes" && onPostularClick && (
             <Button
               onClick={onPostularClick}
-              className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-2"
+              className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
             >
-              <img src="/logo-blanco.svg" alt="yoParticipo" className="h-5 w-auto" />
-              Participa Aquí
+              <img src="/logo-blanco.svg" alt="yoParticipo" className="h-4 sm:h-5 w-auto" />
+              <span className="hidden xs:inline">Participa Aquí</span>
+              <span className="xs:hidden">Participa</span>
             </Button>
           )}
         </div>
