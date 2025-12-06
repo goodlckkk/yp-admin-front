@@ -707,35 +707,40 @@ export default function DashboardPage() {
       <div className="lg:ml-64">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
-          <div className="px-4 py-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="lg:hidden">
-                  <Icons.Menu className="w-6 h-6" />
+          <div className="px-3 py-3 sm:px-4 sm:py-4 lg:px-8">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                <button 
+                  onClick={() => setShowMobileMenu(!showMobileMenu)} 
+                  className="lg:hidden p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <Icons.Menu className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">
                     {getActiveSectionLabel(activeSection)}
                   </h2>
-                  <p className="text-sm text-gray-500">Gestiona toda la información de la plataforma</p>
+                  <p className="text-xs sm:text-sm text-gray-500 hidden sm:block truncate">Gestiona toda la información de la plataforma</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <Button 
                   variant="ghost" 
-                  className="relative hover:bg-[#A7F2EB]/20"
+                  size="sm"
+                  className="relative hover:bg-[#A7F2EB]/20 p-2"
                   title="Notificaciones"
                 >
-                  <Icons.Bell className="w-5 h-5 text-[#024959]" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-[#04BFAD] rounded-full"></span>
+                  <Icons.Bell className="w-4 h-4 sm:w-5 sm:h-5 text-[#024959]" />
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#04BFAD] rounded-full"></span>
                 </Button>
                 <Button 
                   variant="outline" 
+                  size="sm"
                   onClick={() => (window.location.href = "/")}
-                  className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20"
+                  className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20 px-2 sm:px-3"
                 >
-                  <Icons.Globe className="w-5 h-5 mr-2" />
-                  Ver Sitio
+                  <Icons.Globe className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
+                  <span className="hidden sm:inline">Ver Sitio</span>
                 </Button>
               </div>
             </div>
