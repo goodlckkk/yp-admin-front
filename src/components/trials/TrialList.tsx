@@ -341,46 +341,57 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
 
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          {/* Header Principal */}
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <CardTitle>Lista de Estudios Clínicos</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-lg sm:text-xl">Lista de Estudios Clínicos</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
                 {totalItems} {totalItems === 1 ? 'estudio clínico encontrado' : 'estudios clínicos encontrados'}
               </CardDescription>
             </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={handleCreateNew}
-                className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Nuevo Estudio Clínico
-              </Button>
+            <Button 
+              onClick={handleCreateNew}
+              size="sm"
+              className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
+            >
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Nuevo Estudio</span>
+            </Button>
+          </div>
+
+          {/* Botones de Acción */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex gap-2 flex-1">
               <Button 
                 onClick={() => setIsInstitutionModalOpen(true)}
                 variant="outline"
-                className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20"
+                size="sm"
+                className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
               >
-                <Plus className="mr-2 h-4 w-4" />
-                Agregar Institución
+                <Plus className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Agregar Institución</span>
+                <span className="sm:hidden">Institución</span>
               </Button>
               <Button 
                 onClick={() => setIsSponsorModalOpen(true)}
                 variant="outline"
-                className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20"
+                size="sm"
+                className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
               >
-                <Plus className="mr-2 h-4 w-4" />
-                Agregar Sponsor
+                <Plus className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Agregar Sponsor</span>
+                <span className="sm:hidden">Sponsor</span>
               </Button>
               <Button 
-                variant="ghost" 
-                size="icon" 
+                variant="outline" 
+                size="sm"
                 onClick={() => fetchTrials(false)} 
                 disabled={loading}
                 className="text-[#04BFAD] hover:text-[#024959] hover:bg-[#A7F2EB]/20"
                 title="Actualizar lista"
               >
-                <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 sm:mr-2 ${loading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Actualizar</span>
               </Button>
             </div>
           </div>

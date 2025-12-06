@@ -816,16 +816,29 @@ export default function DashboardPage() {
           {activeSection === "pacientes" && (
             <div className="space-y-6">
               <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Lista de Pacientes</h3>
-                    <p className="text-sm text-gray-500">
-                      {patientsToDisplay.length} de {patientIntakes.length} {patientIntakes.length === 1 ? 'paciente' : 'pacientes'}
-                      {patientsToDisplay.length !== patientIntakes.length && ' (filtrados)'}
-                    </p>
+                {/* Header de la sección */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Lista de Pacientes</h3>
+                      <p className="text-xs sm:text-sm text-gray-500">
+                        {patientsToDisplay.length} de {patientIntakes.length} {patientIntakes.length === 1 ? 'paciente' : 'pacientes'}
+                        {patientsToDisplay.length !== patientIntakes.length && ' (filtrados)'}
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => setIsManualPatientFormOpen(true)}
+                      size="sm"
+                      className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
+                    >
+                      <Icons.Plus className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Agregar Paciente</span>
+                    </Button>
                   </div>
-                  <div className="flex gap-2 w-full sm:w-auto">
-                    <div className="relative flex-1 sm:w-64">
+
+                  {/* Barra de búsqueda y acciones */}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="relative flex-1">
                       <Icons.Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <Input
                         placeholder="Buscar pacientes..."
@@ -834,42 +847,42 @@ export default function DashboardPage() {
                         onChange={(e) => setFilters({...filters, searchQuery: e.target.value})}
                       />
                     </div>
-                    <Button
-                      onClick={() => setIsManualPatientFormOpen(true)}
-                      className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
-                    >
-                      <Icons.Plus className="w-4 h-4 mr-2" />
-                      Agregar Paciente
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={refreshPatients}
-                      className="text-[#04BFAD] hover:text-[#024959] hover:bg-[#A7F2EB]/20"
-                      title="Actualizar lista de pacientes"
-                      disabled={loading}
-                    >
-                      <Icons.RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
-                    </Button>
-                    <Button 
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setFilters({...filters, showFilters: !filters.showFilters});
-                      }}
-                      className="text-[#04BFAD] hover:text-[#024959] hover:bg-[#A7F2EB]/20"
-                    >
-                      {filters.showFilters ? 'Ocultar Filtros ▲' : 'Mostrar Filtros ▼'}
-                    </Button>
-                    <Button 
-                      onClick={exportPatientsToExcel}
-                      className="text-white" 
-                      style={{ background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' }}
-                      disabled={patientsToDisplay.length === 0}
-                      title={patientsToDisplay.length === 0 ? 'No hay pacientes para exportar' : `Exportar ${patientsToDisplay.length} paciente(s) a Excel`}
-                    >
-                      <Icons.Download className="w-4 h-4 mr-2" />
-                      <span className="hidden sm:inline">Exportar</span>
-                    </Button>
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={refreshPatients}
+                        className="text-[#04BFAD] hover:text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
+                        title="Actualizar lista de pacientes"
+                        disabled={loading}
+                      >
+                        <Icons.RefreshCw className={`h-4 w-4 sm:mr-2 ${loading ? 'animate-spin' : ''}`} />
+                        <span className="hidden sm:inline">Actualizar</span>
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setFilters({...filters, showFilters: !filters.showFilters});
+                        }}
+                        className="text-[#04BFAD] hover:text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
+                      >
+                        <Icons.ChevronDown className={`h-4 w-4 sm:mr-2 transition-transform ${filters.showFilters ? 'rotate-180' : ''}`} />
+                        <span className="hidden sm:inline">{filters.showFilters ? 'Ocultar' : 'Filtros'}</span>
+                      </Button>
+                      <Button 
+                        onClick={exportPatientsToExcel}
+                        size="sm"
+                        className="text-white flex-1 sm:flex-none" 
+                        style={{ background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' }}
+                        disabled={patientsToDisplay.length === 0}
+                        title={patientsToDisplay.length === 0 ? 'No hay pacientes para exportar' : `Exportar ${patientsToDisplay.length} paciente(s) a Excel`}
+                      >
+                        <Icons.Download className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Exportar</span>
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
