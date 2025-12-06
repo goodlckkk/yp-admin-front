@@ -4,9 +4,11 @@ import logoInstitutions from "../assets/logo-2.svg?url";
 
 interface FooterPageProps {
   activeTab: string;
+  onContactClick?: () => void;
+  onFaqClick?: () => void;
 }
 
-export function FooterPage({ activeTab }: FooterPageProps){
+export function FooterPage({ activeTab, onContactClick, onFaqClick }: FooterPageProps){
 
   const isInstituciones = activeTab === "instituciones";
   const logoSrc = isInstituciones ? logoInstitutions : logoPatients;
@@ -34,12 +36,8 @@ export function FooterPage({ activeTab }: FooterPageProps){
                     </p>
                     <div className={`flex flex-col gap-2 ${textSecondary}`}>
                         <div className="flex items-center gap-2">
-                            <Icons.Phone className="w-4 h-4" />
-                            <span className="text-sm">+56 2 3456 7890</span>
-                        </div>
-                        <div className="flex items-center gap-2">
                             <Icons.Mail className="w-4 h-4" />
-                            <span className="text-sm">contacto@participo.cl</span>
+                            <span className="text-sm">contacto@yoparticipo.cl</span>
                         </div>
                     </div>
                     </div>
@@ -48,12 +46,12 @@ export function FooterPage({ activeTab }: FooterPageProps){
                         <h4 className={`font-semibold ${textPrimary} mb-4`}>Plataforma</h4>
                         <ul className={`space-y-2 ${textSecondary}`}>
                             <li>
-                                <a href="#" className={`${hoverColor} transition-colors`}>
+                                <a href="/" className={`${hoverColor} transition-colors`}>
                                 Para Pacientes
                                 </a>
                             </li>
                             <li>
-                                <a href="#" className={`${hoverColor} transition-colors`}>
+                                <a href="/#instituciones" className={`${hoverColor} transition-colors`}>
                                 Para Instituciones
                                 </a>
                             </li>
@@ -64,19 +62,20 @@ export function FooterPage({ activeTab }: FooterPageProps){
                         <h4 className={`font-semibold ${textPrimary} mb-4`}>Soporte</h4>
                         <ul className={`space-y-2 ${textSecondary}`}>
                             <li>
-                                <a href="/faq" className={`${hoverColor} transition-colors`}>
+                                <button
+                                    onClick={onFaqClick}
+                                    className={`${hoverColor} transition-colors text-left`}
+                                >
                                     Preguntas Frecuentes
-                                </a>
+                                </button>
                             </li>
                             <li>
-                                <a href="#" className={`${hoverColor} transition-colors`}>
-                                    Ayuda
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className={`${hoverColor} transition-colors`}>
+                                <button 
+                                    onClick={onContactClick}
+                                    className={`${hoverColor} transition-colors text-left`}
+                                >
                                     Contacto
-                                </a>
+                                </button>
                             </li>
                         </ul>
                     </div>

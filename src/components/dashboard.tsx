@@ -27,6 +27,7 @@ import { TrialForm } from './trials/TrialForm';
 import { PatientEditForm } from './patients/PatientEditForm';
 import { ManualPatientForm } from './patients/ManualPatientForm';
 import { TrialList } from "./trials/TrialList"
+import { ResearchSitesView } from "./research-sites/ResearchSitesView"
 import HeroSlidesManager from './dashboard/HeroSlidesManager';
 import SuccessStoriesManager from './dashboard/SuccessStoriesManager';
 import { Cie10SingleAutocomplete } from './ui/Cie10SingleAutocomplete';
@@ -38,7 +39,21 @@ const navigate = (path: string) => {
 };
 
 // Tipos de sección
-type Section = "overview" | "pacientes" | "estudios" | "slider" | "historias"
+type Section = "overview" | "pacientes" | "estudios" | "sitios" | "slider" | "historias"
+
+// Tipos de grupos del menú
+type MenuGroup = {
+  id: string;
+  label: string;
+  icon: any;
+  items: MenuItem[];
+}
+
+type MenuItem = {
+  id: Section;
+  label: string;
+  icon: any;
+}
 
 // Tipos de filtros para estudios clínicos
 type TrialFilters = {
@@ -208,9 +223,10 @@ export default function DashboardPage() {
       // Filtro por estado
       const matchesStatus = !trialFilters.status || trial.status === trialFilters.status;
       
-      // Filtro por ciudad
+      // Filtro por ciudad/comuna (usando researchSite)
       const matchesCity = !trialFilters.city || 
-        (trial.clinic_city?.toLowerCase().includes(trialFilters.city.toLowerCase()) ?? false);
+        (trial.researchSite?.ciudad?.toLowerCase().includes(trialFilters.city.toLowerCase()) ?? false) ||
+        (trial.researchSite?.comuna?.toLowerCase().includes(trialFilters.city.toLowerCase()) ?? false);
       
       // Filtro por rango de fechas
       const startDate = trialFilters.startDate ? new Date(trialFilters.startDate) : null;
@@ -480,20 +496,20 @@ export default function DashboardPage() {
         bg: "bg-[#dfe3e3]",
       },
       {
-        label: "Postulaciones Contactadas",
-        value: patientIntakes.filter((intake) => intake.status === "CONTACTED").length.toString(),
-        change: `+${patientIntakes.filter((intake) => intake.status === "CONTACTED").length}`,
-        icon: Icons.Phone,
+        label: "Pacientes Verificados",
+        value: patientIntakes.filter((intake) => intake.status === "VERIFIED").length.toString(),
+        change: `+${patientIntakes.filter((intake) => intake.status === "VERIFIED").length}`,
+        icon: Icons.CheckCircle,
         color: "text-emerald-600",
         bg: "bg-emerald-100",
       },
       {
-        label: "Postulaciones en Revisión",
-        value: patientIntakes.filter((intake) => intake.status === "REVIEWING").length.toString(),
-        change: `+${patientIntakes.filter((intake) => intake.status === "REVIEWING").length}`,
-        icon: Icons.Activity,
-        color: "text-amber-600",
-        bg: "bg-amber-100",
+        label: "Con Estudio Asignado",
+        value: patientIntakes.filter((intake) => intake.status === "STUDY_ASSIGNED").length.toString(),
+        change: `+${patientIntakes.filter((intake) => intake.status === "STUDY_ASSIGNED").length}`,
+        icon: Icons.Microscope,
+        color: "text-purple-600",
+        bg: "bg-purple-100",
       },
       {
         label: "Estudios Clínicos Activos",
@@ -519,13 +535,53 @@ export default function DashboardPage() {
   }
 
 
-  const menuItems = [
+  // Estado para controlar qué grupos están expandidos
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(['ensayos', 'web']);
+
+  const toggleGroup = (groupId: string) => {
+    setExpandedGroups(prev => 
+      prev.includes(groupId) 
+        ? prev.filter(id => id !== groupId)
+        : [...prev, groupId]
+    );
+  };
+
+  // Estructura del menú con grupos
+  const menuGroups: (MenuItem | MenuGroup)[] = [
     { id: "overview" as Section, label: "Vista General", icon: Icons.Activity },
     { id: "pacientes" as Section, label: "Pacientes", icon: Icons.Users },
-    { id: "estudios" as Section, label: "Estudios Clínicos", icon: Icons.Microscope },
-    { id: "slider" as Section, label: "Slider Principal", icon: Icons.Image },
-    { id: "historias" as Section, label: "Historias que Inspiran", icon: Icons.Heart },
+    {
+      id: 'ensayos',
+      label: 'Gestión de Ensayos',
+      icon: Icons.Microscope,
+      items: [
+        { id: "estudios" as Section, label: "Estudios Clínicos", icon: Icons.FileText },
+        { id: "sitios" as Section, label: "Sitios/Instituciones", icon: Icons.Building },
+      ]
+    },
+    {
+      id: 'web',
+      label: 'Gestión Web',
+      icon: Icons.Globe,
+      items: [
+        { id: "slider" as Section, label: "Slider Principal", icon: Icons.Image },
+        { id: "historias" as Section, label: "Historias que Inspiran", icon: Icons.Heart },
+      ]
+    },
   ]
+
+  // Función helper para obtener el label de la sección activa
+  const getActiveSectionLabel = (section: Section): string => {
+    for (const item of menuGroups) {
+      if ('items' in item) {
+        const found = item.items.find(subItem => subItem.id === section);
+        if (found) return found.label;
+      } else if (item.id === section) {
+        return item.label;
+      }
+    }
+    return 'Dashboard';
+  }
 
   if (!isAuthorized) {
     return (
@@ -557,21 +613,65 @@ export default function DashboardPage() {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveSection(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                  activeSection === item.id
-                    ? "text-white shadow-lg"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-                style={activeSection === item.id ? { background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' } : {}}
-              >
-                <item.icon className="w-5 h-5" />
-                {item.label}
-              </button>
-            ))}
+            {menuGroups.map((item) => {
+              // Si es un grupo con items
+              if ('items' in item) {
+                const isExpanded = expandedGroups.includes(item.id);
+                return (
+                  <div key={item.id} className="space-y-1">
+                    {/* Botón del grupo */}
+                    <button
+                      onClick={() => toggleGroup(item.id)}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-gray-700 hover:bg-gray-100"
+                    >
+                      <item.icon className="w-5 h-5" />
+                      <span className="flex-1 text-left">{item.label}</span>
+                      <Icons.ChevronDown className={`w-4 h-4 transition-transform ${
+                        isExpanded ? 'rotate-180' : ''
+                      }`} />
+                    </button>
+                    
+                    {/* Items del grupo */}
+                    {isExpanded && (
+                      <div className="ml-4 space-y-1 border-l-2 border-gray-200 pl-2">
+                        {item.items.map((subItem) => (
+                          <button
+                            key={subItem.id}
+                            onClick={() => setActiveSection(subItem.id)}
+                            className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                              activeSection === subItem.id
+                                ? "text-white shadow-lg"
+                                : "text-gray-600 hover:bg-gray-100"
+                            }`}
+                            style={activeSection === subItem.id ? { background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' } : {}}
+                          >
+                            <subItem.icon className="w-4 h-4" />
+                            {subItem.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              
+              // Si es un item simple
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    activeSection === item.id
+                      ? "text-white shadow-lg"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                  style={activeSection === item.id ? { background: 'linear-gradient(to right, #04bcbc, #7cdcdc)' } : {}}
+                >
+                  <item.icon className="w-5 h-5" />
+                  {item.label}
+                </button>
+              );
+            })}
           </nav>
 
           {/* User Profile */}
@@ -609,7 +709,7 @@ export default function DashboardPage() {
                 </button>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">
-                    {menuItems.find((item) => item.id === activeSection)?.label}
+                    {getActiveSectionLabel(activeSection)}
                   </h2>
                   <p className="text-sm text-gray-500">Gestiona toda la información de la plataforma</p>
                 </div>
@@ -807,10 +907,12 @@ export default function DashboardPage() {
                           onChange={(e) => setFilters({...filters, status: e.target.value})}
                         >
                           <option value="">Todos los estados</option>
-                          <option value="RECEIVED">Recibido</option>
-                          <option value="REVIEWING">En revisión</option>
-                          <option value="CONTACTED">Contactado</option>
-                          <option value="DISCARDED">Descartado</option>
+                          <option value="RECEIVED">📥 Recibido</option>
+                          <option value="VERIFIED">✅ Verificado</option>
+                          <option value="STUDY_ASSIGNED">🔬 Estudio Asignado</option>
+                          <option value="AWAITING_STUDY">⏳ En Espera de Estudio</option>
+                          <option value="PENDING_CONTACT">📞 Pendiente de Contacto</option>
+                          <option value="DISCARDED">🗑️ Descartado</option>
                         </select>
                       </div>
                       <div>
@@ -909,20 +1011,28 @@ export default function DashboardPage() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <Badge
                                 className={
-                                  paciente.status === "CONTACTED"
-                                    ? "bg-green-100 text-green-700"
-                                    : paciente.status === "REVIEWING"
-                                      ? "bg-yellow-100 text-yellow-700"
-                                      : paciente.status === "DISCARDED"
-                                        ? "bg-rose-100 text-rose-700"
-                                        : "bg-[#dfe3e3] text-[#044c64]"
+                                  paciente.status === "RECEIVED"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : paciente.status === "VERIFIED"
+                                      ? "bg-green-100 text-green-700"
+                                      : paciente.status === "STUDY_ASSIGNED"
+                                        ? "bg-purple-100 text-purple-700"
+                                        : paciente.status === "AWAITING_STUDY"
+                                          ? "bg-yellow-100 text-yellow-700"
+                                          : paciente.status === "PENDING_CONTACT"
+                                            ? "bg-orange-100 text-orange-700"
+                                            : paciente.status === "DISCARDED"
+                                              ? "bg-rose-100 text-rose-700"
+                                              : "bg-blue-100 text-blue-700"
                                 }
                               >
-                                {paciente.status === 'RECEIVED' ? 'Recibido' :
-                                 paciente.status === 'REVIEWING' ? 'En Revisión' :
-                                 paciente.status === 'CONTACTED' ? 'Contactado' :
-                                 paciente.status === 'DISCARDED' ? 'Descartado' :
-                                 'Recibido'}
+                                {paciente.status === 'RECEIVED' ? '📥 Recibido' :
+                                 paciente.status === 'VERIFIED' ? '✅ Verificado' :
+                                 paciente.status === 'STUDY_ASSIGNED' ? '🔬 Estudio Asignado' :
+                                 paciente.status === 'AWAITING_STUDY' ? '⏳ En Espera' :
+                                 paciente.status === 'PENDING_CONTACT' ? '📞 Pendiente Contacto' :
+                                 paciente.status === 'DISCARDED' ? '🗑️ Descartado' :
+                                 '📥 Recibido'}
                               </Badge>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -981,6 +1091,11 @@ export default function DashboardPage() {
               initialTrials={trials}
               onTrialChange={handleTrialChange}
             />
+          )}
+
+          {/* Sitios/Instituciones */}
+          {activeSection === "sitios" && (
+            <ResearchSitesView />
           )}
 
           {/* Slider Principal */}

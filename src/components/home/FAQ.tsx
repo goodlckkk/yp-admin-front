@@ -17,43 +17,43 @@ interface FAQItem {
 const faqData: FAQItem[] = [
   {
     question: '¿Qué es un ensayo clínico?',
-    answer: 'Es un estudio para probar nuevos tratamientos y ver si son seguros y efectivos.',
+    answer: 'Un ensayo clínico es un estudio de investigación médica diseñado para evaluar la seguridad y eficacia de nuevos tratamientos, medicamentos, dispositivos médicos o procedimientos. Estos estudios son fundamentales para el avance de la medicina y se realizan bajo estrictos protocolos de seguridad aprobados por autoridades sanitarias. Los participantes reciben atención médica especializada y contribuyen al desarrollo de tratamientos que pueden beneficiar a futuras generaciones.',
   },
   {
     question: '¿Cómo sé si puedo participar?',
-    answer: 'Completa un formulario y nuestro equipo te contactará si hay un estudio para ti.',
+    answer: 'Para determinar tu elegibilidad, primero completa nuestro formulario de registro con tu información médica básica. Nuestro equipo médico revisará tu perfil y lo comparará con los criterios de inclusión de los estudios activos. Si hay un estudio adecuado para ti, te contactaremos para explicarte los detalles, responder tus preguntas y programar una evaluación inicial. Cada estudio tiene requisitos específicos como edad, condición de salud, historial médico y ubicación geográfica.',
   },
   {
     question: '¿Es seguro participar en un ensayo clínico?',
-    answer: 'Sí, los ensayos siguen normas de seguridad y siempre te explicamos todo antes de que decidas.',
+    answer: 'Sí, la seguridad de los participantes es la máxima prioridad. Todos los ensayos clínicos en Chile están regulados por el Instituto de Salud Pública (ISP) y deben ser aprobados por Comités de Ética Científica independientes. Antes de participar, recibirás información detallada sobre los posibles riesgos y beneficios a través del proceso de consentimiento informado. Durante el estudio, serás monitoreado constantemente por profesionales médicos especializados y puedes retirarte en cualquier momento si lo deseas.',
   },
   {
     question: '¿Tiene algún costo participar?',
-    answer: 'No, es totalmente gratuito y en algunos casos te reembolsan gastos.',
+    answer: 'No, participar en un ensayo clínico es completamente gratuito. De hecho, todos los exámenes médicos, consultas, medicamentos del estudio y procedimientos relacionados con la investigación son proporcionados sin costo para ti. Además, muchos estudios ofrecen compensación por gastos de transporte, estacionamiento y tiempo invertido. Nunca tendrás que pagar por participar en un ensayo clínico legítimo.',
   },
   {
     question: '¿Qué tipo de estudios hay?',
-    answer: 'Hay estudios para distintas condiciones de salud y en distintas ciudades. Te ayudamos a encontrar el adecuado.',
+    answer: 'Ofrecemos una amplia variedad de estudios clínicos que abarcan múltiples áreas de la medicina: oncología (cáncer), cardiología, neurología, diabetes, enfermedades respiratorias, dermatología, salud mental, enfermedades raras y muchas más. Los estudios se realizan en diferentes ciudades de Chile y pueden incluir tratamientos preventivos, terapéuticos o de diagnóstico. Nuestro equipo te ayudará a encontrar el estudio más adecuado según tu condición de salud, ubicación y preferencias personales.',
   },
   {
     question: '¿Puedo salir del estudio si cambio de opinión?',
-    answer: 'Por supuesto, puedes dejar de participar en cualquier momento sin ningún problema.',
+    answer: 'Absolutamente. Tu participación es completamente voluntaria y tienes el derecho de retirarte del estudio en cualquier momento, por cualquier razón, sin tener que dar explicaciones y sin que esto afecte tu atención médica futura. Si decides retirarte, simplemente informa al equipo del estudio. Es importante que, si es posible, asistas a una visita final para asegurar tu seguridad y bienestar, pero esto no es obligatorio. Tu decisión será respetada sin ningún tipo de presión o consecuencia negativa.',
   },
   {
     question: '¿Qué pasa si tengo efectos secundarios?',
-    answer: 'Tendrás atención médica y apoyo. Tu seguridad es lo más importante.',
+    answer: 'Si experimentas cualquier efecto secundario o reacción adversa durante el estudio, recibirás atención médica inmediata y especializada sin costo alguno. El equipo médico del estudio está disponible 24/7 para atender cualquier emergencia. Todos los efectos secundarios son cuidadosamente monitoreados, documentados y reportados a las autoridades regulatorias. Tu seguridad es la prioridad absoluta, y el estudio puede ser pausado o modificado si se identifican riesgos inesperados. Además, cuentas con seguro médico proporcionado por el patrocinador del estudio.',
   },
   {
     question: '¿Cómo se protege mi privacidad?',
-    answer: 'Tus datos son confidenciales y solo se usan para encontrar estudios adecuados para ti.',
+    answer: 'Tu privacidad y confidencialidad están protegidas por estrictas leyes chilenas e internacionales, incluyendo la Ley N° 19.628 sobre Protección de Datos Personales. Toda tu información médica es codificada y almacenada de forma segura. Solo el equipo médico autorizado del estudio tiene acceso a tus datos personales. En las publicaciones científicas, tu identidad nunca será revelada. Utilizamos sistemas encriptados para el manejo de datos y cumplimos con los más altos estándares de confidencialidad médica. Tus datos solo se usan para fines de investigación y para conectarte con estudios relevantes.',
   },
   {
     question: '¿Cuánto tiempo dura un ensayo clínico?',
-    answer: 'Depende del estudio, pero siempre te diremos la duración aproximada antes de que empieces.',
+    answer: 'La duración varía significativamente según el tipo de estudio y la condición que se investiga. Algunos estudios pueden durar semanas, mientras que otros pueden extenderse por varios meses o incluso años. Antes de comprometerte, recibirás información detallada sobre: la duración total del estudio, la frecuencia de las visitas médicas, el tiempo estimado de cada visita, y los procedimientos que se realizarán en cada etapa. También te informaremos si hay un período de seguimiento después de completar el tratamiento. Esta información te permitirá tomar una decisión informada sobre tu participación.',
   },
   {
     question: '¿Qué beneficios puedo obtener al participar?',
-    answer: 'Puedes acceder a tratamientos nuevos y ayudar a mejorar la salud de otras personas en el futuro.',
+    answer: 'Los beneficios de participar en un ensayo clínico son múltiples: acceso a tratamientos innovadores que aún no están disponibles para el público general, atención médica especializada y monitoreo constante de tu salud, exámenes y pruebas médicas sin costo, posible mejora en tu condición de salud, compensación por gastos de transporte y tiempo, y la satisfacción de contribuir al avance de la ciencia médica que puede ayudar a millones de personas en el futuro. Además, muchos participantes reportan sentirse empoderados al tomar un rol activo en su tratamiento y en la investigación médica.',
   },
 ];
 
@@ -67,6 +67,7 @@ export default function FAQ() {
 
   return (
     <section 
+      id="faq"
       ref={elementRef as any}
       className={`min-h-screen flex items-center py-20 bg-white relative overflow-hidden transition-all duration-1000 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
@@ -116,18 +117,18 @@ export default function FAQ() {
 
               {/* Respuesta con animación */}
               <div
-                className={`transition-all duration-300 ease-in-out ${
+                className={`transition-all duration-500 ease-in-out ${
                   openIndex === index
-                    ? 'max-h-96 opacity-100'
+                    ? 'max-h-[800px] opacity-100'
                     : 'max-h-0 opacity-0'
                 }`}
                 style={{
                   overflow: 'hidden',
                 }}
               >
-                <div className="px-6 pb-5 pt-2">
+                <div className="px-6 pb-6 pt-2">
                   <div className="pl-4 border-l-4 border-[#04BFAD]">
-                    <p className="text-[#4D4D59] leading-relaxed">
+                    <p className="text-[#4D4D59] leading-relaxed text-base">
                       {item.answer}
                     </p>
                   </div>

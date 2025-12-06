@@ -1,0 +1,1247 @@
+[
+  {
+    "nombre": "Paracetamol",
+    "categoria": "Analgésico/Antipirético",
+    "presentaciones": ["500mg", "1g"]
+  },
+  {
+    "nombre": "Ibuprofeno",
+    "categoria": "AINE",
+    "presentaciones": ["400mg", "600mg"]
+  },
+  {
+    "nombre": "Amoxicilina",
+    "categoria": "Antibiótico",
+    "presentaciones": ["500mg", "875mg"]
+  },
+  {
+    "nombre": "Metformina",
+    "categoria": "Antidiabético",
+    "presentaciones": ["500mg", "850mg", "1000mg"]
+  },
+  {
+    "nombre": "Atorvastatina",
+    "categoria": "Estatina",
+    "presentaciones": ["10mg", "20mg", "40mg", "80mg"]
+  },
+  {
+    "nombre": "Enalapril",
+    "categoria": "IECA",
+    "presentaciones": ["5mg", "10mg", "20mg"]
+  },
+  {
+    "nombre": "Losartán",
+    "categoria": "ARA II",
+    "presentaciones": ["50mg", "100mg"]
+  },
+  {
+    "nombre": "Omeprazol",
+    "categoria": "IBP",
+    "presentaciones": ["20mg", "40mg"]
+  },
+  {
+    "nombre": "Levotiroxina",
+    "categoria": "Hormona tiroidea",
+    "presentaciones": ["50mcg", "75mcg", "100mcg", "125mcg"]
+  },
+  {
+    "nombre": "Aspirina",
+    "categoria": "Antiagregante plaquetario",
+    "presentaciones": ["100mg", "500mg"]
+  },
+  {
+    "nombre": "Simvastatina",
+    "categoria": "Estatina",
+    "presentaciones": ["10mg", "20mg", "40mg"]
+  },
+  {
+    "nombre": "Amlodipino",
+    "categoria": "Calcioantagonista",
+    "presentaciones": ["5mg", "10mg"]
+  },
+  {
+    "nombre": "Clonazepam",
+    "categoria": "Benzodiacepina",
+    "presentaciones": ["0.5mg", "2mg"]
+  },
+  {
+    "nombre": "Fluoxetina",
+    "categoria": "ISRS",
+    "presentaciones": ["20mg"]
+  },
+  {
+    "nombre": "Sertralina",
+    "categoria": "ISRS",
+    "presentaciones": ["50mg", "100mg"]
+  },
+  {
+    "nombre": "Diclofenaco",
+    "categoria": "AINE",
+    "presentaciones": ["50mg", "75mg"]
+  },
+  {
+    "nombre": "Ranitidina",
+    "categoria": "Antihistamínico H2",
+    "presentaciones": ["150mg", "300mg"]
+  },
+  {
+    "nombre": "Salbutamol",
+    "categoria": "Broncodilatador",
+    "presentaciones": ["100mcg/dosis", "200mcg/dosis"]
+  },
+  {
+    "nombre": "Prednisona",
+    "categoria": "Corticosteroide",
+    "presentaciones": ["5mg", "20mg", "50mg"]
+  },
+  {
+    "nombre": "Captopril",
+    "categoria": "IECA",
+    "presentaciones": ["25mg", "50mg"]
+  },
+  {
+    "nombre": "Hidroclorotiazida",
+    "categoria": "Diurético",
+    "presentaciones": ["25mg", "50mg"]
+  },
+  {
+    "nombre": "Furosemida",
+    "categoria": "Diurético de asa",
+    "presentaciones": ["40mg"]
+  },
+  {
+    "nombre": "Carvedilol",
+    "categoria": "Betabloqueador",
+    "presentaciones": ["6.25mg", "12.5mg", "25mg"]
+  },
+  {
+    "nombre": "Bisoprolol",
+    "categoria": "Betabloqueador",
+    "presentaciones": ["2.5mg", "5mg", "10mg"]
+  },
+  {
+    "nombre": "Espironolactona",
+    "categoria": "Diurético ahorrador de potasio",
+    "presentaciones": ["25mg", "100mg"]
+  },
+  {
+    "nombre": "Warfarina",
+    "categoria": "Anticoagulante",
+    "presentaciones": ["5mg"]
+  },
+  {
+    "nombre": "Clopidogrel",
+    "categoria": "Antiagregante plaquetario",
+    "presentaciones": ["75mg"]
+  },
+  {
+    "nombre": "Insulina NPH",
+    "categoria": "Insulina intermedia",
+    "presentaciones": ["100 UI/mL"]
+  },
+  {
+    "nombre": "Insulina Glargina",
+    "categoria": "Insulina basal",
+    "presentaciones": ["100 UI/mL"]
+  },
+  {
+    "nombre": "Glibenclamida",
+    "categoria": "Sulfonilurea",
+    "presentaciones": ["5mg"]
+  },
+  {
+    "nombre": "Allopurinol",
+    "categoria": "Antigotoso",
+    "presentaciones": ["100mg", "300mg"]
+  },
+  {
+    "nombre": "Colchicina",
+    "categoria": "Antigotoso",
+    "presentaciones": ["0.5mg"]
+  },
+  {
+    "nombre": "Tramadol",
+    "categoria": "Analgésico opioide",
+    "presentaciones": ["50mg", "100mg"]
+  },
+  {
+    "nombre": "Morfina",
+    "categoria": "Analgésico opioide",
+    "presentaciones": ["10mg", "30mg"]
+  },
+  {
+    "nombre": "Gabapentina",
+    "categoria": "Anticonvulsivante",
+    "presentaciones": ["300mg", "400mg"]
+  },
+  {
+    "nombre": "Pregabalina",
+    "categoria": "Anticonvulsivante",
+    "presentaciones": ["75mg", "150mg"]
+  },
+  {
+    "nombre": "Fenitoína",
+    "categoria": "Anticonvulsivante",
+    "presentaciones": ["100mg"]
+  },
+  {
+    "nombre": "Ácido Valproico",
+    "categoria": "Anticonvulsivante",
+    "presentaciones": ["250mg", "500mg"]
+  },
+  {
+    "nombre": "Carbamazepina",
+    "categoria": "Anticonvulsivante",
+    "presentaciones": ["200mg", "400mg"]
+  },
+  {
+    "nombre": "Levetiracetam",
+    "categoria": "Anticonvulsivante",
+    "presentaciones": ["500mg", "1000mg"]
+  },
+  {
+    "nombre": "Risperidona",
+    "categoria": "Antipsicótico",
+    "presentaciones": ["1mg", "2mg", "3mg"]
+  },
+  {
+    "nombre": "Quetiapina",
+    "categoria": "Antipsicótico",
+    "presentaciones": ["25mg", "100mg", "200mg"]
+  },
+  {
+    "nombre": "Olanzapina",
+    "categoria": "Antipsicótico",
+    "presentaciones": ["5mg", "10mg"]
+  },
+  {
+    "nombre": "Haloperidol",
+    "categoria": "Antipsicótico",
+    "presentaciones": ["5mg"]
+  },
+  {
+    "nombre": "Amitriptilina",
+    "categoria": "Antidepresivo tricíclico",
+    "presentaciones": ["25mg", "50mg"]
+  },
+  {
+    "nombre": "Venlafaxina",
+    "categoria": "IRSN",
+    "presentaciones": ["75mg", "150mg"]
+  },
+  {
+    "nombre": "Escitalopram",
+    "categoria": "ISRS",
+    "presentaciones": ["10mg", "20mg"]
+  },
+  {
+    "nombre": "Paroxetina",
+    "categoria": "ISRS",
+    "presentaciones": ["20mg"]
+  },
+  {
+    "nombre": "Alprazolam",
+    "categoria": "Benzodiacepina",
+    "presentaciones": ["0.25mg", "0.5mg", "1mg"]
+  },
+  {
+    "nombre": "Lorazepam",
+    "categoria": "Benzodiacepina",
+    "presentaciones": ["1mg", "2mg"]
+  },
+  {
+    "nombre": "Diazepam",
+    "categoria": "Benzodiacepina",
+    "presentaciones": ["5mg", "10mg"]
+  },
+  {
+    "nombre": "Zolpidem",
+    "categoria": "Hipnótico",
+    "presentaciones": ["10mg"]
+  },
+  {
+    "nombre": "Melatonina",
+    "categoria": "Regulador del sueño",
+    "presentaciones": ["3mg", "5mg"]
+  },
+  {
+    "nombre": "Cetirizina",
+    "categoria": "Antihistamínico",
+    "presentaciones": ["10mg"]
+  },
+  {
+    "nombre": "Loratadina",
+    "categoria": "Antihistamínico",
+    "presentaciones": ["10mg"]
+  },
+  {
+    "nombre": "Desloratadina",
+    "categoria": "Antihistamínico",
+    "presentaciones": ["5mg"]
+  },
+  {
+    "nombre": "Montelukast",
+    "categoria": "Antileucotrieno",
+    "presentaciones": ["10mg"]
+  },
+  {
+    "nombre": "Budesonida",
+    "categoria": "Corticosteroide inhalado",
+    "presentaciones": ["200mcg/dosis", "400mcg/dosis"]
+  },
+  {
+    "nombre": "Fluticasona",
+    "categoria": "Corticosteroide inhalado",
+    "presentaciones": ["125mcg/dosis", "250mcg/dosis"]
+  },
+  {
+    "nombre": "Beclometasona",
+    "categoria": "Corticosteroide inhalado",
+    "presentaciones": ["250mcg/dosis"]
+  },
+  {
+    "nombre": "Ipratropio",
+    "categoria": "Anticolinérgico",
+    "presentaciones": ["20mcg/dosis"]
+  },
+  {
+    "nombre": "Tiotropio",
+    "categoria": "Anticolinérgico",
+    "presentaciones": ["18mcg/dosis"]
+  },
+  {
+    "nombre": "Formoterol",
+    "categoria": "Broncodilatador",
+    "presentaciones": ["12mcg/dosis"]
+  },
+  {
+    "nombre": "Salmeterol",
+    "categoria": "Broncodilatador",
+    "presentaciones": ["50mcg/dosis"]
+  },
+  {
+    "nombre": "Azitromicina",
+    "categoria": "Antibiótico",
+    "presentaciones": ["500mg"]
+  },
+  {
+    "nombre": "Claritromicina",
+    "categoria": "Antibiótico",
+    "presentaciones": ["500mg"]
+  },
+  {
+    "nombre": "Ciprofloxacino",
+    "categoria": "Antibiótico",
+    "presentaciones": ["500mg", "750mg"]
+  },
+  {
+    "nombre": "Levofloxacino",
+    "categoria": "Antibiótico",
+    "presentaciones": ["500mg", "750mg"]
+  },
+  {
+    "nombre": "Ceftriaxona",
+    "categoria": "Antibiótico",
+    "presentaciones": ["1g"]
+  },
+  {
+    "nombre": "Clindamicina",
+    "categoria": "Antibiótico",
+    "presentaciones": ["300mg", "600mg"]
+  },
+  {
+    "nombre": "Metronidazol",
+    "categoria": "Antibiótico/Antiparasitario",
+    "presentaciones": ["500mg"]
+  },
+  {
+    "nombre": "Nitrofurantoína",
+    "categoria": "Antibiótico",
+    "presentaciones": ["100mg"]
+  },
+  {
+    "nombre": "Trimetoprima/Sulfametoxazol",
+    "categoria": "Antibiótico",
+    "presentaciones": ["160/800mg"]
+  },
+  {
+    "nombre": "Aciclovir",
+    "categoria": "Antiviral",
+    "presentaciones": ["200mg", "400mg", "800mg"]
+  },
+  {
+    "nombre": "Oseltamivir",
+    "categoria": "Antiviral",
+    "presentaciones": ["75mg"]
+  },
+  {
+    "nombre": "Fluconazol",
+    "categoria": "Antifúngico",
+    "presentaciones": ["150mg"]
+  },
+  {
+    "nombre": "Nistatina",
+    "categoria": "Antifúngico",
+    "presentaciones": ["100,000 UI/mL"]
+  },
+  {
+    "nombre": "Albendazol",
+    "categoria": "Antiparasitario",
+    "presentaciones": ["400mg"]
+  },
+  {
+    "nombre": "Mebendazol",
+    "categoria": "Antiparasitario",
+    "presentaciones": ["100mg", "500mg"]
+  },
+  {
+    "nombre": "Ácido Fólico",
+    "categoria": "Vitamina",
+    "presentaciones": ["1mg", "5mg"]
+  },
+  {
+    "nombre": "Vitamina B12",
+    "categoria": "Vitamina",
+    "presentaciones": ["1000mcg"]
+  },
+  {
+    "nombre": "Vitamina D",
+    "categoria": "Vitamina",
+    "presentaciones": ["1000 UI", "2000 UI"]
+  },
+  {
+    "nombre": "Calcio + Vitamina D",
+    "categoria": "Suplemento",
+    "presentaciones": ["600mg + 400 UI"]
+  },
+  {
+    "nombre": "Hierro",
+    "categoria": "Suplemento",
+    "presentaciones": ["300mg"]
+  },
+  {
+    "nombre": "Complejo B",
+    "categoria": "Vitamina",
+    "presentaciones": ["Varios"]
+  },
+  {
+    "nombre": "Sildenafil",
+    "categoria": "Inhibidor PDE5",
+    "presentaciones": ["50mg", "100mg"]
+  },
+  {
+    "nombre": "Tadalafil",
+    "categoria": "Inhibidor PDE5",
+    "presentaciones": ["5mg", "20mg"]
+  },
+  {
+    "nombre": "Finasteride",
+    "categoria": "Inhibidor 5-alfa reductasa",
+    "presentaciones": ["1mg", "5mg"]
+  },
+  {
+    "nombre": "Tamsulosina",
+    "categoria": "Alfabloqueador",
+    "presentaciones": ["0.4mg"]
+  },
+  {
+    "nombre": "Doxazosina",
+    "categoria": "Alfabloqueador",
+    "presentaciones": ["2mg", "4mg"]
+  },
+  {
+    "nombre": "Isotretinoína",
+    "categoria": "Retinoide",
+    "presentaciones": ["10mg", "20mg"]
+  },
+  {
+    "nombre": "Adapaleno",
+    "categoria": "Retinoide tópico",
+    "presentaciones": ["0.1%"]
+  },
+  {
+    "nombre": "Clotrimazol",
+    "categoria": "Antifúngico tópico",
+    "presentaciones": ["1%"]
+  },
+  {
+    "nombre": "Hidrocortisona",
+    "categoria": "Corticosteroide tópico",
+    "presentaciones": ["1%"]
+  },
+  {
+    "nombre": "Betametasona",
+    "categoria": "Corticosteroide tópico",
+    "presentaciones": ["0.05%"]
+  },
+  {
+    "nombre": "Ketorolaco",
+    "categoria": "AINE",
+    "presentaciones": ["10mg", "30mg"]
+  },
+  {
+    "nombre": "Meloxicam",
+    "categoria": "AINE",
+    "presentaciones": ["7.5mg", "15mg"]
+  },
+  {
+    "nombre": "Celecoxib",
+    "categoria": "AINE COX-2",
+    "presentaciones": ["200mg"]
+  },
+  {
+    "nombre": "Naproxeno",
+    "categoria": "AINE",
+    "presentaciones": ["250mg", "500mg"]
+  },
+  {
+    "nombre": "Ketoprofeno",
+    "categoria": "AINE",
+    "presentaciones": ["100mg"]
+  },
+  {
+    "nombre": "Piroxicam",
+    "categoria": "AINE",
+    "presentaciones": ["20mg"]
+  },
+  {
+    "nombre": "Indometacina",
+    "categoria": "AINE",
+    "presentaciones": ["25mg"]
+  },
+  {
+    "nombre": "Etoricoxib",
+    "categoria": "AINE COX-2",
+    "presentaciones": ["60mg", "90mg", "120mg"]
+  },
+  {
+    "nombre": "Codeína",
+    "categoria": "Analgésico opioide",
+    "presentaciones": ["30mg"]
+  },
+  {
+    "nombre": "Paracetamol + Codeína",
+    "categoria": "Analgésico combinado",
+    "presentaciones": ["500mg + 30mg"]
+  },
+  {
+    "nombre": "Paracetamol + Tramadol",
+    "categoria": "Analgésico combinado",
+    "presentaciones": ["325mg + 37.5mg"]
+  },
+  {
+    "nombre": "Esomeprazol",
+    "categoria": "IBP",
+    "presentaciones": ["20mg", "40mg"]
+  },
+  {
+    "nombre": "Lansoprazol",
+    "categoria": "IBP",
+    "presentaciones": ["30mg"]
+  },
+  {
+    "nombre": "Pantoprazol",
+    "categoria": "IBP",
+    "presentaciones": ["20mg", "40mg"]
+  },
+  {
+    "nombre": "Famotidina",
+    "categoria": "Antihistamínico H2",
+    "presentaciones": ["20mg", "40mg"]
+  },
+  {
+    "nombre": "Sucralfato",
+    "categoria": "Protector gástrico",
+    "presentaciones": ["1g"]
+  },
+  {
+    "nombre": "Domperidona",
+    "categoria": "Procinético",
+    "presentaciones": ["10mg"]
+  },
+  {
+    "nombre": "Metoclopramida",
+    "categoria": "Procinético",
+    "presentaciones": ["10mg"]
+  },
+  {
+    "nombre": "Ondansetrón",
+    "categoria": "Antiemético",
+    "presentaciones": ["4mg", "8mg"]
+  },
+  {
+    "nombre": "Loperamida",
+    "categoria": "Antidiarreico",
+    "presentaciones": ["2mg"]
+  },
+  {
+    "nombre": "Lactulosa",
+    "categoria": "Laxante",
+    "presentaciones": ["667mg/mL"]
+  },
+  {
+    "nombre": "Bisacodilo",
+    "categoria": "Laxante",
+    "presentaciones": ["5mg"]
+  },
+  {
+    "nombre": "Simeticona",
+    "categoria": "Antiflatulento",
+    "presentaciones": ["80mg"]
+  },
+  {
+    "nombre": "Dimeticona",
+    "categoria": "Antiflatulento",
+    "presentaciones": ["40mg"]
+  },
+  {
+    "nombre": "Ácido Ursodesoxicólico",
+    "categoria": "Hepatoprotector",
+    "presentaciones": ["150mg", "300mg"]
+  },
+  {
+    "nombre": "Silimarina",
+    "categoria": "Hepatoprotector",
+    "presentaciones": ["150mg"]
+  },
+  {
+    "nombre": "Propranolol",
+    "categoria": "Betabloqueador",
+    "presentaciones": ["10mg", "40mg"]
+  },
+  {
+    "nombre": "Atenolol",
+    "categoria": "Betabloqueador",
+    "presentaciones": ["50mg", "100mg"]
+  },
+  {
+    "nombre": "Metoprolol",
+    "categoria": "Betabloqueador",
+    "presentaciones": ["50mg", "100mg"]
+  },
+  {
+    "nombre": "Nebivolol",
+    "categoria": "Betabloqueador",
+    "presentaciones": ["5mg"]
+  },
+  {
+    "nombre": "Verapamilo",
+    "categoria": "Calcioantagonista",
+    "presentaciones": ["80mg", "120mg"]
+  },
+  {
+    "nombre": "Diltiazem",
+    "categoria": "Calcioantagonista",
+    "presentaciones": ["60mg", "90mg"]
+  },
+  {
+    "nombre": "Nifedipino",
+    "categoria": "Calcioantagonista",
+    "presentaciones": ["10mg", "20mg"]
+  },
+  {
+    "nombre": "Irbesartán",
+    "categoria": "ARA II",
+    "presentaciones": ["150mg", "300mg"]
+  },
+  {
+    "nombre": "Valsartán",
+    "categoria": "ARA II",
+    "presentaciones": ["80mg", "160mg", "320mg"]
+  },
+  {
+    "nombre": "Telmisartán",
+    "categoria": "ARA II",
+    "presentaciones": ["40mg", "80mg"]
+  },
+  {
+    "nombre": "Candesartán",
+    "categoria": "ARA II",
+    "presentaciones": ["8mg", "16mg", "32mg"]
+  },
+  {
+    "nombre": "Ramipril",
+    "categoria": "IECA",
+    "presentaciones": ["2.5mg", "5mg", "10mg"]
+  },
+  {
+    "nombre": "Perindopril",
+    "categoria": "IECA",
+    "presentaciones": ["4mg", "8mg"]
+  },
+  {
+    "nombre": "Lisinopril",
+    "categoria": "IECA",
+    "presentaciones": ["10mg", "20mg"]
+  },
+  {
+    "nombre": "Digoxina",
+    "categoria": "Glucósido cardíaco",
+    "presentaciones": ["0.25mg"]
+  },
+  {
+    "nombre": "Amiodarona",
+    "categoria": "Antiarrítmico",
+    "presentaciones": ["200mg"]
+  },
+  {
+    "nombre": "Nitroglicerina",
+    "categoria": "Vasodilatador",
+    "presentaciones": ["0.5mg sublingual"]
+  },
+  {
+    "nombre": "Isosorbide",
+    "categoria": "Vasodilatador",
+    "presentaciones": ["10mg", "20mg"]
+  },
+  {
+    "nombre": "Rosuvastatina",
+    "categoria": "Estatina",
+    "presentaciones": ["10mg", "20mg", "40mg"]
+  },
+  {
+    "nombre": "Pravastatina",
+    "categoria": "Estatina",
+    "presentaciones": ["20mg", "40mg"]
+  },
+  {
+    "nombre": "Ezetimiba",
+    "categoria": "Inhibidor absorción colesterol",
+    "presentaciones": ["10mg"]
+  },
+  {
+    "nombre": "Fenofibrato",
+    "categoria": "Fibrato",
+    "presentaciones": ["160mg", "200mg"]
+  },
+  {
+    "nombre": "Gemfibrozilo",
+    "categoria": "Fibrato",
+    "presentaciones": ["600mg"]
+  },
+  {
+    "nombre": "Rivaroxabán",
+    "categoria": "Anticoagulante",
+    "presentaciones": ["10mg", "15mg", "20mg"]
+  },
+  {
+    "nombre": "Apixabán",
+    "categoria": "Anticoagulante",
+    "presentaciones": ["2.5mg", "5mg"]
+  },
+  {
+    "nombre": "Dabigatrán",
+    "categoria": "Anticoagulante",
+    "presentaciones": ["110mg", "150mg"]
+  },
+  {
+    "nombre": "Enoxaparina",
+    "categoria": "Heparina de bajo peso molecular",
+    "presentaciones": ["40mg", "60mg"]
+  },
+  {
+    "nombre": "Ticagrelor",
+    "categoria": "Antiagregante plaquetario",
+    "presentaciones": ["90mg"]
+  },
+  {
+    "nombre": "Prasugrel",
+    "categoria": "Antiagregante plaquetario",
+    "presentaciones": ["10mg"]
+  },
+  {
+    "nombre": "Sitagliptina",
+    "categoria": "Inhibidor DPP-4",
+    "presentaciones": ["50mg", "100mg"]
+  },
+  {
+    "nombre": "Vildagliptina",
+    "categoria": "Inhibidor DPP-4",
+    "presentaciones": ["50mg"]
+  },
+  {
+    "nombre": "Linagliptina",
+    "categoria": "Inhibidor DPP-4",
+    "presentaciones": ["5mg"]
+  },
+  {
+    "nombre": "Empagliflozina",
+    "categoria": "Inhibidor SGLT2",
+    "presentaciones": ["10mg", "25mg"]
+  },
+  {
+    "nombre": "Dapagliflozina",
+    "categoria": "Inhibidor SGLT2",
+    "presentaciones": ["10mg"]
+  },
+  {
+    "nombre": "Canagliflozina",
+    "categoria": "Inhibidor SGLT2",
+    "presentaciones": ["100mg", "300mg"]
+  },
+  {
+    "nombre": "Liraglutida",
+    "categoria": "Agonista GLP-1",
+    "presentaciones": ["6mg/mL"]
+  },
+  {
+    "nombre": "Dulaglutida",
+    "categoria": "Agonista GLP-1",
+    "presentaciones": ["0.75mg", "1.5mg"]
+  },
+  {
+    "nombre": "Pioglitazona",
+    "categoria": "Tiazolidinediona",
+    "presentaciones": ["15mg", "30mg"]
+  },
+  {
+    "nombre": "Gliclazida",
+    "categoria": "Sulfonilurea",
+    "presentaciones": ["30mg", "60mg"]
+  },
+  {
+    "nombre": "Glimepirida",
+    "categoria": "Sulfonilurea",
+    "presentaciones": ["2mg", "4mg"]
+  },
+  {
+    "nombre": "Acarbosa",
+    "categoria": "Inhibidor alfa-glucosidasa",
+    "presentaciones": ["50mg", "100mg"]
+  },
+  {
+    "nombre": "Repaglinida",
+    "categoria": "Meglitinida",
+    "presentaciones": ["0.5mg", "1mg", "2mg"]
+  },
+  {
+    "nombre": "Insulina Regular",
+    "categoria": "Insulina rápida",
+    "presentaciones": ["100 UI/mL"]
+  },
+  {
+    "nombre": "Insulina Lispro",
+    "categoria": "Insulina ultrarrápida",
+    "presentaciones": ["100 UI/mL"]
+  },
+  {
+    "nombre": "Insulina Aspart",
+    "categoria": "Insulina ultrarrápida",
+    "presentaciones": ["100 UI/mL"]
+  },
+  {
+    "nombre": "Insulina Detemir",
+    "categoria": "Insulina basal",
+    "presentaciones": ["100 UI/mL"]
+  },
+  {
+    "nombre": "Insulina Degludec",
+    "categoria": "Insulina basal",
+    "presentaciones": ["100 UI/mL"]
+  },
+  {
+    "nombre": "Metimazol",
+    "categoria": "Antitiroideos",
+    "presentaciones": ["5mg"]
+  },
+  {
+    "nombre": "Propiltiouracilo",
+    "categoria": "Antitiroideos",
+    "presentaciones": ["50mg"]
+  },
+  {
+    "nombre": "Calcitriol",
+    "categoria": "Vitamina D activa",
+    "presentaciones": ["0.25mcg"]
+  },
+  {
+    "nombre": "Carbonato de Calcio",
+    "categoria": "Suplemento de calcio",
+    "presentaciones": ["500mg", "1000mg"]
+  },
+  {
+    "nombre": "Alendronato",
+    "categoria": "Bifosfonato",
+    "presentaciones": ["70mg"]
+  },
+  {
+    "nombre": "Risedronato",
+    "categoria": "Bifosfonato",
+    "presentaciones": ["35mg"]
+  },
+  {
+    "nombre": "Ibandronato",
+    "categoria": "Bifosfonato",
+    "presentaciones": ["150mg"]
+  },
+  {
+    "nombre": "Denosumab",
+    "categoria": "Anticuerpo monoclonal",
+    "presentaciones": ["60mg"]
+  },
+  {
+    "nombre": "Teriparatida",
+    "categoria": "Hormona paratiroidea",
+    "presentaciones": ["20mcg"]
+  },
+  {
+    "nombre": "Raloxifeno",
+    "categoria": "SERM",
+    "presentaciones": ["60mg"]
+  },
+  {
+    "nombre": "Estrógenos conjugados",
+    "categoria": "Terapia hormonal",
+    "presentaciones": ["0.625mg"]
+  },
+  {
+    "nombre": "Estradiol",
+    "categoria": "Estrógeno",
+    "presentaciones": ["1mg", "2mg"]
+  },
+  {
+    "nombre": "Progesterona",
+    "categoria": "Progestágeno",
+    "presentaciones": ["100mg", "200mg"]
+  },
+  {
+    "nombre": "Medroxiprogesterona",
+    "categoria": "Progestágeno",
+    "presentaciones": ["5mg", "10mg"]
+  },
+  {
+    "nombre": "Etinilestradiol + Levonorgestrel",
+    "categoria": "Anticonceptivo oral",
+    "presentaciones": ["0.03mg + 0.15mg"]
+  },
+  {
+    "nombre": "Etinilestradiol + Drospirenona",
+    "categoria": "Anticonceptivo oral",
+    "presentaciones": ["0.03mg + 3mg"]
+  },
+  {
+    "nombre": "Desogestrel",
+    "categoria": "Anticonceptivo oral",
+    "presentaciones": ["0.075mg"]
+  },
+  {
+    "nombre": "Levonorgestrel",
+    "categoria": "Anticonceptivo de emergencia",
+    "presentaciones": ["1.5mg"]
+  },
+  {
+    "nombre": "Misoprostol",
+    "categoria": "Prostaglandina",
+    "presentaciones": ["200mcg"]
+  },
+  {
+    "nombre": "Oxitocina",
+    "categoria": "Hormona",
+    "presentaciones": ["10 UI/mL"]
+  },
+  {
+    "nombre": "Metilergometrina",
+    "categoria": "Ergot alcaloide",
+    "presentaciones": ["0.2mg"]
+  },
+  {
+    "nombre": "Clomifeno",
+    "categoria": "Inductor ovulación",
+    "presentaciones": ["50mg"]
+  },
+  {
+    "nombre": "Bromocriptina",
+    "categoria": "Agonista dopaminérgico",
+    "presentaciones": ["2.5mg"]
+  },
+  {
+    "nombre": "Cabergolina",
+    "categoria": "Agonista dopaminérgico",
+    "presentaciones": ["0.5mg"]
+  },
+  {
+    "nombre": "Testosterona",
+    "categoria": "Andrógeno",
+    "presentaciones": ["250mg/mL"]
+  },
+  {
+    "nombre": "Bicalutamida",
+    "categoria": "Antiandrógeno",
+    "presentaciones": ["50mg"]
+  },
+  {
+    "nombre": "Dutasteride",
+    "categoria": "Inhibidor 5-alfa reductasa",
+    "presentaciones": ["0.5mg"]
+  },
+  {
+    "nombre": "Metotrexato",
+    "categoria": "Antimetabolito",
+    "presentaciones": ["2.5mg", "10mg"]
+  },
+  {
+    "nombre": "Azatioprina",
+    "categoria": "Inmunosupresor",
+    "presentaciones": ["50mg"]
+  },
+  {
+    "nombre": "Ciclosporina",
+    "categoria": "Inmunosupresor",
+    "presentaciones": ["25mg", "100mg"]
+  },
+  {
+    "nombre": "Tacrolimus",
+    "categoria": "Inmunosupresor",
+    "presentaciones": ["1mg", "5mg"]
+  },
+  {
+    "nombre": "Micofenolato",
+    "categoria": "Inmunosupresor",
+    "presentaciones": ["500mg"]
+  },
+  {
+    "nombre": "Hidroxicloroquina",
+    "categoria": "Antimalárico/DMARD",
+    "presentaciones": ["200mg"]
+  },
+  {
+    "nombre": "Cloroquina",
+    "categoria": "Antimalárico",
+    "presentaciones": ["150mg"]
+  },
+  {
+    "nombre": "Sulfasalazina",
+    "categoria": "DMARD",
+    "presentaciones": ["500mg"]
+  },
+  {
+    "nombre": "Leflunomida",
+    "categoria": "DMARD",
+    "presentaciones": ["20mg"]
+  },
+  {
+    "nombre": "Adalimumab",
+    "categoria": "Anti-TNF",
+    "presentaciones": ["40mg"]
+  },
+  {
+    "nombre": "Etanercept",
+    "categoria": "Anti-TNF",
+    "presentaciones": ["50mg"]
+  },
+  {
+    "nombre": "Infliximab",
+    "categoria": "Anti-TNF",
+    "presentaciones": ["100mg"]
+  },
+  {
+    "nombre": "Rituximab",
+    "categoria": "Anticuerpo monoclonal",
+    "presentaciones": ["500mg"]
+  },
+  {
+    "nombre": "Tocilizumab",
+    "categoria": "Anti-IL6",
+    "presentaciones": ["80mg", "200mg"]
+  },
+  {
+    "nombre": "Mesalazina",
+    "categoria": "Aminosalicilato",
+    "presentaciones": ["500mg", "800mg"]
+  },
+  {
+    "nombre": "Budesonida oral",
+    "categoria": "Corticosteroide",
+    "presentaciones": ["3mg"]
+  },
+  {
+    "nombre": "Dexametasona",
+    "categoria": "Corticosteroide",
+    "presentaciones": ["0.5mg", "4mg"]
+  },
+  {
+    "nombre": "Metilprednisolona",
+    "categoria": "Corticosteroide",
+    "presentaciones": ["4mg", "16mg"]
+  },
+  {
+    "nombre": "Deflazacort",
+    "categoria": "Corticosteroide",
+    "presentaciones": ["6mg", "30mg"]
+  },
+  {
+    "nombre": "Betametasona oral",
+    "categoria": "Corticosteroide",
+    "presentaciones": ["0.5mg"]
+  },
+  {
+    "nombre": "Fludrocortisona",
+    "categoria": "Mineralocorticoide",
+    "presentaciones": ["0.1mg"]
+  },
+  {
+    "nombre": "Alopurinol",
+    "categoria": "Antigotoso",
+    "presentaciones": ["100mg", "300mg"]
+  },
+  {
+    "nombre": "Febuxostat",
+    "categoria": "Antigotoso",
+    "presentaciones": ["80mg"]
+  },
+  {
+    "nombre": "Probenecid",
+    "categoria": "Uricosúrico",
+    "presentaciones": ["500mg"]
+  },
+  {
+    "nombre": "Indapamida",
+    "categoria": "Diurético",
+    "presentaciones": ["1.5mg", "2.5mg"]
+  },
+  {
+    "nombre": "Clortalidona",
+    "categoria": "Diurético",
+    "presentaciones": ["25mg"]
+  },
+  {
+    "nombre": "Amilorida",
+    "categoria": "Diurético ahorrador de potasio",
+    "presentaciones": ["5mg"]
+  },
+  {
+    "nombre": "Triamtereno",
+    "categoria": "Diurético ahorrador de potasio",
+    "presentaciones": ["50mg"]
+  },
+  {
+    "nombre": "Manitol",
+    "categoria": "Diurético osmótico",
+    "presentaciones": ["20%"]
+  },
+  {
+    "nombre": "Acetazolamida",
+    "categoria": "Inhibidor anhidrasa carbónica",
+    "presentaciones": ["250mg"]
+  },
+  {
+    "nombre": "Dorzolamida",
+    "categoria": "Inhibidor anhidrasa carbónica",
+    "presentaciones": ["2%"]
+  },
+  {
+    "nombre": "Timolol",
+    "categoria": "Betabloqueador oftálmico",
+    "presentaciones": ["0.5%"]
+  },
+  {
+    "nombre": "Latanoprost",
+    "categoria": "Análogo prostaglandina",
+    "presentaciones": ["0.005%"]
+  },
+  {
+    "nombre": "Travoprost",
+    "categoria": "Análogo prostaglandina",
+    "presentaciones": ["0.004%"]
+  },
+  {
+    "nombre": "Brimonidina",
+    "categoria": "Agonista alfa-2",
+    "presentaciones": ["0.2%"]
+  },
+  {
+    "nombre": "Pilocarpina",
+    "categoria": "Colinérgico",
+    "presentaciones": ["2%", "4%"]
+  },
+  {
+    "nombre": "Tropicamida",
+    "categoria": "Midriático",
+    "presentaciones": ["1%"]
+  },
+  {
+    "nombre": "Ciclopentolato",
+    "categoria": "Midriático",
+    "presentaciones": ["1%"]
+  },
+  {
+    "nombre": "Fenilefrina",
+    "categoria": "Simpaticomimético",
+    "presentaciones": ["10%"]
+  },
+  {
+    "nombre": "Tobramicina",
+    "categoria": "Antibiótico oftálmico",
+    "presentaciones": ["0.3%"]
+  },
+  {
+    "nombre": "Gentamicina",
+    "categoria": "Antibiótico oftálmico",
+    "presentaciones": ["0.3%"]
+  },
+  {
+    "nombre": "Ciprofloxacino oftálmico",
+    "categoria": "Antibiótico oftálmico",
+    "presentaciones": ["0.3%"]
+  },
+  {
+    "nombre": "Moxifloxacino oftálmico",
+    "categoria": "Antibiótico oftálmico",
+    "presentaciones": ["0.5%"]
+  },
+  {
+    "nombre": "Dexametasona oftálmica",
+    "categoria": "Corticosteroide oftálmico",
+    "presentaciones": ["0.1%"]
+  },
+  {
+    "nombre": "Prednisolona oftálmica",
+    "categoria": "Corticosteroide oftálmico",
+    "presentaciones": ["1%"]
+  },
+  {
+    "nombre": "Fluorometolona",
+    "categoria": "Corticosteroide oftálmico",
+    "presentaciones": ["0.1%"]
+  },
+  {
+    "nombre": "Ketorolaco oftálmico",
+    "categoria": "AINE oftálmico",
+    "presentaciones": ["0.5%"]
+  },
+  {
+    "nombre": "Diclofenaco oftálmico",
+    "categoria": "AINE oftálmico",
+    "presentaciones": ["0.1%"]
+  },
+  {
+    "nombre": "Lágrimas artificiales",
+    "categoria": "Lubricante oftálmico",
+    "presentaciones": ["Varios"]
+  },
+  {
+    "nombre": "Carboximetilcelulosa",
+    "categoria": "Lubricante oftálmico",
+    "presentaciones": ["0.5%", "1%"]
+  },
+  {
+    "nombre": "Hialuronato de sodio",
+    "categoria": "Lubricante oftálmico",
+    "presentaciones": ["0.1%", "0.3%"]
+  },
+  {
+    "nombre": "Ranibizumab",
+    "categoria": "Anti-VEGF",
+    "presentaciones": ["10mg/mL"]
+  },
+  {
+    "nombre": "Bevacizumab",
+    "categoria": "Anti-VEGF",
+    "presentaciones": ["25mg/mL"]
+  },
+  {
+    "nombre": "Aflibercept",
+    "categoria": "Anti-VEGF",
+    "presentaciones": ["40mg/mL"]
+  }
+]

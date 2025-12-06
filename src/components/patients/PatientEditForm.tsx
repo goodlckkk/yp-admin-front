@@ -15,10 +15,15 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { Checkbox } from '../ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { TrialSuggestions } from './TrialSuggestions';
 import type { PatientIntake } from '../../lib/api';
 import { fetchWithAuth } from '../../lib/api';
+// Usar componentes con lista COMPLETA de CIE-10 (14,000+ enfermedades) para el dashboard
+import { Cie10SingleAutocompleteComplete } from '../ui/Cie10SingleAutocompleteComplete';
+import { Cie10MultipleAutocomplete } from '../ui/Cie10MultipleAutocomplete';
+import { MedicamentoSimpleAutocomplete } from '../ui/MedicamentoSimpleAutocomplete';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,12 +42,28 @@ interface PatientEditFormProps {
   onSuccess: () => void;
 }
 
-// Estados disponibles para el paciente
+// Estados disponibles para el paciente (flujo completo)
 const PATIENT_STATUSES = [
-  { value: 'RECEIVED', label: 'Recibido', color: 'bg-[#dfe3e3] text-[#044c64]' },
-  { value: 'REVIEWING', label: 'En Revisión', color: 'bg-yellow-100 text-yellow-700' },
-  { value: 'CONTACTED', label: 'Contactado', color: 'bg-green-100 text-green-700' },
-  { value: 'DISCARDED', label: 'Descartado', color: 'bg-rose-100 text-rose-700' },
+  { value: 'RECEIVED', label: 'Recibido', color: 'bg-blue-100 text-blue-700', icon: '📥' },
+  { value: 'VERIFIED', label: 'Verificado', color: 'bg-green-100 text-green-700', icon: '✅' },
+  { value: 'STUDY_ASSIGNED', label: 'Estudio Asignado', color: 'bg-purple-100 text-purple-700', icon: '🔬' },
+  { value: 'AWAITING_STUDY', label: 'En Espera de Estudio', color: 'bg-yellow-100 text-yellow-700', icon: '⏳' },
+  { value: 'PENDING_CONTACT', label: 'Pendiente de Contacto', color: 'bg-orange-100 text-orange-700', icon: '📞' },
+  { value: 'DISCARDED', label: 'Descartado', color: 'bg-rose-100 text-rose-700', icon: '🗑️' },
+];
+
+// Patologías prevalentes en Chile
+const PATOLOGIAS_PREVALENTES = [
+  "Hipertensión",
+  "Diabetes",
+  "Enfermedad pulmonar",
+  "EPOC (Enfermedad Pulmonar Obstructiva Crónica)",
+  "Enfermedad coronaria (infarto agudo al miocardio)",
+  "Insuficiencia cardíaca",
+  "Enfermedad renal crónica",
+  "Asma",
+  "Obesidad",
+  "Fumador/a"
 ];
 
 export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: PatientEditFormProps) {
@@ -53,9 +74,15 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
   // Estado del formulario editable
   const [formData, setFormData] = useState({
     condicionPrincipal: '',
+    condicionPrincipalCodigo: '', // Código CIE-10
     descripcionCondicion: '',
-    medicamentosActuales: '',
-    alergias: '',
+    patologias: [] as string[], // Patologías prevalentes seleccionadas
+    medicamentosActuales: '', // Legacy (texto libre)
+    medicamentosEstructurados: [] as string[], // Nuevo (solo nombres)
+    alergias: '', // Legacy (texto libre)
+    alergiasEstructuradas: [] as Array<{ codigo: string; nombre: string }>, // Nuevo (CIE-10)
+    otrasEnfermedades: '', // Legacy (texto libre)
+    otrasEnfermedadesEstructuradas: [] as Array<{ codigo: string; nombre: string }>, // Nuevo (CIE-10)
     cirugiasPrevias: '',
     status: 'RECEIVED',
   });
@@ -64,12 +91,18 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
   useEffect(() => {
     if (patient && isOpen) {
       setFormData({
-        condicionPrincipal: patient.condicionPrincipal || '',
-        descripcionCondicion: patient.descripcionCondicion || '',
-        medicamentosActuales: patient.medicamentosActuales || '',
-        alergias: patient.alergias || '',
-        cirugiasPrevias: patient.cirugiasPrevias || '',
-        status: patient.status || 'RECEIVED',
+        condicionPrincipal: patient?.condicionPrincipal || '',
+        condicionPrincipalCodigo: patient?.condicionPrincipalCodigo || '', // Código CIE-10
+        descripcionCondicion: patient?.descripcionCondicion || '',
+        patologias: (patient as any)?.patologias || [], // Patologías prevalentes
+        medicamentosActuales: patient?.medicamentosActuales || '', // Legacy
+        medicamentosEstructurados: (patient as any)?.medicamentosEstructurados || [], // Nuevo
+        alergias: patient?.alergias || '', // Legacy
+        alergiasEstructuradas: (patient as any)?.alergiasEstructuradas || [], // Nuevo
+        otrasEnfermedades: (patient as any)?.otrasEnfermedades || '', // Legacy
+        otrasEnfermedadesEstructuradas: (patient as any)?.otrasEnfermedadesEstructuradas || [], // Nuevo
+        cirugiasPrevias: patient?.cirugiasPrevias || '',
+        status: patient?.status || 'RECEIVED',
       });
     }
   }, [patient, isOpen]);
@@ -299,6 +332,86 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
           </CardContent>
         </Card>
 
+        {/* Sección 2.5: Origen del Paciente (Solo lectura) */}
+        <Card className="border border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-lg text-[#024959] font-semibold">Origen del Paciente</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Fuente de Registro</Label>
+                <div className="mt-1">
+                  <Badge 
+                    className={
+                      patient.source === 'WEB_FORM' 
+                        ? 'bg-blue-100 text-blue-700 border-blue-300' 
+                        : 'bg-purple-100 text-purple-700 border-purple-300'
+                    }
+                  >
+                    {patient.source === 'WEB_FORM' ? '🌐 Formulario Web' : '✍️ Ingreso Manual'}
+                  </Badge>
+                </div>
+              </div>
+              
+              {/* Solo mostrar institución si es MANUAL_ENTRY y tiene referralResearchSiteId */}
+              {patient.source === 'MANUAL_ENTRY' && (patient as any).referralResearchSiteId && (
+                <div>
+                  <Label>Institución que Deriva</Label>
+                  <Input
+                    value={(patient as any).referralResearchSite?.nombre || 'Cargando...'}
+                    disabled
+                    className="mt-1 bg-gray-50"
+                  />
+                </div>
+              )}
+              
+              {/* Mensaje si es MANUAL_ENTRY pero NO tiene institución */}
+              {patient.source === 'MANUAL_ENTRY' && !(patient as any).referralResearchSiteId && (
+                <div>
+                  <Label>Institución que Deriva</Label>
+                  <div className="mt-1 p-2 bg-gray-50 rounded border border-gray-200 text-sm text-gray-500">
+                    Sin institución asociada
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Información adicional de la institución si existe */}
+            {patient.source === 'MANUAL_ENTRY' && (patient as any).referralResearchSite && (
+              <div className="mt-4 p-4 bg-gradient-to-r from-[#A7F2EB]/10 to-transparent rounded-lg border border-[#04BFAD]/20">
+                <p className="text-sm text-gray-600 mb-2">
+                  <strong>📍 Ubicación:</strong>{' '}
+                  {[
+                    (patient as any).referralResearchSite.ciudad,
+                    (patient as any).referralResearchSite.comuna,
+                    (patient as any).referralResearchSite.region
+                  ].filter(Boolean).join(', ') || 'No especificada'}
+                </p>
+                {(patient as any).referralResearchSite.telefono && (
+                  <p className="text-sm text-gray-600 mb-2">
+                    <strong>📞 Teléfono:</strong> {(patient as any).referralResearchSite.telefono}
+                  </p>
+                )}
+                {(patient as any).referralResearchSite.email && (
+                  <p className="text-sm text-gray-600">
+                    <strong>📧 Email:</strong> {(patient as any).referralResearchSite.email}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Mensaje informativo para pacientes de WEB */}
+            {patient.source === 'WEB_FORM' && (
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <strong>ℹ️ Información:</strong> Este paciente se registró directamente desde el formulario web de la plataforma.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Sección 3: Información Médica (EDITABLE) */}
         <Card className="border border-[#04BFAD]">
           <CardHeader className="bg-[#A7F2EB]/10">
@@ -308,13 +421,19 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
           </CardHeader>
           <CardContent className="space-y-4 mt-4">
             <div>
-              <Label htmlFor="condicionPrincipal">Condición Principal *</Label>
-              <Input
-                id="condicionPrincipal"
+              <Cie10SingleAutocompleteComplete
+                label="Condición Principal *"
                 value={formData.condicionPrincipal}
-                onChange={(e) => setFormData({ ...formData, condicionPrincipal: e.target.value })}
-                placeholder="Ej: Diabetes tipo 2"
-                className="mt-1"
+                selectedCode={formData.condicionPrincipalCodigo}
+                onChange={(nombre: string, codigo: string) => {
+                  setFormData({ 
+                    ...formData, 
+                    condicionPrincipal: nombre,
+                    condicionPrincipalCodigo: codigo
+                  });
+                }}
+                placeholder="Buscar enfermedad por nombre o código CIE-10..."
+                required
               />
             </div>
 
@@ -330,27 +449,63 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
               />
             </div>
 
+            {/* Patologías Prevalentes */}
             <div>
-              <Label htmlFor="medicamentosActuales">Medicamentos Actuales</Label>
-              <Textarea
-                id="medicamentosActuales"
-                value={formData.medicamentosActuales}
-                onChange={(e) => setFormData({ ...formData, medicamentosActuales: e.target.value })}
-                placeholder="Lista de medicamentos que el paciente está tomando actualmente..."
-                rows={3}
-                className="mt-1"
+              <Label className="mb-3 block">Patologías Prevalentes</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-[#F2F2F2]/50 rounded-xl">
+                {PATOLOGIAS_PREVALENTES.map((patologia) => (
+                  <Checkbox
+                    key={patologia}
+                    id={`edit-${patologia}`}
+                    checked={formData.patologias.includes(patologia)}
+                    onChange={(checked) => {
+                      const newPatologias = checked
+                        ? [...formData.patologias, patologia]
+                        : formData.patologias.filter((p) => p !== patologia);
+                      setFormData({ ...formData, patologias: newPatologias });
+                    }}
+                    label={patologia}
+                  />
+                ))}
+              </div>
+              {formData.patologias.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {formData.patologias.map((pat) => (
+                    <Badge key={pat} variant="outline" className="bg-[#04BFAD]/10 text-[#024959]">
+                      {pat}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Otras Enfermedades */}
+            <div>
+              <Cie10MultipleAutocomplete
+                label="Otras Enfermedades (CIE-10)"
+                value={formData.otrasEnfermedadesEstructuradas}
+                onChange={(enfermedades) => setFormData({ ...formData, otrasEnfermedadesEstructuradas: enfermedades })}
+                placeholder="Buscar enfermedades por nombre o código CIE-10..."
               />
             </div>
 
+            {/* Alergias */}
             <div>
-              <Label htmlFor="alergias">Alergias</Label>
-              <Textarea
-                id="alergias"
-                value={formData.alergias}
-                onChange={(e) => setFormData({ ...formData, alergias: e.target.value })}
-                placeholder="Alergias conocidas del paciente..."
-                rows={2}
-                className="mt-1"
+              <Cie10MultipleAutocomplete
+                label="Alergias (CIE-10)"
+                value={formData.alergiasEstructuradas}
+                onChange={(alergias) => setFormData({ ...formData, alergiasEstructuradas: alergias })}
+                placeholder="Buscar alergias por nombre o código CIE-10..."
+              />
+            </div>
+
+            {/* Medicamentos Actuales */}
+            <div>
+              <MedicamentoSimpleAutocomplete
+                label="Medicamentos Actuales"
+                value={formData.medicamentosEstructurados}
+                onChange={(medicamentos) => setFormData({ ...formData, medicamentosEstructurados: medicamentos })}
+                placeholder="Buscar medicamento o escribir uno personalizado..."
               />
             </div>
 
@@ -390,6 +545,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                     {PATIENT_STATUSES.map((status) => (
                       <SelectItem key={status.value} value={status.value}>
                         <div className="flex items-center gap-2">
+                          <span className="text-lg">{status.icon}</span>
                           <Badge className={status.color}>
                             {status.label}
                           </Badge>

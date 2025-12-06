@@ -15,6 +15,7 @@ import PatientJourney from "./home/PatientJourney"
 import SuccessStories from "./home/SuccessStories"
 import PrivacySecurity from "./home/PrivacySecurity"
 import FAQ from "./home/FAQ"
+import { ContactModal } from "./ContactModal"
 import { createPatientIntake, getTrials, getPublicStats } from "@/lib/api"
 import type { Trial, PublicStats } from "@/lib/api"
 import {
@@ -40,6 +41,7 @@ export default function HomePage() {
   const [trials, setTrials] = useState<Trial[]>([])
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [publicStats, setPublicStats] = useState<PublicStats | null>(null)
+  const [showContactModal, setShowContactModal] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -247,8 +249,8 @@ export default function HomePage() {
                 ) : (
                   <div className="col-span-3 text-center py-12">
                     <Icons.Microscope className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                    <p className="text-xl text-gray-600">Cargando estudios clínicos disponibles...</p>
-                    <p className="text-sm text-gray-500 mt-2">Si este mensaje persiste, verifica la conexión con la API</p>
+                    <p className="text-xl text-gray-600">Aún no se han agregado estudios clínicos</p>
+                    <p className="text-sm text-gray-500 mt-2">Pronto habrá nuevas oportunidades disponibles</p>
                   </div>
                 )}
               </div>
@@ -324,7 +326,19 @@ export default function HomePage() {
       {activeTab === "instituciones" && <TrialPage />}
 
       {/* Footer */}
-      <FooterPage activeTab={activeTab} />
+      <FooterPage 
+        activeTab={activeTab} 
+        onContactClick={() => setShowContactModal(true)}
+        onFaqClick={() => {
+          setActiveTab('pacientes');
+          setTimeout(() => {
+            const faqSection = document.getElementById('faq');
+            if (faqSection) {
+              faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 100);
+        }}
+      />
 
       {/* Modal del Formulario */}
       {showPatientForm && (
@@ -382,6 +396,12 @@ export default function HomePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de Contacto */}
+      <ContactModal 
+        isOpen={showContactModal} 
+        onClose={() => setShowContactModal(false)} 
+      />
     </div>
   )
 }

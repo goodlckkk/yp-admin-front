@@ -18,11 +18,17 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Cie10SingleAutocomplete } from '../ui/Cie10SingleAutocomplete';
+// Componentes CIE-10 COMPLETOS para el dashboard (14,000+ enfermedades)
+import { Cie10SingleAutocompleteComplete } from '../ui/Cie10SingleAutocompleteComplete';
+import { Cie10MultipleAutocomplete } from '../ui/Cie10MultipleAutocomplete';
+import { MedicamentoSimpleAutocomplete } from '../ui/MedicamentoSimpleAutocomplete';
+import { ResearchSiteAutocomplete } from '../ui/research-site-autocomplete';
+import { AddInstitutionModal } from '../trials/AddInstitutionModal';
 import { Checkbox } from '../ui/checkbox';
 import { Badge } from '../ui/badge';
 import { createPatientIntake } from '../../lib/api';
 import type { CreatePatientIntakePayload } from '../../lib/api';
+import { regionesChile, comunasPorRegion, getComunasByRegion } from '../../lib/regiones-comunas';
 
 interface ManualPatientFormProps {
   isOpen: boolean;
@@ -30,35 +36,20 @@ interface ManualPatientFormProps {
   onSuccess: () => void;
 }
 
-// Regiones de Chile
-const REGIONES_CHILE = [
-  "Arica y Parinacota",
-  "Tarapacá",
-  "Antofagasta",
-  "Atacama",
-  "Coquimbo",
-  "Valparaíso",
-  "Metropolitana de Santiago",
-  "O'Higgins",
-  "Maule",
-  "Ñuble",
-  "Biobío",
-  "La Araucanía",
-  "Los Ríos",
-  "Los Lagos",
-  "Aysén",
-  "Magallanes"
-];
+// Las regiones y comunas ahora se importan desde el archivo compartido
 
 // Patologías más prevalentes en Chile
 const PATOLOGIAS_PREVALENTES = [
   "Hipertensión",
   "Diabetes",
   "Enfermedad pulmonar",
+  "EPOC (Enfermedad Pulmonar Obstructiva Crónica)",
   "Enfermedad coronaria (infarto agudo al miocardio)",
   "Insuficiencia cardíaca",
   "Enfermedad renal crónica",
   "Asma",
+  "Obesidad",
+  "Fumador/a",
   "Otros"
 ];
 
@@ -78,8 +69,9 @@ const CODIGOS_PAIS = [
 export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAddInstitutionModalOpen, setIsAddInstitutionModalOpen] = useState(false);
   
-  const [formData, setFormData] = useState<CreatePatientIntakePayload>({
+  const [formData, setFormData] = useState<any>({
     nombres: '',
     apellidos: '',
     rut: '',
@@ -94,7 +86,16 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     condicionPrincipal: '',
     condicionPrincipalCodigo: '', // ← Código CIE-10 de la condición principal
     patologias: [], // ← Checkboxes de patologías prevalentes
+    // Campos estructurados (nuevos)
+    medicamentosEstructurados: [] as string[], // Solo nombres de medicamentos
+    alergiasEstructuradas: [] as Array<{ codigo: string; nombre: string }>,
+    otrasEnfermedadesEstructuradas: [] as Array<{ codigo: string; nombre: string }>,
+    // Campos legacy (texto libre)
     otrasEnfermedades: '',
+    alergias: '',
+    medicamentosActuales: '',
+    // Sitio/Institución de referencia (opcional)
+    referralResearchSiteId: '',
     aceptaTerminos: true,
     aceptaPrivacidad: true,
     source: 'MANUAL_ENTRY',
@@ -105,17 +106,20 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     'Hipertensión',
     'Diabetes',
     'Enfermedad pulmonar',
+    'EPOC (Enfermedad Pulmonar Obstructiva Crónica)',
     'Enfermedad coronaria (infarto agudo al miocardio)',
     'Insuficiencia cardíaca',
     'Enfermedad renal crónica',
-    'Asma'
+    'Asma',
+    'Obesidad',
+    'Fumador/a'
   ];
 
   // Manejar selección de patologías
   const handlePatologiaToggle = (patologia: string) => {
-    setFormData((prev) => {
+    setFormData((prev: any) => {
       const patologias = prev.patologias?.includes(patologia)
-        ? prev.patologias.filter(p => p !== patologia)
+        ? prev.patologias.filter((p: string) => p !== patologia)
         : [...(prev.patologias || []), patologia];
       return { ...prev, patologias };
     });
@@ -139,8 +143,8 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     return cleaned.slice(0, 15); // Máximo 15 dígitos según estándar E.164
   };
 
-  const handleInputChange = (field: keyof CreatePatientIntakePayload, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (field: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
     setError(null);
   };
 
@@ -312,6 +316,8 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
                   type="date"
                   value={formData.fechaNacimiento}
                   onChange={(e) => handleInputChange('fechaNacimiento', e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
+                  min={new Date(new Date().setFullYear(new Date().getFullYear() - 150)).toISOString().split('T')[0]}
                   disabled={loading}
                   className="mt-1"
                 />
@@ -400,16 +406,19 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
                 <Label htmlFor="region">Región *</Label>
                 <Select
                   value={formData.region}
-                  onValueChange={(value) => handleInputChange('region', value)}
+                  onValueChange={(value) => {
+                    handleInputChange('region', value);
+                    handleInputChange('comuna', ''); // Limpiar comuna al cambiar región
+                  }}
                   disabled={loading}
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Seleccionar región" />
                   </SelectTrigger>
                   <SelectContent>
-                    {REGIONES_CHILE.map((region) => (
-                      <SelectItem key={region} value={region}>
-                        {region}
+                    {regionesChile.map((region) => (
+                      <SelectItem key={region.value} value={region.value}>
+                        {region.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -418,14 +427,22 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
               
               <div>
                 <Label htmlFor="comuna">Comuna *</Label>
-                <Input
-                  id="comuna"
+                <Select
                   value={formData.comuna}
-                  onChange={(e) => handleInputChange('comuna', e.target.value)}
-                  placeholder="Ej: Santiago"
-                  disabled={loading}
-                  className="mt-1"
-                />
+                  onValueChange={(value) => handleInputChange('comuna', value)}
+                  disabled={loading || !formData.region}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={formData.region ? "Seleccionar comuna" : "Primero selecciona región"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formData.region && getComunasByRegion(formData.region).map((comuna) => (
+                      <SelectItem key={comuna.value} value={comuna.value}>
+                        {comuna.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -442,16 +459,36 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
             </div>
           </div>
 
+          {/* Sitio/Institución de Referencia */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-[#024959]">Sitio/Institución de Referencia</h3>
+            
+            <ResearchSiteAutocomplete
+              value={formData.referralResearchSiteId}
+              onSelect={(siteId) => handleInputChange('referralResearchSiteId', siteId)}
+              onAddNew={() => setIsAddInstitutionModalOpen(true)}
+              disabled={loading}
+              placeholder="Buscar sitio/institución que derivó al paciente..."
+              label="Sitio/Institución que Deriva (Opcional)"
+            />
+            
+            <p className="text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <strong>💡 Información:</strong> Si este paciente fue derivado por un sitio/institución específica 
+              (ej: Clínica Alemana, Hospital Regional, Clínica Vanguardia), selecciónala aquí. 
+              Esto ayuda a rastrear el origen de las derivaciones.
+            </p>
+          </div>
+
           {/* Información Médica */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[#024959]">Información Médica</h3>
             
-            {/* Autocomplete CIE-10 para Condición Principal */}
-            <Cie10SingleAutocomplete
-              label="Condición Médica Principal"
+            {/* Autocomplete CIE-10 COMPLETO para Condición Principal */}
+            <Cie10SingleAutocompleteComplete
+              label="Condición Médica Principal *"
               value={formData.condicionPrincipal || ''}
               selectedCode={formData.condicionPrincipalCodigo || ''}
-              onChange={(nombre, codigo) => {
+              onChange={(nombre: string, codigo: string) => {
                 handleInputChange('condicionPrincipal', nombre);
                 handleInputChange('condicionPrincipalCodigo', codigo);
               }}
@@ -460,26 +497,26 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
               required
             />
 
-            {/* Checkboxes de Patologías Prevalentes */}
+            {/* Patologías Prevalentes (Checkboxes) */}
             <div>
-              <Label className="block mb-3">
-                ¿Tiene alguna de estas patologías? (Seleccione todas las que apliquen)
-              </Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-[#F2F2F2]/50 rounded-lg">
+              <label className="block text-sm font-medium text-[#024959] mb-3">
+                ¿Tiene alguna de estas patologías? (Selecciona todas las que apliquen)
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-[#F2F2F2]/50 rounded-xl">
                 {patologiasPrevalentes.map((patologia) => (
                   <Checkbox
                     key={patologia}
-                    id={`patologia-${patologia}`}
+                    id={`manual-${patologia}`}
                     checked={formData.patologias?.includes(patologia) || false}
-                    onChange={() => handlePatologiaToggle(patologia)}
+                    onChange={(checked) => handlePatologiaToggle(patologia)}
                     label={patologia}
                   />
                 ))}
               </div>
               {formData.patologias && formData.patologias.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.patologias.map((pat) => (
-                    <Badge key={pat} className="bg-[#04BFAD] text-white">
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {formData.patologias.map((pat: string) => (
+                    <Badge key={pat} variant="outline" className="bg-[#04BFAD]/10 text-[#024959]">
                       {pat}
                     </Badge>
                   ))}
@@ -487,16 +524,36 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
               )}
             </div>
 
-            {/* Otras Enfermedades (texto libre) */}
+            {/* Otras Enfermedades (CIE-10 Múltiple) */}
             <div>
-              <Label htmlFor="otrasEnfermedades">Otras Enfermedades (Opcional)</Label>
-              <Textarea
-                id="otrasEnfermedades"
-                value={formData.otrasEnfermedades}
-                onChange={(e) => handleInputChange('otrasEnfermedades', e.target.value)}
-                placeholder="Describa otras condiciones médicas que no estén en la lista..."
+              <Cie10MultipleAutocomplete
+                label="Otras Enfermedades (CIE-10)"
+                value={formData.otrasEnfermedadesEstructuradas}
+                onChange={(enfermedades) => handleInputChange('otrasEnfermedadesEstructuradas', enfermedades)}
+                placeholder="Buscar enfermedades por nombre o código CIE-10..."
                 disabled={loading}
-                className="mt-1 min-h-[100px]"
+              />
+            </div>
+
+            {/* Alergias (CIE-10 Múltiple) */}
+            <div>
+              <Cie10MultipleAutocomplete
+                label="Alergias (CIE-10)"
+                value={formData.alergiasEstructuradas}
+                onChange={(alergias) => handleInputChange('alergiasEstructuradas', alergias)}
+                placeholder="Buscar alergias por nombre o código CIE-10..."
+                disabled={loading}
+              />
+            </div>
+
+            {/* Medicamentos Actuales (Solo Nombres) */}
+            <div>
+              <MedicamentoSimpleAutocomplete
+                label="Medicamentos Actuales"
+                value={formData.medicamentosEstructurados}
+                onChange={(medicamentos) => handleInputChange('medicamentosEstructurados', medicamentos)}
+                placeholder="Buscar medicamento o escribir uno personalizado..."
+                disabled={loading}
               />
             </div>
 
@@ -551,6 +608,16 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
           </div>
         </form>
       </DialogContent>
+
+      {/* Modal para agregar nuevo sitio/institución */}
+      <AddInstitutionModal
+        isOpen={isAddInstitutionModalOpen}
+        onClose={() => setIsAddInstitutionModalOpen(false)}
+        onSuccess={(newSite) => {
+          setFormData({ ...formData, referralResearchSiteId: newSite.id });
+          setIsAddInstitutionModalOpen(false);
+        }}
+      />
     </Dialog>
   );
 }

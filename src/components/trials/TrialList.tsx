@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui
 import { Button } from '../ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Badge } from '../ui/badge';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 import type { Trial, TrialStatus, TrialsFilterParams } from '../../lib/api';
 import { getTrials, deleteTrial } from '../../lib/api';
 import { TrialFilters } from './TrialFilters';
@@ -82,16 +83,16 @@ const navigate = (path: string) => {
 // --- Mapeos de estado ---
 
 const statusVariant: Record<TrialStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  DRAFT: 'outline',
+  PREPARATION: 'outline',
   RECRUITING: 'secondary',
-  ACTIVE: 'default',
+  FOLLOW_UP: 'default',
   CLOSED: 'destructive',
 };
 
 const statusLabels: Record<TrialStatus, string> = {
-  DRAFT: 'Borrador',
+  PREPARATION: 'Preparación',
   RECRUITING: 'Reclutando',
-  ACTIVE: 'Activo',
+  FOLLOW_UP: 'Seguimiento',
   CLOSED: 'Cerrado',
 };
 
@@ -122,6 +123,11 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
   const [editingTrial, setEditingTrial] = useState<Trial | null>(null);
   const [isInstitutionModalOpen, setIsInstitutionModalOpen] = useState(false);
   const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
+  
+  // Estados para el modal de confirmación de eliminación
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [trialToDelete, setTrialToDelete] = useState<Trial | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Verificar autenticación al montar
   useRequireAuth();
@@ -240,18 +246,29 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
     }
   };
 
-  const handleDelete = async (trialId: string) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar este estudio clínico? Esta acción no se puede deshacer.')) {
-      return;
-    }
+  const handleDelete = (trialId: string) => {
+    const trial = trials.find(t => t.id === trialId);
+    if (!trial) return;
+    
+    setTrialToDelete(trial);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!trialToDelete) return;
     
     try {
-      await deleteTrial(trialId);
+      setIsDeleting(true);
+      await deleteTrial(trialToDelete.id);
       showToast('Estudio clínico eliminado exitosamente', 'success');
       fetchTrials(); // Recargar la lista
     } catch (err) {
       console.error('Error al eliminar estudio clínico:', err);
       showToast('No se pudo eliminar el estudio clínico. Por favor, intenta nuevamente.', 'error');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+      setTrialToDelete(null);
     }
   };
 
@@ -429,7 +446,7 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center text-gray-600">
                           <MapPin className="mr-2 h-4 w-4 text-[#04BFAD]" />
-                          <span>{trial.clinic_city}</span>
+                          <span>{trial.researchSite?.ciudad || 'Sin ubicación'}</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <CalendarIcon className="mr-2 h-4 w-4 text-[#04BFAD]" />
@@ -516,6 +533,22 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
           setIsSponsorModalOpen(false);
           showToast('Patrocinador agregado exitosamente', 'success');
         }}
+      />
+
+      {/* Modal de confirmación para eliminar */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => {
+          setShowDeleteDialog(false);
+          setTrialToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Eliminar Estudio Clínico"
+        description={`¿Estás seguro de eliminar el estudio "${trialToDelete?.title}"? Los pacientes asociados serán desvinculados automáticamente. Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        isLoading={isDeleting}
       />
 
     </div>
