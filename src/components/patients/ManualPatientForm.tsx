@@ -214,7 +214,13 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     setError(null);
 
     try {
-      await createPatientIntake(formData);
+      // Preparar payload: si referralResearchSiteId está vacío, no enviarlo
+      const payload = {
+        ...formData,
+        ...(formData.referralResearchSiteId ? { referralResearchSiteId: formData.referralResearchSiteId } : {}),
+      };
+      
+      await createPatientIntake(payload);
       
       // Resetear formulario
       setFormData({
@@ -461,7 +467,10 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
 
           {/* Sitio/Institución de Referencia */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[#024959]">Sitio/Institución de Referencia</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-[#024959]">Sitio/Institución de Referencia</h3>
+              <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Opcional</span>
+            </div>
             
             <ResearchSiteAutocomplete
               value={formData.referralResearchSiteId}
@@ -469,13 +478,14 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
               onAddNew={() => setIsAddInstitutionModalOpen(true)}
               disabled={loading}
               placeholder="Buscar sitio/institución que derivó al paciente..."
-              label="Sitio/Institución que Deriva (Opcional)"
+              label="Sitio/Institución que Deriva"
+              required={false}
             />
             
             <p className="text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <strong>💡 Información:</strong> Si este paciente fue derivado por un sitio/institución específica 
-              (ej: Clínica Alemana, Hospital Regional, Clínica Vanguardia), selecciónala aquí. 
-              Esto ayuda a rastrear el origen de las derivaciones.
+              <strong>💡 Información:</strong> Este campo es <strong>opcional</strong>. Solo complétalo si el paciente fue derivado por un sitio/institución específica 
+              (ej: Clínica Alemana, Hospital Regional, Clínica Vanguardia). 
+              Si el paciente ingresó directamente, puedes dejarlo en blanco.
             </p>
           </div>
 
