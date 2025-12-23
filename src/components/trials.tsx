@@ -5,6 +5,7 @@ import { InputWithLabel } from "./ui/input";
 import { TextareaWithLabel } from "./ui/textarea";
 import { SelectWithLabel } from "./ui/select";
 import { useState } from "react";
+import { sendInstitutionContact } from "@/lib/api";
 
 const trialsPage = () => {
   const [formContactoInstitucion, setFormContactoInstitucion] = useState({
@@ -47,25 +48,42 @@ const trialsPage = () => {
     }
   };
 
-  const handleSubmitContactoInstitucion = (e: React.FormEvent) => {
+  const handleSubmitContactoInstitucion = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Contacto Institución:", formContactoInstitucion);
-    alert("¡Gracias por tu interés! Nos contactaremos contigo en menos de 24 horas.");
-    setFormContactoInstitucion({
-      nombreInstitucion: "",
-      tipoInstitucion: "",
-      nombreContacto: "",
-      cargoContacto: "",
-      email: "",
-      telefono: "",
-      pais: "",
-      ciudad: "",
-      direccion: "",
-      sitioWeb: "",
-      numeroEnsayos: "",
-      areasInteres: "",
-      mensaje: "",
-    });
+    
+    try {
+      // Enviar datos al backend
+      const response = await sendInstitutionContact({
+        nombreInstitucion: formContactoInstitucion.nombreInstitucion,
+        nombreContacto: formContactoInstitucion.nombreContacto,
+        email: formContactoInstitucion.email,
+        telefono: formContactoInstitucion.telefono,
+        mensaje: formContactoInstitucion.mensaje,
+      });
+      
+      // Mostrar mensaje de éxito
+      alert(response.message || "¡Gracias por tu interés! Nos contactaremos contigo en menos de 24 horas.");
+      
+      // Limpiar formulario
+      setFormContactoInstitucion({
+        nombreInstitucion: "",
+        tipoInstitucion: "",
+        nombreContacto: "",
+        cargoContacto: "",
+        email: "",
+        telefono: "",
+        pais: "",
+        ciudad: "",
+        direccion: "",
+        sitioWeb: "",
+        numeroEnsayos: "",
+        areasInteres: "",
+        mensaje: "",
+      });
+    } catch (error) {
+      console.error("Error al enviar formulario:", error);
+      alert("Hubo un error al enviar tu solicitud. Por favor, intenta nuevamente o contáctanos directamente a contacto@yoparticipo.cl");
+    }
   };
 
   return (

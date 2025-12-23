@@ -511,3 +511,20 @@ export interface PublicStats {
 export async function getPublicStats(): Promise<PublicStats> {
   return request<PublicStats>(`/stats/public`);
 }
+
+// ==================== FORMULARIO DE INSTITUCIONES ====================
+
+export interface InstitutionContactPayload {
+  nombreInstitucion: string;
+  nombreContacto: string;
+  email: string;
+  telefono: string;
+  mensaje: string;
+}
+
+export async function sendInstitutionContact(payload: InstitutionContactPayload): Promise<{ success: boolean; message: string }> {
+  return request<{ success: boolean; message: string }>(`/emails/institution-contact`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
