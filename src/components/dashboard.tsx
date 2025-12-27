@@ -28,6 +28,7 @@ import { PatientEditForm } from './patients/PatientEditForm';
 import { ManualPatientForm } from './patients/ManualPatientForm';
 import { TrialList } from "./trials/TrialList"
 import { ResearchSitesView } from "./research-sites/ResearchSitesView"
+import { SponsorsView } from "./sponsors/SponsorsView"
 import HeroSlidesManager from './dashboard/HeroSlidesManager';
 import SuccessStoriesManager from './dashboard/SuccessStoriesManager';
 import { Cie10SingleAutocomplete } from './ui/Cie10SingleAutocomplete';
@@ -39,7 +40,7 @@ const navigate = (path: string) => {
 };
 
 // Tipos de sección
-type Section = "overview" | "pacientes" | "estudios" | "sitios" | "slider" | "historias"
+type Section = "overview" | "pacientes" | "estudios" | "sitios" | "sponsors" | "slider" | "historias"
 
 // Tipos de grupos del menú
 type MenuGroup = {
@@ -557,6 +558,7 @@ export default function DashboardPage() {
       items: [
         { id: "estudios" as Section, label: "Estudios Clínicos", icon: Icons.FileText },
         { id: "sitios" as Section, label: "Sitios/Instituciones", icon: Icons.Building },
+        { id: "sponsors" as Section, label: "Sponsors", icon: Icons.Shield },
       ]
     },
     {
@@ -1213,6 +1215,11 @@ export default function DashboardPage() {
           {/* Sitios/Instituciones */}
           {activeSection === "sitios" && (
             <ResearchSitesView />
+          )}
+
+          {/* Sponsors */}
+          {activeSection === "sponsors" && (
+            <SponsorsView />
           )}
 
           {/* Slider Principal */}
