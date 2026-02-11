@@ -88,7 +88,7 @@ export function HeaderPage({ activeTab, setActiveTab, onPostularClick }: any) {
               className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm whitespace-nowrap"
             >
               <img src="/logo-blanco.svg" alt="yoParticipo" className="h-4 sm:h-4 md:h-5 w-auto" />
-              <span>Participo</span>
+              <span>Quiero Participar</span>
             </Button>
           )}
         </div>

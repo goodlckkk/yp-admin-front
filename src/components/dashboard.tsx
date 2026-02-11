@@ -128,7 +128,7 @@ export default function DashboardPage() {
     limit: 10 // Límite de 10 pacientes por página con paginación
   })
 
-  const INACTIVITY_LIMIT_MS = 15 * 60 * 1000
+  const INACTIVITY_LIMIT_MS = 60 * 60 * 1000 // 60 minutos
 
   // Función para calcular la edad a partir de la fecha de nacimiento
   const calculateAge = (birthDate?: string): number => {
@@ -158,23 +158,62 @@ export default function DashboardPage() {
   const exportPatientsToExcel = () => {
     try {
       // Preparar los datos para exportar
-      const dataToExport = patientsToDisplay.map((patient) => ({
-        'RUT': patient.rut || 'N/A',
-        'Nombres': patient.nombres || 'N/A',
-        'Apellidos': patient.apellidos || 'N/A',
-        'Email': patient.email || 'N/A',
-        'Teléfono': patient.telefono || 'N/A',
-        'Fecha de Nacimiento': formatDate(patient.fechaNacimiento),
-        'Edad': calculateAge(patient.fechaNacimiento),
-        'Sexo': patient.sexo || 'N/A',
-        'Región': patient.region || 'N/A',
-        'Comuna': patient.comuna || 'N/A',
-        'Condición Principal': patient.condicionPrincipal || 'N/A',
-        'Medicamentos Actuales': patient.medicamentosActuales || 'N/A',
-        'Estudio Clínico Asignado': patient.trial?.title || 'Sin asignar',
-        'Estado': patient.status || 'RECEIVED',
-        'Fecha de Registro': formatDate(patient.createdAt),
-      }));
+      const dataToExport = patientsToDisplay.map((patient) => {
+        // Calcular vigencia del consentimiento (15 años)
+        const registrationDate = new Date(patient.createdAt);
+        const expirationDate = new Date(registrationDate);
+        expirationDate.setFullYear(registrationDate.getFullYear() + 15);
+        const isExpired = new Date() > expirationDate;
+        
+        // Obtener origen legible
+        const sourceMap: Record<string, string> = {
+          'WEB_FORM': 'Formulario Web',
+          'MANUAL_ENTRY': 'Ingreso Manual',
+          'REFERRAL': 'Referido',
+          'OTHER': 'Otro'
+        };
+
+        // Formatear patologías (array a string)
+        const patologiasStr = Array.isArray((patient as any).patologias) 
+          ? (patient as any).patologias.join(', ') 
+          : '';
+
+        // Formatear otras enfermedades (texto o estructurado)
+        let otrasEnfermedadesStr = (patient as any).otrasEnfermedades || '';
+        if (Array.isArray((patient as any).otrasEnfermedadesEstructuradas)) {
+          const otrasStruct = (patient as any).otrasEnfermedadesEstructuradas
+            .map((e: any) => `${e.nombre} (${e.codigo})`)
+            .join(', ');
+          otrasEnfermedadesStr = otrasEnfermedadesStr 
+            ? `${otrasEnfermedadesStr}, ${otrasStruct}`
+            : otrasStruct;
+        }
+
+        return {
+          'RUT': patient.rut || 'N/A',
+          'Nombres': patient.nombres || 'N/A',
+          'Apellidos': patient.apellidos || 'N/A',
+          'Email': patient.email || 'N/A',
+          'Teléfono': patient.telefono || 'N/A',
+          'Fecha de Nacimiento': formatDate(patient.fechaNacimiento),
+          'Edad': calculateAge(patient.fechaNacimiento),
+          'Sexo': patient.sexo || 'N/A',
+          'Región': patient.region || 'N/A',
+          'Comuna': patient.comuna || 'N/A',
+          'Dirección': patient.direccion || 'N/A',
+          'Condición Principal': patient.condicionPrincipal || 'N/A',
+          'Patologías Prevalentes': patologiasStr || 'Ninguna',
+          'Otras Enfermedades': otrasEnfermedadesStr || 'Ninguna',
+          'Medicamentos Actuales': patient.medicamentosActuales || 'N/A',
+          'Estudio Clínico Asignado': patient.trial?.title || 'Sin asignar',
+          'Sitio / Institución': patient.referralResearchSite?.nombre || 'N/A',
+          'Estado': patient.status || 'RECEIVED',
+          'Origen': sourceMap[patient.source] || patient.source || 'N/A',
+          'Fecha de Registro': formatDate(patient.createdAt),
+          'Vigencia Consentimiento': isExpired ? 'CADUCADO' : 'VIGENTE',
+          'Fecha Caducidad': formatDate(expirationDate.toISOString())
+        };
+      });
 
       // Crear un libro de trabajo (workbook)
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
@@ -331,7 +370,7 @@ export default function DashboardPage() {
       }
     }, 30_000)
 
-    console.log('[Auth] Sistema de inactividad iniciado (15 minutos)')
+    console.log('[Auth] Sistema de inactividad iniciado (60 minutos)')
 
     return () => {
       activityEvents.forEach((event) => window.removeEventListener(event, registerActivity))
@@ -446,6 +485,15 @@ export default function DashboardPage() {
     refreshTrials()
   }
 
+  // Función para verificar vigencia del consentimiento (15 años)
+  const isConsentValid = (registrationDate?: string) => {
+    if (!registrationDate) return false;
+    const date = new Date(registrationDate);
+    const expirationDate = new Date(date);
+    expirationDate.setFullYear(date.getFullYear() + 15);
+    return new Date() <= expirationDate;
+  };
+
   const patientsToDisplay = useMemo(() => {
     // Combinar búsqueda del header con filtros avanzados
     const combinedSearchQuery = searchQuery || filters.searchQuery;
@@ -497,18 +545,18 @@ export default function DashboardPage() {
         bg: "bg-[#dfe3e3]",
       },
       {
-        label: "Pacientes Verificados",
-        value: patientIntakes.filter((intake) => intake.status === "VERIFIED").length.toString(),
-        change: `+${patientIntakes.filter((intake) => intake.status === "VERIFIED").length}`,
-        icon: Icons.CheckCircle,
-        color: "text-emerald-600",
-        bg: "bg-emerald-100",
+        label: "Pendientes por verificar",
+        value: patientIntakes.filter((intake) => intake.status === "RECEIVED").length.toString(),
+        change: `+${patientIntakes.filter((intake) => intake.status === "RECEIVED").length}`,
+        icon: Icons.AlertTriangle,
+        color: "text-orange-600",
+        bg: "bg-orange-100",
       },
       {
-        label: "Con Estudio Asignado",
+        label: "Por sitios e instituciones",
         value: patientIntakes.filter((intake) => intake.status === "STUDY_ASSIGNED").length.toString(),
         change: `+${patientIntakes.filter((intake) => intake.status === "STUDY_ASSIGNED").length}`,
-        icon: Icons.Microscope,
+        icon: Icons.Building,
         color: "text-purple-600",
         bg: "bg-purple-100",
       },
@@ -535,6 +583,19 @@ export default function DashboardPage() {
     })
   }
 
+
+  const formatDateTime = (isoDate?: string) => {
+    if (!isoDate) return "Sin registro"
+    const date = new Date(isoDate)
+    if (Number.isNaN(date.getTime())) return "Sin registro"
+    return date.toLocaleString("es-CL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    })
+  }
 
   // Estado para controlar qué grupos están expandidos
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['ensayos', 'web']);
@@ -607,7 +668,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               <img src="/logo.svg" alt="yoParticipo" className="w-10 h-10 scale-150" />
               <div>
-                <h1 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>yoParticipo</h1>
+                <h1 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>YOParticipo</h1>
                 <p className="text-xs text-gray-500">Dashboard Admin</p>
               </div>
             </div>
@@ -803,7 +864,7 @@ export default function DashboardPage() {
                           <div className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: '#04bcbc' }}></div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-900">{intake.nombres} {intake.apellidos}</p>
-                            <p className="text-xs text-gray-500 mt-1">{formatDate(intake.fechaNacimiento)}</p>
+                            <p className="text-xs text-gray-500 mt-1">{formatDateTime(intake.createdAt)}</p>
                           </div>
                         </div>
                       ))}
@@ -986,9 +1047,12 @@ export default function DashboardPage() {
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Nombre</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">RUT</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Fecha Registro</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Edad</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Condición</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Estudio Clínico</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Sitio / Institución</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Vigencia</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Estado</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Acciones</th>
                         </tr>
@@ -1028,6 +1092,7 @@ export default function DashboardPage() {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{paciente.rut}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatDateTime(paciente.createdAt)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                               {calculateAge(paciente.fechaNacimiento)} años
                             </td>
@@ -1035,6 +1100,20 @@ export default function DashboardPage() {
                               <Badge variant="outline">{paciente.condicionPrincipal}</Badge>
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-600">{paciente.trial?.title ?? "Sin asignar"}</td>
+                            <td className="px-6 py-4 text-sm text-gray-600">{paciente.referralResearchSite?.nombre ?? "N/A"}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {isConsentValid(paciente.createdAt) ? (
+                                <Badge className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100 gap-1">
+                                  <Icons.Check className="w-3 h-3" />
+                                  Vigente
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-red-50 text-red-700 border-red-200 hover:bg-red-100 gap-1">
+                                  <Icons.X className="w-3 h-3" />
+                                  Caducado
+                                </Badge>
+                              )}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <Badge
                                 className={
@@ -1156,6 +1235,10 @@ export default function DashboardPage() {
                         <div className="flex justify-between items-start">
                           <span className="text-gray-600">Estudio:</span>
                           <span className="font-medium text-right text-xs max-w-[60%]">{paciente.trial?.title ?? "Sin asignar"}</span>
+                        </div>
+                        <div className="flex justify-between items-start">
+                          <span className="text-gray-600">Sitio:</span>
+                          <span className="font-medium text-right text-xs max-w-[60%]">{paciente.referralResearchSite?.nombre ?? "N/A"}</span>
                         </div>
                       </div>
 

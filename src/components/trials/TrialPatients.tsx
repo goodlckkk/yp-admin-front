@@ -270,6 +270,7 @@ export function TrialPatients({ trialId }: TrialPatientsProps) {
                     <TableHead>Paciente</TableHead>
                     <TableHead>Contacto</TableHead>
                     <TableHead>Edad</TableHead>
+                    <TableHead>Vigencia</TableHead>
                     <TableHead>Comuna</TableHead>
                     <TableHead>Fecha Postulación</TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
@@ -313,6 +314,17 @@ export function TrialPatients({ trialId }: TrialPatientsProps) {
                       </TableCell>
                       <TableCell>
                         {calculateAge(patient.fechaNacimiento) ? `${calculateAge(patient.fechaNacimiento)} años` : 'N/A'}
+                      </TableCell>
+                      <TableCell>
+                        {patient.aceptaAlmacenamiento15Anos ? (
+                          <Badge variant="secondary" className="bg-green-50 text-green-700 text-xs">
+                            15 años
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-gray-100 text-gray-600 text-xs">
+                            Estándar
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell>
                         {patient.comuna && (
@@ -405,6 +417,15 @@ export function TrialPatients({ trialId }: TrialPatientsProps) {
                   <div>
                     <p className="text-sm text-gray-600">Región</p>
                     <p className="font-medium">{selectedPatient.region || 'No especificada'}</p>
+                    {selectedPatient.aceptaAlmacenamiento15Anos ? (
+                      <Badge variant="secondary" className="bg-green-50 text-green-700">
+                        ✓ Acepta almacenamiento por 15 años
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive">
+                        ✗ No acepta almacenamiento
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>
