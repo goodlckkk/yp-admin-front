@@ -45,6 +45,7 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
     otrasEnfermedades: "",
     aceptaTerminos: false,
     aceptaPrivacidad: false,
+    aceptaAlmacenamiento15Anos: false,
   })
 
   // Patologías prevalentes en Chile (según feedback)
@@ -272,7 +273,16 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
   const validateStep = (step: number) => {
     switch (step) {
       case 1:
-        return !!(formData.nombres && formData.apellidos && formData.rut && formData.fechaNacimiento && formData.sexo)
+        // Validar que tenga datos personales y RUT válido
+        const hasPersonalData = !!(formData.nombres && formData.apellidos && formData.rut && formData.fechaNacimiento && formData.sexo)
+        
+        if (!hasPersonalData) return false
+        
+        // Validar longitud del RUT
+        const cleanRut = formData.rut.replace(/[^0-9kK]/g, "")
+        if (cleanRut.length < 8 || cleanRut.length > 9) return false
+        
+        return true
       case 2:
         // Validar que tenga teléfono, email válido, región y comuna
         return !!(
@@ -286,7 +296,7 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
         // Validar que tenga condición principal
         return !!formData.condicionPrincipal
       case 4:
-        return !!(formData.aceptaTerminos && formData.aceptaPrivacidad)
+        return !!(formData.aceptaTerminos && formData.aceptaPrivacidad && formData.aceptaAlmacenamiento15Anos)
       default:
         return true
     }
@@ -645,6 +655,11 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
                     *
                   </>
                 }
+              />
+              <Checkbox
+                checked={formData.aceptaAlmacenamiento15Anos}
+                onChange={(checked) => handleInputChange("aceptaAlmacenamiento15Anos", checked)}
+                label="Acepto que mis datos sean almacenados por un periodo de 15 años después del registro. *"
               />
             </div>
 

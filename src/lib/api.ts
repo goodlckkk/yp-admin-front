@@ -84,6 +84,7 @@ export interface CreatePatientIntakePayload {
   otrasEnfermedadesEstructuradas?: Array<{ codigo: string; nombre: string }>; // CIE-10
   aceptaTerminos?: boolean;
   aceptaPrivacidad?: boolean;
+  aceptaAlmacenamiento15Anos?: boolean;
   trialId?: string;
   referralResearchSiteId?: string; // ID del sitio/institución que derivó al paciente
   source?: PatientIntakeSource; // Origen: WEB (formulario público) o MANUAL (dashboard)
@@ -93,6 +94,7 @@ export interface PatientIntake extends CreatePatientIntakePayload {
   id: string;
   createdAt?: string;
   trial?: Trial | null;
+  referralResearchSite?: ResearchSite | null;
   status?: 'RECEIVED' | 'VERIFIED' | 'STUDY_ASSIGNED' | 'AWAITING_STUDY' | 'PENDING_CONTACT' | 'DISCARDED';
 }
 
@@ -351,6 +353,7 @@ export enum UserRole {
   PATIENT = 'PATIENT',
   DOCTOR = 'DOCTOR',
   ADMIN = 'ADMIN',
+  INSTITUTION = 'INSTITUTION',
 }
 
 export interface User {
@@ -360,6 +363,8 @@ export interface User {
   role: UserRole;
   phone?: string;
   birth_date?: string;
+  institutionId?: string;
+  institution?: ResearchSite;
   created_at: string;
   updated_at: string;
 }

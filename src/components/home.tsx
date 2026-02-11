@@ -170,7 +170,10 @@ export default function HomePage() {
       {activeTab === "pacientes" && (
         <>
           {/* Hero Slider Dinámico */}
-          <HeroSlider autoPlayInterval={5000} />
+          <HeroSlider 
+            autoPlayInterval={5000} 
+            onPostularClick={() => setShowPatientForm(true)}
+          />
 
           {/* Camino del Paciente */}
           <PatientJourney onPostularClick={() => setShowPatientForm(true)} />

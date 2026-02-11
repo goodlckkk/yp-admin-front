@@ -11,7 +11,7 @@ import { TokenService } from './token.service';
 
 export class AuthGuardService {
   private static readonly LOGIN_PATH = '/auth';
-  private static readonly INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutos
+  private static readonly INACTIVITY_TIMEOUT = 24 * 60 * 60 * 1000; // 24 horas
 
   /**
    * Verifica si el usuario está autenticado

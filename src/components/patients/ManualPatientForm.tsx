@@ -23,7 +23,6 @@ import { Cie10SingleAutocompleteComplete } from '../ui/Cie10SingleAutocompleteCo
 import { Cie10MultipleAutocomplete } from '../ui/Cie10MultipleAutocomplete';
 import { MedicamentoSimpleAutocomplete } from '../ui/MedicamentoSimpleAutocomplete';
 import { ResearchSiteAutocomplete } from '../ui/research-site-autocomplete';
-import { AddInstitutionModal } from '../trials/AddInstitutionModal';
 import { Checkbox } from '../ui/checkbox';
 import { Badge } from '../ui/badge';
 import { createPatientIntake } from '../../lib/api';
@@ -53,23 +52,9 @@ const PATOLOGIAS_PREVALENTES = [
   "Otros"
 ];
 
-// Códigos de país más comunes
-const CODIGOS_PAIS = [
-  { codigo: "+56", pais: "CL" },
-  { codigo: "+54", pais: "AR" },
-  { codigo: "+55", pais: "BR" },
-  { codigo: "+57", pais: "CO" },
-  { codigo: "+51", pais: "PE" },
-  { codigo: "+52", pais: "MX" },
-  { codigo: "+1", pais: "US" },
-  { codigo: "+34", pais: "ES" },
-  { codigo: "+44", pais: "UK" },
-];
-
 export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isAddInstitutionModalOpen, setIsAddInstitutionModalOpen] = useState(false);
   
   const [formData, setFormData] = useState<any>({
     nombres: '',
@@ -77,8 +62,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     rut: '',
     fechaNacimiento: '',
     sexo: '',
-    telefonoCodigoPais: '+56', // ← Código de país por defecto (Chile)
-    telefonoNumero: '', // ← Número sin código
+    telefono: '', 
     email: '',
     region: '',
     comuna: '',
@@ -86,6 +70,8 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     condicionPrincipal: '',
     condicionPrincipalCodigo: '', // ← Código CIE-10 de la condición principal
     patologias: [], // ← Checkboxes de patologías prevalentes
+    // Referencias
+    referralResearchSiteId: '', // ← ID del sitio que deriva (Opcional)
     // Campos estructurados (nuevos)
     medicamentosEstructurados: [] as string[], // Solo nombres de medicamentos
     alergiasEstructuradas: [] as Array<{ codigo: string; nombre: string }>,
@@ -94,10 +80,9 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     otrasEnfermedades: '',
     alergias: '',
     medicamentosActuales: '',
-    // Sitio/Institución de referencia (opcional)
-    referralResearchSiteId: '',
     aceptaTerminos: true,
     aceptaPrivacidad: true,
+    aceptaAlmacenamiento15Anos: true,
     source: 'MANUAL_ENTRY',
   });
 
@@ -130,17 +115,21 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     const cleaned = value.replace(/[^0-9kK]/g, '');
     if (cleaned.length === 0) return '';
     
+    if (cleaned.length <= 1) return cleaned;
+
     const body = cleaned.slice(0, -1);
     const dv = cleaned.slice(-1);
     
     const formatted = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return body.length > 0 ? `${formatted}-${dv}` : cleaned;
+    return `${formatted}-${dv}`;
   };
 
   // Formatear número de teléfono (solo dígitos, máximo 15)
   const formatPhoneNumber = (value: string) => {
-    const cleaned = value.replace(/[^0-9]/g, '');
-    return cleaned.slice(0, 15); // Máximo 15 dígitos según estándar E.164
+    // Permitir dígitos, espacios, guiones y el signo +
+    // No forzamos ningún formato específico, solo limpiamos caracteres inválidos
+    const cleaned = value.replace(/[^0-9+\-\s]/g, '');
+    return cleaned.slice(0, 20); // Aumentamos un poco el límite para permitir espacios
   };
 
   const handleInputChange = (field: string, value: any) => {
@@ -155,7 +144,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
 
   const handlePhoneNumberChange = (value: string) => {
     const formatted = formatPhoneNumber(value);
-    handleInputChange('telefonoNumero', formatted);
+    handleInputChange('telefono', formatted);
   };
 
 
@@ -172,6 +161,14 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
       setError('El RUT es requerido');
       return false;
     }
+    
+    // Validar longitud del RUT
+    const cleanRut = formData.rut.replace(/[^0-9kK]/g, '');
+    if (cleanRut.length < 8 || cleanRut.length > 9) {
+      setError('El RUT debe tener entre 8 y 9 caracteres');
+      return false;
+    }
+
     if (!formData.fechaNacimiento) {
       setError('La fecha de nacimiento es requerida');
       return false;
@@ -180,7 +177,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
       setError('El sexo es requerido');
       return false;
     }
-    if (!formData.telefonoNumero?.trim()) {
+    if (!formData.telefono?.trim()) {
       setError('El número de teléfono es requerido');
       return false;
     }
@@ -214,10 +211,9 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     setError(null);
 
     try {
-      // Preparar payload: si referralResearchSiteId está vacío, no enviarlo
+      // Preparar payload
       const payload = {
         ...formData,
-        ...(formData.referralResearchSiteId ? { referralResearchSiteId: formData.referralResearchSiteId } : {}),
       };
       
       await createPatientIntake(payload);
@@ -229,16 +225,17 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
         rut: '',
         fechaNacimiento: '',
         sexo: '',
-        telefonoCodigoPais: '+56',
-        telefonoNumero: '',
+        telefono: '',
         email: '',
         region: '',
         comuna: '',
         direccion: '',
+        referralResearchSiteId: '', // ← Resetear sitio
         condicionPrincipal: '',
         otrasEnfermedades: '',
         aceptaTerminos: true,
         aceptaPrivacidad: true,
+        aceptaAlmacenamiento15Anos: true,
         source: 'MANUAL_ENTRY',
       });
       
@@ -352,40 +349,18 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[#024959]">Contacto</h3>
             
-            {/* Teléfono con selector de código de país */}
+            {/* Teléfono simplificado */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="telefono">Teléfono *</Label>
-                <div className="flex gap-2 mt-1">
-                  <Select
-                    value={formData.telefonoCodigoPais}
-                    onValueChange={(value) => handleInputChange('telefonoCodigoPais', value)}
-                    disabled={loading}
-                  >
-                    <SelectTrigger className="w-[90px]">
-                      <SelectValue placeholder="Código" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CODIGOS_PAIS.map((item) => (
-                        <SelectItem key={item.codigo} value={item.codigo}>
-                          {item.codigo}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    id="telefonoNumero"
-                    value={formData.telefonoNumero}
-                    onChange={(e) => handlePhoneNumberChange(e.target.value)}
-                    placeholder="912345678"
-                    maxLength={9}
-                    disabled={loading}
-                    className="flex-1"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Ejemplo: {formData.telefonoCodigoPais} 912345678
-                </p>
+                <Input
+                  id="telefono"
+                  value={formData.telefono}
+                  onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                  placeholder="9 1234 5678"
+                  disabled={loading}
+                  className="mt-1"
+                />
               </div>
               
               <div>
@@ -465,29 +440,26 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
             </div>
           </div>
 
-          {/* Sitio/Institución de Referencia */}
+
+
+          {/* Origen / Institución (Oculto en manual) */}
+          {/* 
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-[#024959]">Sitio/Institución de Referencia</h3>
-              <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Opcional</span>
+            <h3 className="text-lg font-semibold text-[#024959]">Origen del Paciente</h3>
+            
+            <div>
+              <ResearchSiteAutocomplete
+                value={formData.referralResearchSiteId || ''}
+                onSelect={(siteId) => handleInputChange('referralResearchSiteId', siteId)}
+                label="Institución que deriva (Opcional)"
+                placeholder="Buscar hospital, clínica o centro médico..."
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Si el paciente fue derivado por una institución específica, selecciónela aquí.
+              </p>
             </div>
-            
-            <ResearchSiteAutocomplete
-              value={formData.referralResearchSiteId}
-              onSelect={(siteId) => handleInputChange('referralResearchSiteId', siteId)}
-              onAddNew={() => setIsAddInstitutionModalOpen(true)}
-              disabled={loading}
-              placeholder="Buscar sitio/institución que derivó al paciente..."
-              label="Sitio/Institución que Deriva"
-              required={false}
-            />
-            
-            <p className="text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <strong>💡 Información:</strong> Este campo es <strong>opcional</strong>. Solo complétalo si el paciente fue derivado por un sitio/institución específica 
-              (ej: Clínica Alemana, Hospital Regional, Clínica Vanguardia). 
-              Si el paciente ingresó directamente, puedes dejarlo en blanco.
-            </p>
           </div>
+          */}
 
           {/* Información Médica */}
           <div className="space-y-4">
@@ -569,24 +541,47 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
 
           </div>
 
-          {/* Consentimiento de Privacidad */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="consentimiento"
-                checked={formData.aceptaPrivacidad || false}
-                onChange={(e) => handleInputChange('aceptaPrivacidad', e.target.checked)}
-                disabled={loading}
-                className="mt-1 h-4 w-4 text-[#04BFAD] border-gray-300 rounded focus:ring-[#024959]"
-              />
-              <div className="flex-1">
-                <Label htmlFor="consentimiento" className="text-sm font-medium text-gray-900 cursor-pointer">
-                  Consentimiento de Privacidad *
-                </Label>
-                <p className="text-xs text-gray-600 mt-1">
-                  Confirmo que el paciente ha dado su consentimiento para que yoparticipo.cl almacene y procese su información personal con fines de participación en estudios clínicos, de acuerdo con nuestra Política de Privacidad.
-                </p>
+          {/* Consentimientos */}
+          <div className="space-y-3">
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="consentimiento"
+                  checked={formData.aceptaPrivacidad || false}
+                  onChange={(e) => handleInputChange('aceptaPrivacidad', e.target.checked)}
+                  disabled={loading}
+                  className="mt-1 h-4 w-4 text-[#04BFAD] border-gray-300 rounded focus:ring-[#024959]"
+                />
+                <div className="flex-1">
+                  <Label htmlFor="consentimiento" className="text-sm font-medium text-gray-900 cursor-pointer">
+                    Consentimiento de Privacidad *
+                  </Label>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Confirmo que el paciente ha dado su consentimiento para que yoparticipo.cl almacene y procese su información personal con fines de participación en estudios clínicos, de acuerdo con nuestra Política de Privacidad.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="consentimiento15"
+                  checked={formData.aceptaAlmacenamiento15Anos || false}
+                  onChange={(e) => handleInputChange('aceptaAlmacenamiento15Anos', e.target.checked)}
+                  disabled={loading}
+                  className="mt-1 h-4 w-4 text-[#04BFAD] border-gray-300 rounded focus:ring-[#024959]"
+                />
+                <div className="flex-1">
+                  <Label htmlFor="consentimiento15" className="text-sm font-medium text-gray-900 cursor-pointer">
+                    Consentimiento de Almacenamiento (15 años) *
+                  </Label>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Confirmo que el paciente acepta que sus datos sean almacenados por un periodo de 15 años después del registro.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -619,15 +614,6 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
         </form>
       </DialogContent>
 
-      {/* Modal para agregar nuevo sitio/institución */}
-      <AddInstitutionModal
-        isOpen={isAddInstitutionModalOpen}
-        onClose={() => setIsAddInstitutionModalOpen(false)}
-        onSuccess={(newSite) => {
-          setFormData({ ...formData, referralResearchSiteId: newSite.id });
-          setIsAddInstitutionModalOpen(false);
-        }}
-      />
     </Dialog>
   );
 }

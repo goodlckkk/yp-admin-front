@@ -27,9 +27,10 @@ interface HeroSlide {
 
 interface HeroSliderProps {
   autoPlayInterval?: number; // Intervalo en milisegundos (default: 5000)
+  onPostularClick?: () => void;
 }
 
-export default function HeroSlider({ autoPlayInterval = 5000 }: HeroSliderProps) {
+export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }: HeroSliderProps) {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -40,24 +41,27 @@ export default function HeroSlider({ autoPlayInterval = 5000 }: HeroSliderProps)
   const defaultSlides = [
     {
       id: 'default-1',
-      title: 'Descubre nuevas oportunidades de tratamiento',
-      description: 'a través de ensayos clínicos.',
-      gradient: 'from-[#024959] via-[#04BFAD] to-[#024959]',
-      icon: 'ClipboardList' // Ícono de tableta médica/formulario
+      title: 'Tu salud es lo más importante',
+      description: 'Participa en estudios clínicos con seguimiento médico y acompañamiento profesional.',
+      imageUrl: '/Slider-1.png',
+      ctaText: 'Quiero participar',
+      align: 'left' // Nuevo campo para alineación
     },
     {
       id: 'default-2',
-      title: 'Participa de forma segura y confidencial',
-      description: 'tu bienestar es nuestra prioridad.',
-      gradient: 'from-[#04BFAD] via-[#024959] to-[#04BFAD]',
-      icon: 'Shield' // Ícono de escudo para seguridad
+      title: 'Decide con tranquilidad',
+      description: 'Tu participación es voluntaria, segura y respaldada por equipos de salud especializados.',
+      imageUrl: '/slider-2.png',
+      ctaText: 'Quiero participar',
+      align: 'left'
     },
     {
       id: 'default-3',
-      title: 'Únete a una comunidad',
-      description: 'que busca mejorar la salud para todos.',
-      gradient: 'from-[#04BFAD] via-[#024959] to-[#04BFAD]', // Mismo gradiente que slide 2
-      icon: 'Users' // Ícono de usuarios para comunidad
+      title: 'Sin costo y con un propósito real',
+      description: 'Participar es gratuito y ayuda a mejorar los tratamientos del futuro.',
+      imageUrl: '/slider-3.png',
+      ctaText: 'Quiero participar',
+      align: 'left'
     }
   ];
 
@@ -65,27 +69,9 @@ export default function HeroSlider({ autoPlayInterval = 5000 }: HeroSliderProps)
    * Cargar slides activos desde la API
    */
   useEffect(() => {
-    const fetchSlides = async () => {
-      try {
-        // Endpoint público que solo devuelve slides activos
-        const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/hero-slides/active`);
-        
-        if (!response.ok) {
-          throw new Error('Error al cargar slides');
-        }
-        
-        const data = await response.json();
-        setSlides(data);
-      } catch (error) {
-        console.error('Error al cargar slides:', error);
-        // Si hay error, mostrar slide por defecto
-        setSlides([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSlides();
+    // Usar slides locales directamente para esta versión
+    setSlides(defaultSlides as any);
+    setLoading(false);
   }, []);
 
   /**
@@ -197,9 +183,18 @@ export default function HeroSlider({ autoPlayInterval = 5000 }: HeroSliderProps)
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in-delay">
                   {slide.title}
                 </h1>
-                <p className="text-xl sm:text-2xl md:text-3xl opacity-90 animate-fade-in-delay-2">
+                <p className="text-xl sm:text-2xl md:text-3xl opacity-90 animate-fade-in-delay-2 mb-10">
                   {slide.description}
                 </p>
+                {slide.ctaText && onPostularClick && (
+                  <button
+                    onClick={onPostularClick}
+                    className="inline-flex items-center gap-2 bg-white text-[#024959] hover:bg-gray-100 font-bold px-8 py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg animate-fade-in-delay-2"
+                  >
+                    {slide.ctaText}
+                    <Icons.ArrowRight className="h-5 w-5" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -250,27 +245,48 @@ export default function HeroSlider({ autoPlayInterval = 5000 }: HeroSliderProps)
 
             {/* Contenido del slide */}
             {(slide.title || slide.description || slide.ctaText) && (
-              <div className="relative z-10 h-full flex items-center justify-center">
+              <div className={`relative z-10 h-full flex flex-col 
+                ${(slide as any).align === 'left' ? 'items-start justify-center' : 
+                  (slide as any).align === 'left-bottom' ? 'items-start justify-end pb-32' : 
+                  (slide as any).align === 'left-top' ? 'items-start justify-start pt-48' :
+                  'items-center justify-center'
+                }`}>
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="max-w-3xl mx-auto text-center text-white">
+                  <div className={`max-w-3xl 
+                    ${(slide as any).align === 'left' || (slide as any).align === 'left-bottom' || (slide as any).align === 'left-top' ? 'text-left ml-0 sm:ml-10 lg:ml-20' : 'mx-auto text-center'} 
+                    text-white`}>
                     {slide.title && (
-                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 animate-fade-in">
+                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 animate-fade-in text-shadow-lg">
                         {slide.title}
                       </h1>
                     )}
                     {slide.description && (
-                      <p className="text-lg sm:text-xl md:text-2xl mb-8 opacity-90 animate-fade-in-delay">
+                      <p className={`text-lg sm:text-xl md:text-2xl mb-8 opacity-90 animate-fade-in-delay 
+                        ${(slide as any).align === 'left' || (slide as any).align === 'left-bottom' || (slide as any).align === 'left-top' ? '' : 'mx-auto'} 
+                        max-w-2xl text-shadow-md`}>
                         {slide.description}
                       </p>
                     )}
-                    {slide.ctaText && slide.ctaUrl && (
-                      <a
-                        href={slide.ctaUrl}
-                        className="inline-flex items-center gap-2 bg-[#04BFAD] hover:bg-[#024959] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg animate-fade-in-delay-2"
-                      >
-                        {slide.ctaText}
-                        <Icons.ArrowRight className="h-5 w-5" />
-                      </a>
+                    {(slide.ctaText || onPostularClick) && (
+                        (slide.ctaUrl) ? (
+                            <a
+                                href={slide.ctaUrl}
+                                className="inline-flex items-center gap-2 bg-[#04BFAD] hover:bg-[#024959] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg animate-fade-in-delay-2"
+                            >
+                                {slide.ctaText || 'Quiero participar'}
+                                <Icons.ArrowRight className="h-5 w-5" />
+                            </a>
+                        ) : (
+                             onPostularClick && (
+                                <button
+                                    onClick={onPostularClick}
+                                    className="inline-flex items-center gap-2 bg-[#04BFAD] hover:bg-[#024959] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg animate-fade-in-delay-2"
+                                >
+                                    {slide.ctaText || 'Quiero participar'}
+                                    <Icons.ArrowRight className="h-5 w-5" />
+                                </button>
+                             )
+                        )
                     )}
                   </div>
                 </div>

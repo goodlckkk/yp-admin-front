@@ -5,7 +5,7 @@
  * - Permite editar información médica
  * - Permite cambiar el estado del paciente
  * - Muestra el ensayo asignado
- * - Campos personales en solo lectura
+ * - Permite editar información personal y de contacto (modo edición completa)
  */
 
 import { useState, useEffect } from 'react';
@@ -34,6 +34,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/alert-dialog';
+import { regionesChile, getComunasByRegion } from '../../lib/regiones-comunas';
+import { ChangeHistory } from '../ui/ChangeHistory';
 
 interface PatientEditFormProps {
   patient: PatientIntake | null;
@@ -70,9 +72,23 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isFullEditMode, setIsFullEditMode] = useState(false);
   
   // Estado del formulario editable
   const [formData, setFormData] = useState({
+    // Personal Info
+    nombres: '',
+    apellidos: '',
+    rut: '',
+    fechaNacimiento: '',
+    sexo: '',
+    // Contact Info
+    email: '',
+    telefono: '',
+    region: '',
+    comuna: '',
+    direccion: '',
+    // Medical Info
     condicionPrincipal: '',
     condicionPrincipalCodigo: '', // Código CIE-10
     descripcionCondicion: '',
@@ -91,6 +107,16 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
   useEffect(() => {
     if (patient && isOpen) {
       setFormData({
+        nombres: patient.nombres || '',
+        apellidos: patient.apellidos || '',
+        rut: patient.rut || '',
+        fechaNacimiento: patient.fechaNacimiento ? new Date(patient.fechaNacimiento).toISOString().split('T')[0] : '',
+        sexo: patient.sexo || '',
+        email: patient.email || '',
+        telefono: patient.telefono || '',
+        region: patient.region || '',
+        comuna: patient.comuna || '',
+        direccion: patient.direccion || '',
         condicionPrincipal: patient?.condicionPrincipal || '',
         condicionPrincipalCodigo: patient?.condicionPrincipalCodigo || '', // Código CIE-10
         descripcionCondicion: patient?.descripcionCondicion || '',
@@ -104,11 +130,21 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
         cirugiasPrevias: patient?.cirugiasPrevias || '',
         status: patient?.status || 'RECEIVED',
       });
+      setIsFullEditMode(false); // Reset edit mode on open
     }
   }, [patient, isOpen]);
 
   // Si no está abierto o no hay paciente, no renderizar nada
   if (!isOpen || !patient) return null;
+
+  // Formatear RUT
+  const formatRut = (value: string) => {
+    const cleaned = value.replace(/[^0-9kK]/g, '');
+    if (cleaned.length <= 1) return cleaned;
+    const body = cleaned.slice(0, -1);
+    const dv = cleaned.slice(-1);
+    return `${body.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}-${dv}`;
+  };
 
   // Calcular edad
   const calculateAge = (birthDate: string | undefined): string => {
@@ -123,8 +159,8 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
     }
   };
 
-  // Formatear fecha
-  const formatDate = (date: string | undefined): string => {
+  // Formatear fecha para display
+  const formatDateDisplay = (date: string | undefined): string => {
     if (!date) return 'N/A';
     try {
       return new Date(date).toLocaleDateString('es-CL', {
@@ -139,6 +175,15 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
 
   // Guardar cambios
   const handleSave = async () => {
+    // Validar longitud del RUT si se está editando
+    if (isFullEditMode && formData.rut) {
+      const cleanRut = formData.rut.replace(/[^0-9kK]/g, '');
+      if (cleanRut.length < 8 || cleanRut.length > 9) {
+        setError('El RUT debe tener entre 8 y 9 caracteres');
+        return;
+      }
+    }
+
     setLoading(true);
     setError(null);
 
@@ -201,38 +246,65 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
             Modifica la información médica y el estado del paciente
           </p>
         </div>
-        <Button
-          variant="ghost"
-          onClick={onClose}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          ✕ Cerrar
-        </Button>
+        <div className="flex gap-2">
+            <Button
+            variant="outline"
+            onClick={() => setIsFullEditMode(!isFullEditMode)}
+            className="text-[#04BFAD] border-[#04BFAD] hover:bg-[#04BFAD]/10"
+            >
+            {isFullEditMode ? 'Bloquear Edición' : 'Editar paciente completo'}
+            </Button>
+            <Button
+            variant="ghost"
+            onClick={onClose}
+            className="text-gray-600 hover:text-gray-900"
+            >
+            ✕ Cerrar
+            </Button>
+        </div>
+      </div>
+
+      {/* Banner Confidencial */}
+      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-md">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <span className="text-yellow-400 text-xl">🔒</span>
+          </div>
+          <div className="ml-3">
+            <p className="text-sm text-yellow-700">
+              <span className="font-bold">Registro médico confidencial.</span> La información aquí contenida está protegida y es sensible.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Formulario */}
       <div className="space-y-6">
-        {/* Sección 1: Información Personal (Solo lectura) */}
-        <Card className="border border-gray-200">
-          <CardHeader>
-            <CardTitle className="text-lg text-[#024959] font-semibold">Información Personal</CardTitle>
+        {/* Sección 1: Información Personal */}
+        <Card className={`border ${isFullEditMode ? 'border-[#04BFAD]' : 'border-gray-200'}`}>
+          <CardHeader className={isFullEditMode ? 'bg-[#A7F2EB]/10' : ''}>
+            <CardTitle className="text-lg text-[#024959] font-semibold flex items-center gap-2">
+                Información Personal {isFullEditMode && <Badge className="bg-[#04BFAD]">Editable</Badge>}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Nombres</Label>
                 <Input
-                  value={patient.nombres || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={formData.nombres}
+                  onChange={(e) => setFormData({...formData, nombres: e.target.value})}
+                  disabled={!isFullEditMode}
+                  className={!isFullEditMode ? "mt-1 bg-gray-50" : "mt-1"}
                 />
               </div>
               <div>
                 <Label>Apellidos</Label>
                 <Input
-                  value={patient.apellidos || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={formData.apellidos}
+                  onChange={(e) => setFormData({...formData, apellidos: e.target.value})}
+                  disabled={!isFullEditMode}
+                  className={!isFullEditMode ? "mt-1 bg-gray-50" : "mt-1"}
                 />
               </div>
             </div>
@@ -241,17 +313,20 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
               <div>
                 <Label>RUT</Label>
                 <Input
-                  value={patient.rut || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={formData.rut}
+                  onChange={(e) => setFormData({...formData, rut: formatRut(e.target.value)})}
+                  disabled={!isFullEditMode}
+                  className={!isFullEditMode ? "mt-1 bg-gray-50" : "mt-1"}
                 />
               </div>
               <div>
                 <Label>Fecha de Nacimiento</Label>
                 <Input
-                  value={formatDate(patient.fechaNacimiento)}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  type={isFullEditMode ? "date" : "text"}
+                  value={isFullEditMode ? formData.fechaNacimiento : formatDateDisplay(formData.fechaNacimiento)}
+                  onChange={(e) => setFormData({...formData, fechaNacimiento: e.target.value})}
+                  disabled={!isFullEditMode}
+                  className={!isFullEditMode ? "mt-1 bg-gray-50" : "mt-1"}
                 />
               </div>
             </div>
@@ -260,44 +335,63 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
               <div>
                 <Label>Edad</Label>
                 <Input
-                  value={calculateAge(patient.fechaNacimiento)}
+                  value={calculateAge(formData.fechaNacimiento)}
                   disabled
                   className="mt-1 bg-gray-50"
                 />
               </div>
               <div>
                 <Label>Sexo</Label>
-                <Input
-                  value={patient.sexo || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
-                />
+                {isFullEditMode ? (
+                    <Select
+                        value={formData.sexo}
+                        onValueChange={(value) => setFormData({...formData, sexo: value})}
+                    >
+                        <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Seleccionar" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Hombre">Hombre</SelectItem>
+                            <SelectItem value="Mujer">Mujer</SelectItem>
+                        </SelectContent>
+                    </Select>
+                ) : (
+                    <Input
+                    value={formData.sexo || 'N/A'}
+                    disabled
+                    className="mt-1 bg-gray-50"
+                    />
+                )}
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Sección 2: Información de Contacto (Solo lectura) */}
-        <Card className="border border-gray-200">
-          <CardHeader>
-            <CardTitle className="text-lg text-[#024959] font-semibold">Información de Contacto</CardTitle>
+        {/* Sección 2: Información de Contacto */}
+        <Card className={`border ${isFullEditMode ? 'border-[#04BFAD]' : 'border-gray-200'}`}>
+          <CardHeader className={isFullEditMode ? 'bg-[#A7F2EB]/10' : ''}>
+            <CardTitle className="text-lg text-[#024959] font-semibold flex items-center gap-2">
+                Información de Contacto {isFullEditMode && <Badge className="bg-[#04BFAD]">Editable</Badge>}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Email</Label>
                 <Input
-                  value={patient.email || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  disabled={!isFullEditMode}
+                  className={!isFullEditMode ? "mt-1 bg-gray-50" : "mt-1"}
                 />
               </div>
               <div>
                 <Label>Teléfono</Label>
                 <Input
-                  value={patient.telefono || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={formData.telefono}
+                  onChange={(e) => setFormData({...formData, telefono: e.target.value})}
+                  disabled={!isFullEditMode}
+                  className={!isFullEditMode ? "mt-1 bg-gray-50" : "mt-1"}
                 />
               </div>
             </div>
@@ -305,28 +399,66 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Región</Label>
-                <Input
-                  value={patient.region || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
-                />
+                {isFullEditMode ? (
+                    <Select
+                        value={formData.region}
+                        onValueChange={(value) => setFormData({...formData, region: value, comuna: ''})}
+                    >
+                        <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Seleccionar región" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {regionesChile.map((region) => (
+                                <SelectItem key={region.value} value={region.value}>
+                                    {region.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                ) : (
+                    <Input
+                    value={formData.region || 'N/A'}
+                    disabled
+                    className="mt-1 bg-gray-50"
+                    />
+                )}
               </div>
               <div>
                 <Label>Comuna</Label>
-                <Input
-                  value={patient.comuna || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
-                />
+                {isFullEditMode ? (
+                    <Select
+                        value={formData.comuna}
+                        onValueChange={(value) => setFormData({...formData, comuna: value})}
+                        disabled={!formData.region}
+                    >
+                        <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Seleccionar comuna" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {formData.region && getComunasByRegion(formData.region).map((comuna) => (
+                                <SelectItem key={comuna.value} value={comuna.value}>
+                                    {comuna.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                ) : (
+                    <Input
+                    value={formData.comuna || 'N/A'}
+                    disabled
+                    className="mt-1 bg-gray-50"
+                    />
+                )}
               </div>
             </div>
 
             <div>
               <Label>Dirección</Label>
               <Input
-                value={patient.direccion || 'N/A'}
-                disabled
-                className="mt-1 bg-gray-50"
+                value={formData.direccion}
+                onChange={(e) => setFormData({...formData, direccion: e.target.value})}
+                disabled={!isFullEditMode}
+                className={!isFullEditMode ? "mt-1 bg-gray-50" : "mt-1"}
               />
             </div>
           </CardContent>
@@ -355,11 +487,11 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
               </div>
               
               {/* Solo mostrar institución si es MANUAL_ENTRY y tiene referralResearchSiteId */}
-              {patient.source === 'MANUAL_ENTRY' && (patient as any).referralResearchSiteId && (
+              {patient.source === 'MANUAL_ENTRY' && patient.referralResearchSiteId && (
                 <div>
                   <Label>Institución que Deriva</Label>
                   <Input
-                    value={(patient as any).referralResearchSite?.nombre || 'Cargando...'}
+                    value={patient.referralResearchSite?.nombre || 'Cargando...'}
                     disabled
                     className="mt-1 bg-gray-50"
                   />
@@ -367,7 +499,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
               )}
               
               {/* Mensaje si es MANUAL_ENTRY pero NO tiene institución */}
-              {patient.source === 'MANUAL_ENTRY' && !(patient as any).referralResearchSiteId && (
+              {patient.source === 'MANUAL_ENTRY' && !patient.referralResearchSiteId && (
                 <div>
                   <Label>Institución que Deriva</Label>
                   <div className="mt-1 p-2 bg-gray-50 rounded border border-gray-200 text-sm text-gray-500">
@@ -378,24 +510,24 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
             </div>
 
             {/* Información adicional de la institución si existe */}
-            {patient.source === 'MANUAL_ENTRY' && (patient as any).referralResearchSite && (
+            {patient.source === 'MANUAL_ENTRY' && patient.referralResearchSite && (
               <div className="mt-4 p-4 bg-gradient-to-r from-[#A7F2EB]/10 to-transparent rounded-lg border border-[#04BFAD]/20">
                 <p className="text-sm text-gray-600 mb-2">
                   <strong>📍 Ubicación:</strong>{' '}
                   {[
-                    (patient as any).referralResearchSite.ciudad,
-                    (patient as any).referralResearchSite.comuna,
-                    (patient as any).referralResearchSite.region
+                    patient.referralResearchSite.ciudad,
+                    patient.referralResearchSite.comuna,
+                    patient.referralResearchSite.region
                   ].filter(Boolean).join(', ') || 'No especificada'}
                 </p>
-                {(patient as any).referralResearchSite.telefono && (
+                {patient.referralResearchSite.telefono && (
                   <p className="text-sm text-gray-600 mb-2">
-                    <strong>📞 Teléfono:</strong> {(patient as any).referralResearchSite.telefono}
+                    <strong>📞 Teléfono:</strong> {patient.referralResearchSite.telefono}
                   </p>
                 )}
-                {(patient as any).referralResearchSite.email && (
+                {patient.referralResearchSite.email && (
                   <p className="text-sm text-gray-600">
-                    <strong>📧 Email:</strong> {(patient as any).referralResearchSite.email}
+                    <strong>📧 Email:</strong> {patient.referralResearchSite.email}
                   </p>
                 )}
               </div>
@@ -416,7 +548,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
         <Card className="border border-[#04BFAD]">
           <CardHeader className="bg-[#A7F2EB]/10">
             <CardTitle className="text-lg text-[#024959] font-semibold flex items-center gap-2">
-              <span>📋</span> Información Médica (Editable)
+              <span>📋</span> Información Médica
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 mt-4">
@@ -527,7 +659,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
         <Card className="border border-[#04BFAD]">
           <CardHeader className="bg-[#A7F2EB]/10">
             <CardTitle className="text-lg text-[#024959] font-semibold flex items-center gap-2">
-              <span>🎯</span> Estado y Asignación (Editable)
+              <span>🎯</span> Estado y Asignación
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 mt-4">
@@ -576,7 +708,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
             <div>
               <Label>Fecha de Registro</Label>
               <Input
-                value={formatDate(patient.createdAt)}
+                value={formatDateDisplay(patient.createdAt)}
                 disabled
                 className="mt-1 bg-gray-50"
               />
@@ -602,6 +734,9 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
             />
           </div>
         )}
+
+        {/* Historial de Cambios */}
+        <ChangeHistory entityName="PatientIntake" entityId={patient.id} />
 
         {/* Botones de acción */}
         <div className="flex justify-between pt-4 border-t border-gray-200">
@@ -641,9 +776,8 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el registro de{' '}
-              <strong>{patient.nombres} {patient.apellidos}</strong> del sistema.
-            </AlertDialogDescription>
+            Contacta a soporte.
+          </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>

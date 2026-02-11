@@ -7,7 +7,7 @@
  * - Opción para eliminar paciente
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { TrialSuggestions } from './TrialSuggestions';
 import type { PatientIntake } from '../../lib/api';
-import { fetchWithAuth } from '../../lib/api';
+import { fetchWithAuth, updatePatientIntake } from '../../lib/api';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,9 +39,55 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<Partial<PatientIntake>>({});
+
+  useEffect(() => {
+    if (patient) {
+      setFormData(patient);
+      setIsEditing(false);
+    }
+  }, [patient]);
 
   // Si no está abierto o no hay paciente, no renderizar nada
   if (!isOpen || !patient) return null;
+
+  const handleInputChange = (field: keyof PatientIntake, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Limpiar campos nulos o undefined
+      const cleanData = Object.fromEntries(
+        Object.entries(formData).filter(([_, v]) => v !== null && v !== undefined && v !== '')
+      );
+      
+      // Asegurarse de enviar el estado correcto
+      if (cleanData.status && !Object.keys(statusLabels).includes(cleanData.status as string)) {
+        delete cleanData.status;
+      }
+
+      await updatePatientIntake(patient.id, cleanData);
+      setIsEditing(false);
+      onSuccess(); // Recargar datos
+    } catch (err: any) {
+      console.error('Error al actualizar paciente:', err);
+      setError(err.message || 'No se pudo actualizar el paciente');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleEdit = () => {
+    if (isEditing) {
+      // Cancelar edición: revertir cambios
+      setFormData(patient);
+    }
+    setIsEditing(!isEditing);
+  };
 
   // Calcular edad
   const calculateAge = (birthDate: string | undefined): string => {
@@ -95,8 +141,10 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
   // Mapeo de estados
   const statusLabels: Record<string, string> = {
     RECEIVED: 'Recibido',
-    REVIEWING: 'En Revisión',
-    CONTACTED: 'Contactado',
+    VERIFIED: 'Verificado',
+    STUDY_ASSIGNED: 'Asignado a Estudio',
+    AWAITING_STUDY: 'Esperando Estudio',
+    PENDING_CONTACT: 'Pendiente de Contacto',
     DISCARDED: 'Descartado'
   };
 
@@ -112,16 +160,44 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
             Información completa del paciente registrado en el sistema
           </p>
         </div>
-        <Button
-          variant="ghost"
-          onClick={onClose}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          ✕ Cerrar
-        </Button>
+        <div className="flex gap-2">
+            {!isEditing ? (
+              <Button 
+                variant="outline" 
+                onClick={toggleEdit}
+                className="border-[#04BFAD] text-[#04BFAD] hover:bg-[#04BFAD] hover:text-white"
+              >
+                ✏️ Editar
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button 
+                  variant="ghost" 
+                  onClick={toggleEdit}
+                  disabled={loading}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={handleSave}
+                  disabled={loading}
+                  className="bg-[#04BFAD] hover:bg-[#03a091] text-white"
+                >
+                  {loading ? 'Guardando...' : '💾 Guardar'}
+                </Button>
+              </div>
+            )}
+            <Button
+              variant="ghost"
+              onClick={onClose}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              ✕ Cerrar
+            </Button>
+        </div>
       </div>
 
-      {/* Formulario de solo lectura */}
+      {/* Formulario */}
       <div className="space-y-6">
         {/* Sección 1: Información Personal */}
         <Card className="border border-gray-200">
@@ -133,17 +209,19 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
               <div>
                 <Label>Nombres</Label>
                 <Input
-                  value={patient.nombres || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={isEditing ? (formData.nombres || '') : (patient.nombres || 'N/A')}
+                  onChange={(e) => handleInputChange('nombres', e.target.value)}
+                  disabled={!isEditing}
+                  className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
                 />
               </div>
               <div>
                 <Label>Apellidos</Label>
                 <Input
-                  value={patient.apellidos || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={isEditing ? (formData.apellidos || '') : (patient.apellidos || 'N/A')}
+                  onChange={(e) => handleInputChange('apellidos', e.target.value)}
+                  disabled={!isEditing}
+                  className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
                 />
               </div>
             </div>
@@ -152,17 +230,20 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
               <div>
                 <Label>RUT</Label>
                 <Input
-                  value={patient.rut || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={isEditing ? (formData.rut || '') : (patient.rut || 'N/A')}
+                  onChange={(e) => handleInputChange('rut', e.target.value)}
+                  disabled={!isEditing}
+                  className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
                 />
               </div>
               <div>
                 <Label>Fecha de Nacimiento</Label>
                 <Input
-                  value={formatDate(patient.fechaNacimiento)}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  type={isEditing ? "date" : "text"}
+                  value={isEditing ? (formData.fechaNacimiento ? new Date(formData.fechaNacimiento).toISOString().split('T')[0] : '') : formatDate(patient.fechaNacimiento)}
+                  onChange={(e) => handleInputChange('fechaNacimiento', e.target.value)}
+                  disabled={!isEditing}
+                  className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
                 />
               </div>
             </div>
@@ -179,9 +260,10 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
               <div>
                 <Label>Sexo</Label>
                 <Input
-                  value={patient.sexo || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={isEditing ? (formData.sexo || '') : (patient.sexo || 'N/A')}
+                  onChange={(e) => handleInputChange('sexo', e.target.value)}
+                  disabled={!isEditing}
+                  className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
                 />
               </div>
             </div>
@@ -198,17 +280,19 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
               <div>
                 <Label>Email</Label>
                 <Input
-                  value={patient.email || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={isEditing ? (formData.email || '') : (patient.email || 'N/A')}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  disabled={!isEditing}
+                  className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
                 />
               </div>
               <div>
                 <Label>Teléfono</Label>
                 <Input
-                  value={patient.telefono || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={isEditing ? (formData.telefono || formData.telefonoNumero || '') : (patient.telefono || patient.telefonoNumero || 'N/A')}
+                  onChange={(e) => handleInputChange('telefono', e.target.value)}
+                  disabled={!isEditing}
+                  className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
                 />
               </div>
             </div>
@@ -217,17 +301,19 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
               <div>
                 <Label>Región</Label>
                 <Input
-                  value={patient.region || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={isEditing ? (formData.region || '') : (patient.region || 'N/A')}
+                  onChange={(e) => handleInputChange('region', e.target.value)}
+                  disabled={!isEditing}
+                  className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
                 />
               </div>
               <div>
                 <Label>Comuna</Label>
                 <Input
-                  value={patient.comuna || 'N/A'}
-                  disabled
-                  className="mt-1 bg-gray-50"
+                  value={isEditing ? (formData.comuna || '') : (patient.comuna || 'N/A')}
+                  onChange={(e) => handleInputChange('comuna', e.target.value)}
+                  disabled={!isEditing}
+                  className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
                 />
               </div>
             </div>
@@ -235,9 +321,10 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
             <div>
               <Label>Dirección</Label>
               <Input
-                value={patient.direccion || 'N/A'}
-                disabled
-                className="mt-1 bg-gray-50"
+                value={isEditing ? (formData.direccion || '') : (patient.direccion || 'N/A')}
+                onChange={(e) => handleInputChange('direccion', e.target.value)}
+                disabled={!isEditing}
+                className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
               />
             </div>
           </CardContent>
@@ -252,49 +339,54 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
             <div>
               <Label>Condición Principal</Label>
               <Input
-                value={patient.condicionPrincipal || 'N/A'}
-                disabled
-                className="mt-1 bg-gray-50"
+                value={isEditing ? (formData.condicionPrincipal || '') : (patient.condicionPrincipal || 'N/A')}
+                onChange={(e) => handleInputChange('condicionPrincipal', e.target.value)}
+                disabled={!isEditing}
+                className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
               />
             </div>
 
             <div>
               <Label>Descripción de la Condición</Label>
               <Textarea
-                value={patient.descripcionCondicion || 'N/A'}
-                disabled
+                value={isEditing ? (formData.descripcionCondicion || '') : (patient.descripcionCondicion || 'N/A')}
+                onChange={(e) => handleInputChange('descripcionCondicion', e.target.value)}
+                disabled={!isEditing}
                 rows={3}
-                className="mt-1 bg-gray-50"
+                className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
               />
             </div>
 
             <div>
               <Label>Medicamentos Actuales</Label>
               <Textarea
-                value={patient.medicamentosActuales || 'N/A'}
-                disabled
+                value={isEditing ? (formData.medicamentosActuales || '') : (patient.medicamentosActuales || 'N/A')}
+                onChange={(e) => handleInputChange('medicamentosActuales', e.target.value)}
+                disabled={!isEditing}
                 rows={3}
-                className="mt-1 bg-gray-50"
+                className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
               />
             </div>
 
             <div>
               <Label>Alergias</Label>
               <Textarea
-                value={patient.alergias || 'N/A'}
-                disabled
+                value={isEditing ? (formData.alergias || '') : (patient.alergias || 'N/A')}
+                onChange={(e) => handleInputChange('alergias', e.target.value)}
+                disabled={!isEditing}
                 rows={2}
-                className="mt-1 bg-gray-50"
+                className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
               />
             </div>
 
             <div>
               <Label>Cirugías Previas</Label>
               <Textarea
-                value={patient.cirugiasPrevias || 'N/A'}
-                disabled
+                value={isEditing ? (formData.cirugiasPrevias || '') : (patient.cirugiasPrevias || 'N/A')}
+                onChange={(e) => handleInputChange('cirugiasPrevias', e.target.value)}
+                disabled={!isEditing}
                 rows={2}
-                className="mt-1 bg-gray-50"
+                className={`mt-1 ${!isEditing ? 'bg-gray-50' : ''}`}
               />
             </div>
           </CardContent>
@@ -312,10 +404,14 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
                 <div className="mt-2">
                   <Badge
                     className={
-                      patient.status === 'CONTACTED'
+                      patient.status === 'VERIFIED'
                         ? 'bg-green-100 text-green-700'
-                        : patient.status === 'REVIEWING'
+                        : patient.status === 'STUDY_ASSIGNED'
+                        ? 'bg-indigo-100 text-indigo-700'
+                        : patient.status === 'AWAITING_STUDY'
                         ? 'bg-yellow-100 text-yellow-700'
+                        : patient.status === 'PENDING_CONTACT'
+                        ? 'bg-orange-100 text-orange-700'
                         : patient.status === 'DISCARDED'
                         ? 'bg-rose-100 text-rose-700'
                         : 'bg-[#dfe3e3] text-[#044c64]'
