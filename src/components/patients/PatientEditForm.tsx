@@ -113,7 +113,11 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
         fechaNacimiento: patient.fechaNacimiento ? new Date(patient.fechaNacimiento).toISOString().split('T')[0] : '',
         sexo: patient.sexo || '',
         email: patient.email || '',
-        telefono: patient.telefono || '',
+        telefono: (patient.telefono && patient.telefono.trim() !== '')
+          ? patient.telefono
+          : ((patient as any).telefonoCodigoPais && (patient as any).telefonoNumero
+            ? `${(patient as any).telefonoCodigoPais} ${(patient as any).telefonoNumero}`
+            : ''),
         region: patient.region || '',
         comuna: patient.comuna || '',
         direccion: patient.direccion || '',
