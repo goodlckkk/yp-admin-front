@@ -37,6 +37,7 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
   const [loading, setLoading] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [defaultIndex, setDefaultIndex] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
 
   // Frases por defecto cuando no hay imágenes
   const defaultSlides: HeroSlide[] = [
@@ -175,7 +176,8 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
                 <img
                   src={slide.imageUrl}
                   alt={slide.title || 'Slide'}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover transition-opacity duration-700 ${imageLoaded[slide.id] ? 'opacity-100' : 'opacity-0'}`}
+                  onLoad={() => setImageLoaded((prev) => ({ ...prev, [slide.id]: true }))}
                 />
                 {/* Overlay oscuro para mejorar legibilidad del texto */}
                 <div className="absolute inset-0 bg-black/40"></div>
