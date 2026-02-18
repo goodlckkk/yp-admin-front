@@ -77,7 +77,7 @@ export function ResearchSiteCard({ site, onEdit, onDelete, onClick }: ResearchSi
             {/* Información principal */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-lg font-bold text-[#024959] truncate">
+                <h3 className="text-lg font-bold text-[#024959] break-words max-w-[160px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px] truncate">
                   {site.nombre}
                 </h3>
                 {site.activo !== undefined && (
@@ -94,7 +94,7 @@ export function ResearchSiteCard({ site, onEdit, onDelete, onClick }: ResearchSi
               
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <MapPin className="h-4 w-4 shrink-0" />
-                <span className="truncate">{location}</span>
+                <span className="break-words max-w-[180px] sm:max-w-[220px] md:max-w-[280px] truncate">{location}</span>
               </div>
             </div>
           </div>
@@ -159,7 +159,7 @@ export function ResearchSiteCard({ site, onEdit, onDelete, onClick }: ResearchSi
           {site.direccion && (
             <div className="flex items-start gap-2 text-sm">
               <MapPin className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-              <span className="text-gray-600 line-clamp-1">{site.direccion}</span>
+              <span className="text-gray-600 break-words line-clamp-1 max-w-[220px]">{site.direccion}</span>
             </div>
           )}
           
@@ -181,7 +181,7 @@ export function ResearchSiteCard({ site, onEdit, onDelete, onClick }: ResearchSi
               <Mail className="h-4 w-4 text-gray-400 shrink-0" />
               <a 
                 href={`mailto:${site.email}`}
-                className="text-[#04BFAD] hover:text-[#024959] hover:underline truncate"
+                className="text-[#04BFAD] hover:text-[#024959] hover:underline break-all max-w-[200px]"
                 onClick={(e) => e.stopPropagation()}
               >
                 {site.email}
@@ -194,7 +194,7 @@ export function ResearchSiteCard({ site, onEdit, onDelete, onClick }: ResearchSi
               <ExternalLink className="h-4 w-4 text-gray-400 shrink-0" />
               <button
                 onClick={handleWebsiteClick}
-                className="text-[#04BFAD] hover:text-[#024959] hover:underline truncate text-left"
+                className="text-[#04BFAD] hover:text-[#024959] hover:underline break-all max-w-[200px] text-left"
               >
                 {site.sitio_web.replace(/^https?:\/\//, '')}
               </button>

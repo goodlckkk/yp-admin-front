@@ -533,3 +533,16 @@ export async function sendInstitutionContact(payload: InstitutionContactPayload)
     body: JSON.stringify(payload),
   });
 }
+
+// ==================== COMUNAS DINÁMICAS ====================
+
+export interface Comuna {
+  id: string;
+  nombre: string;
+  region_id: string;
+  region_nombre: string;
+}
+
+export async function getAllComunas(): Promise<Comuna[]> {
+  return fetchWithAuth<Comuna[]>('/comunas');
+}

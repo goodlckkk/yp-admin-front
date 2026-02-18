@@ -17,6 +17,7 @@ import {
   createPatientIntake,
   updatePatientIntake,
   getUserEmailFromToken,
+  getResearchSites,
 } from "../lib/api"
 import { Icons } from "./ui/icons"
 import { CustomIcons } from "./ui/custom-icons"
@@ -74,6 +75,7 @@ type PatientFilters = {
   conditionCode: string; // Código CIE-10 de la condición
   status: string;
   source: string; // Filtro por origen: 'WEB', 'MANUAL', o '' (todos)
+  institution: string; // Filtro por institución (ID)
   searchQuery: string;
   showFilters: boolean;
   page: number;
@@ -98,7 +100,19 @@ export default function DashboardPage() {
   const [isTrialFormOpen, setIsTrialFormOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<PatientIntake | null>(null);
   const [isPatientDetailsOpen, setIsPatientDetailsOpen] = useState(false);
+  
+  // Estado para sidebar colapsable
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  
+  // Función para toggle sidebar
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+  
   const [isManualPatientFormOpen, setIsManualPatientFormOpen] = useState(false);
+  
+  // Estado para las instituciones disponibles
+  const [researchSites, setResearchSites] = useState<ResearchSite[]>([]);
   
   // Función para cerrar sesión
   const handleLogout = () => {
@@ -122,6 +136,7 @@ export default function DashboardPage() {
     conditionCode: '', // Código CIE-10
     status: '',
     source: '', // Filtro por origen: WEB, MANUAL, o '' (todos)
+    institution: '', // Filtro por institución
     searchQuery: '',
     showFilters: false,
     page: 1,
@@ -154,100 +169,7 @@ export default function DashboardPage() {
     }
   };
 
-  // Función para exportar pacientes a Excel
-  const exportPatientsToExcel = () => {
-    try {
-      // Preparar los datos para exportar
-      const dataToExport = patientsToDisplay.map((patient) => {
-        // Calcular vigencia del consentimiento (15 años)
-        const registrationDate = new Date(patient.createdAt);
-        const expirationDate = new Date(registrationDate);
-        expirationDate.setFullYear(registrationDate.getFullYear() + 15);
-        const isExpired = new Date() > expirationDate;
-        
-        // Obtener origen legible
-        const sourceMap: Record<string, string> = {
-          'WEB_FORM': 'Formulario Web',
-          'MANUAL_ENTRY': 'Ingreso Manual',
-          'REFERRAL': 'Referido',
-          'OTHER': 'Otro'
-        };
 
-        // Formatear patologías (array a string)
-        const patologiasStr = Array.isArray((patient as any).patologias) 
-          ? (patient as any).patologias.join(', ') 
-          : '';
-
-        // Formatear otras enfermedades (texto o estructurado)
-        let otrasEnfermedadesStr = (patient as any).otrasEnfermedades || '';
-        if (Array.isArray((patient as any).otrasEnfermedadesEstructuradas)) {
-          const otrasStruct = (patient as any).otrasEnfermedadesEstructuradas
-            .map((e: any) => `${e.nombre} (${e.codigo})`)
-            .join(', ');
-          otrasEnfermedadesStr = otrasEnfermedadesStr 
-            ? `${otrasEnfermedadesStr}, ${otrasStruct}`
-            : otrasStruct;
-        }
-
-        return {
-          'RUT': patient.rut || 'N/A',
-          'Nombres': patient.nombres || 'N/A',
-          'Apellidos': patient.apellidos || 'N/A',
-          'Email': patient.email || 'N/A',
-          'Teléfono': patient.telefono || 'N/A',
-          'Fecha de Nacimiento': formatDate(patient.fechaNacimiento),
-          'Edad': calculateAge(patient.fechaNacimiento),
-          'Sexo': patient.sexo || 'N/A',
-          'Región': patient.region || 'N/A',
-          'Comuna': patient.comuna || 'N/A',
-          'Dirección': patient.direccion || 'N/A',
-          'Condición Principal': patient.condicionPrincipal || 'N/A',
-          'Patologías Prevalentes': patologiasStr || 'Ninguna',
-          'Otras Enfermedades': otrasEnfermedadesStr || 'Ninguna',
-          'Medicamentos Actuales': patient.medicamentosActuales || 'N/A',
-          'Estudio Clínico Asignado': patient.trial?.title || 'Sin asignar',
-          'Sitio / Institución': patient.referralResearchSite?.nombre || 'N/A',
-          'Estado': patient.status || 'RECEIVED',
-          'Origen': sourceMap[patient.source] || patient.source || 'N/A',
-          'Fecha de Registro': formatDate(patient.createdAt),
-          'Vigencia Consentimiento': isExpired ? 'CADUCADO' : 'VIGENTE',
-          'Fecha Caducidad': formatDate(expirationDate.toISOString())
-        };
-      });
-
-      // Crear un libro de trabajo (workbook)
-      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Pacientes');
-
-      // Ajustar el ancho de las columnas automáticamente
-      const maxWidth = 50;
-      const colWidths = Object.keys(dataToExport[0] || {}).map(key => ({
-        wch: Math.min(
-          Math.max(
-            key.length,
-            ...dataToExport.map(row => String(row[key as keyof typeof row]).length)
-          ),
-          maxWidth
-        )
-      }));
-      worksheet['!cols'] = colWidths;
-
-      // Generar el archivo con la fecha actual
-      const today = new Date();
-      const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
-      const fileName = `pacientes_yoparticipo_${dateStr}.xlsx`;
-
-      // Descargar el archivo
-      XLSX.writeFile(workbook, fileName);
-
-      // Mostrar mensaje de éxito (opcional)
-      console.log(`✅ Archivo exportado: ${fileName}`);
-    } catch (error) {
-      console.error('Error al exportar a Excel:', error);
-      alert('Error al exportar los datos. Por favor, intente nuevamente.');
-    }
-  };
 
   // Filtrar pacientes según los filtros aplicados
   // Filtrar estudios clínicos según los filtros aplicados
@@ -383,11 +305,12 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const [trialsResponse, intakesResponse, statsResponse, trendsResponse] = await Promise.allSettled([
+        const [trialsResponse, intakesResponse, statsResponse, trendsResponse, sitesResponse] = await Promise.allSettled([
           getTrials(),
           getPatientIntakes(),
           getStats(),
           getTrends(),
+          getResearchSites(),
         ])
 
         if (trialsResponse.status === "fulfilled") {
@@ -414,6 +337,10 @@ export default function DashboardPage() {
 
         if (trendsResponse.status === "fulfilled") {
           setTrends(trendsResponse.value)
+        }
+
+        if (sitesResponse.status === "fulfilled") {
+          setResearchSites(sitesResponse.value)
         }
       } catch (err) {
         console.error(err)
@@ -530,9 +457,108 @@ export default function DashboardPage() {
       // Filtro por origen (WEB/MANUAL)
       const matchesSource = !filters.source || patient.source === filters.source;
 
-      return matchesSearch && matchesAge && matchesCondition && matchesStatus && matchesSource;
+      // Filtro por institución
+      const matchesInstitution = !filters.institution || 
+        patient.referralResearchSiteId === filters.institution;
+
+      return matchesSearch && matchesAge && matchesCondition && matchesStatus && matchesSource && matchesInstitution;
     });
   }, [patientIntakes, searchQuery, filters])
+
+  // Función para exportar pacientes a Excel
+  const exportPatientsToExcel = () => {
+    try {
+      // Preparar los datos para exportar
+      const dataToExport = patientsToDisplay.map((patient) => {
+        // Calcular vigencia del consentimiento (15 años)
+        const registrationDate = new Date(patient.createdAt || new Date());
+        const expirationDate = new Date(registrationDate);
+        expirationDate.setFullYear(registrationDate.getFullYear() + 15);
+        const isExpired = new Date() > expirationDate;
+        
+        // Obtener origen legible
+        const sourceMap: Record<string, string> = {
+          'WEB_FORM': 'Formulario Web',
+          'MANUAL_ENTRY': 'Ingreso Manual',
+          'REFERRAL': 'Referido',
+          'OTHER': 'Otro'
+        };
+
+        // Formatear patologías (array a string)
+        const patologiasStr = Array.isArray((patient as any).patologias) 
+          ? (patient as any).patologias.join(', ') 
+          : '';
+
+        // Formatear otras enfermedades (texto o estructurado)
+        let otrasEnfermedadesStr = (patient as any).otrasEnfermedades || '';
+        if (Array.isArray((patient as any).otrasEnfermedadesEstructuradas)) {
+          const otrasStruct = (patient as any).otrasEnfermedadesEstructuradas
+            .map((e: any) => `${e.nombre} (${e.codigo})`)
+            .join(', ');
+          otrasEnfermedadesStr = otrasEnfermedadesStr 
+            ? `${otrasEnfermedadesStr}, ${otrasStruct}`
+            : otrasStruct;
+        }
+
+        return {
+          'RUT': patient.rut || 'N/A',
+          'Nombres': patient.nombres || 'N/A',
+          'Apellidos': patient.apellidos || 'N/A',
+          'Email': patient.email || 'N/A',
+          'Teléfono': patient.telefono || 'N/A',
+          'Fecha de Nacimiento': formatDate(patient.fechaNacimiento),
+          'Edad': calculateAge(patient.fechaNacimiento),
+          'Sexo': patient.sexo || 'N/A',
+          'Región': patient.region || 'N/A',
+          'Comuna': patient.comuna || 'N/A',
+          'Dirección': patient.direccion || 'N/A',
+          'Condición Principal': patient.condicionPrincipal || 'N/A',
+          'Patologías Prevalentes': patologiasStr || 'Ninguna',
+          'Otras Enfermedades': otrasEnfermedadesStr || 'Ninguna',
+          'Medicamentos Actuales': patient.medicamentosActuales || 'N/A',
+          'Estudio Clínico Asignado': patient.trial?.title || 'Sin asignar',
+          'Sitio / Institución': patient.referralResearchSite?.nombre || 'N/A',
+          'Estado': patient.status || 'RECEIVED',
+          'Origen': sourceMap[patient.source || ''] || patient.source || 'N/A',
+          'Fecha de Registro': formatDate(patient.createdAt),
+          'Vigencia Consentimiento': isExpired ? 'CADUCADO' : 'VIGENTE',
+          'Fecha Caducidad': formatDate(expirationDate.toISOString())
+        };
+      });
+
+      // Crear un libro de trabajo (workbook)
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Pacientes');
+
+      // Ajustar el ancho de las columnas automáticamente
+      const maxWidth = 50;
+      const colWidths = Object.keys(dataToExport[0] || {}).map(key => ({
+        wch: Math.min(
+          Math.max(
+            key.length,
+            ...dataToExport.map(row => String(row[key as keyof typeof row]).length)
+          ),
+          maxWidth
+        )
+      }));
+      worksheet['!cols'] = colWidths;
+
+      // Generar el archivo con la fecha actual
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+      const fileName = `pacientes_yoparticipo_${dateStr}.xlsx`;
+
+      // Descargar el archivo
+      XLSX.writeFile(workbook, fileName);
+
+      // Mostrar mensaje de éxito (opcional)
+      console.log(`✅ Archivo exportado: ${fileName}`);
+    } catch (error) {
+      console.error('Error al exportar a Excel:', error);
+      alert('Error al exportar los datos. Por favor, intente nuevamente.');
+    }
+  };
 
   const statsOverview = useMemo(
     () => [
@@ -545,7 +571,15 @@ export default function DashboardPage() {
         bg: "bg-[#dfe3e3]",
       },
       {
-        label: "Pendientes por verificar",
+        label: "Verificados",
+        value: patientIntakes.filter((intake) => intake.status === "VERIFIED").length.toString(),
+        change: `+${patientIntakes.filter((intake) => intake.status === "VERIFIED").length}`,
+        icon: Icons.CheckCircle,
+        color: "text-green-600",
+        bg: "bg-green-100",
+      },
+      {
+        label: "Pendientes",
         value: patientIntakes.filter((intake) => intake.status === "RECEIVED").length.toString(),
         change: `+${patientIntakes.filter((intake) => intake.status === "RECEIVED").length}`,
         icon: Icons.AlertTriangle,
@@ -619,7 +653,7 @@ export default function DashboardPage() {
       items: [
         { id: "estudios" as Section, label: "Estudios Clínicos", icon: Icons.FileText },
         { id: "sitios" as Section, label: "Sitios/Instituciones", icon: Icons.Building },
-        { id: "sponsors" as Section, label: "Sponsors", icon: Icons.Shield },
+        { id: "sponsors" as Section, label: "Patrocinadores/CROs", icon: Icons.Shield },
       ]
     },
     {
@@ -658,20 +692,33 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen w-64 bg-white border-r border-gray-200 transition-transform ${
+        className={`fixed top-0 left-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300 ${
           showMobileMenu ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0`}
+        } lg:translate-x-0 ${isSidebarCollapsed ? "w-16" : "w-64"}`}
       >
         <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="p-6 border-b border-gray-200">
+          {/* Logo y Botón Hamburguer */}
+          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src="/logo.svg" alt="yoParticipo" className="w-10 h-10 scale-150" />
-              <div>
-                <h1 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>YOParticipo</h1>
-                <p className="text-xs text-gray-500">Dashboard Admin</p>
-              </div>
+              <img src="/logo.svg" alt="yoParticipo" className="w-8 h-8 scale-150" />
+              {!isSidebarCollapsed && (
+                <div>
+                  <h1 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>YOParticipo</h1>
+                  <p className="text-xs text-gray-500">Dashboard Admin</p>
+                </div>
+              )}
             </div>
+            {!isSidebarCollapsed && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleSidebar}
+                className="h-8 w-8"
+                title="Colapsar sidebar"
+              >
+                <Icons.Menu className="h-4 w-4" />
+              </Button>
+            )}
           </div>
 
           {/* Navigation */}
@@ -1011,9 +1058,24 @@ export default function DashboardPage() {
                         >
                           <option value="">Todos los orígenes</option>
                           <option value="WEB_FORM">🌐 Formulario Web</option>
-                          <option value="MANUAL_ENTRY">👤 Creado Manual</option>
-                        </select>
-                      </div>
+                        <option value="MANUAL_ENTRY">👤 Creado Manual</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Institución</label>
+                      <select
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        value={filters.institution}
+                        onChange={(e) => setFilters({...filters, institution: e.target.value})}
+                      >
+                        <option value="">Todas las instituciones</option>
+                        {researchSites.map((site) => (
+                          <option key={site.id} value={site.id}>
+                            {site.nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                     </div>
                     <div className="flex justify-end mt-4">
                       <Button
@@ -1027,6 +1089,7 @@ export default function DashboardPage() {
                           conditionCode: '',
                           status: '',
                           source: '',
+                          institution: '',
                           showFilters: false
                         })}
                       >
@@ -1300,7 +1363,7 @@ export default function DashboardPage() {
             <ResearchSitesView />
           )}
 
-          {/* Sponsors */}
+          {/* Patrocinadores/CROs */}
           {activeSection === "sponsors" && (
             <SponsorsView />
           )}

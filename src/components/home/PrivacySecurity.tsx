@@ -38,7 +38,7 @@ export default function PrivacySecurity() {
               <Icons.Shield className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Tu privacidad y seguridad son nuestra prioridad
+              Tu información está protegida
             </h2>
           </div>
 
@@ -46,28 +46,31 @@ export default function PrivacySecurity() {
           <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 md:p-12 border-2 border-white/20 shadow-2xl">
             <div className="space-y-6 text-white">
               <p className="text-lg md:text-xl leading-relaxed">
-                En <span className="font-bold">YoParticipo</span>, protegemos tu información con los más altos estándares de seguridad. Usamos tecnología confiable para resguardar tus datos y te garantizamos que se utilizarán únicamente con el fin de conectarte con ensayos clínicos que puedan ofrecerte nuevas opciones de tratamiento.
+                En YoParticipo tratamos tus datos bajo estándares clínicos y normativa chilena de protección de datos (Ley 19.628).
               </p>
               
               <p className="text-lg md:text-xl leading-relaxed">
-                Siempre lo haremos con tu consentimiento explícito y para tu beneficio, manteniendo la transparencia en cada paso.
+                Solo utilizamos tu información para:
+                <br />✔ Evaluar tu elegibilidad en estudios clínicos
+                <br />✔ Contactarte si cumples criterios
+                <br />✔ Informarte con tu autorización previa
               </p>
 
               <p className="text-lg md:text-xl leading-relaxed">
-                Así, puedes tener la tranquilidad de que tu información está segura y de que solo se comparte en el contexto de los estudios clínicos. Estamos aquí para cuidarte y para ayudarte a encontrar la mejor opción de salud posible.
+                Puedes solicitar en cualquier momento la eliminación de tus datos.
               </p>
             </div>
 
             {/* Características de seguridad */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 pt-10 border-t border-white/20">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10 pt-10 border-t border-white/20">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
                   <Icons.Lock className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white mb-1">Datos Encriptados</h3>
+                  <h3 className="font-bold text-white mb-1">🔐 Datos encriptados</h3>
                   <p className="text-sm text-white/80">
-                    Tecnología de encriptación de última generación
+                    Almacenamiento seguro con tecnología cifrada.
                   </p>
                 </div>
               </div>
@@ -77,21 +80,33 @@ export default function PrivacySecurity() {
                   <Icons.CheckCircle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white mb-1">Consentimiento Explícito</h3>
+                  <h3 className="font-bold text-white mb-1">🧾 Consentimiento informado</h3>
                   <p className="text-sm text-white/80">
-                    Siempre con tu autorización previa
+                    Siempre solicitamos tu autorización antes de cualquier contacto.
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Icons.Eye className="w-6 h-6 text-white" />
+                  <Icons.Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white mb-1">Total Transparencia</h3>
+                  <h3 className="font-bold text-white mb-1">🏛 Cumplimiento normativo</h3>
                   <p className="text-sm text-white/80">
-                    Información clara en cada paso del proceso
+                    Seguimos regulación chilena y estándares éticos de investigación clínica.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                  <Icons.Trash className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-white mb-1">🗑 Derecho a eliminación</h3>
+                  <p className="text-sm text-white/80">
+                    Puedes solicitar la eliminación definitiva de tus datos.
                   </p>
                 </div>
               </div>

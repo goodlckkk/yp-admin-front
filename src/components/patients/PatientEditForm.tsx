@@ -85,6 +85,8 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
     // Contact Info
     email: '',
     telefono: '',
+    telefonoCodigoPais: '',
+    telefonoNumero: '',
     region: '',
     comuna: '',
     direccion: '',
@@ -113,11 +115,9 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
         fechaNacimiento: patient.fechaNacimiento ? new Date(patient.fechaNacimiento).toISOString().split('T')[0] : '',
         sexo: patient.sexo || '',
         email: patient.email || '',
-        telefono: (patient.telefono && patient.telefono.trim() !== '')
-          ? patient.telefono
-          : ((patient as any).telefonoCodigoPais && (patient as any).telefonoNumero
-            ? `${(patient as any).telefonoCodigoPais} ${(patient as any).telefonoNumero}`
-            : ''),
+        telefono: patient.telefono || '',
+        telefonoCodigoPais: patient.telefonoCodigoPais || '',
+        telefonoNumero: patient.telefonoNumero || '',
         region: patient.region || '',
         comuna: patient.comuna || '',
         direccion: patient.direccion || '',
@@ -192,12 +192,48 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
     setError(null);
 
     try {
+      // Preparar solo los campos que se pueden actualizar (evitar enviar campos innecesarios)
+      const updateData: any = {
+        status: formData.status,
+        // Solo incluir campos editables en modo completo
+        ...(isFullEditMode && {
+          nombres: formData.nombres,
+          apellidos: formData.apellidos,
+          rut: formData.rut,
+          fechaNacimiento: formData.fechaNacimiento,
+          sexo: formData.sexo,
+          email: formData.email,
+          telefono: formData.telefono,
+          telefonoCodigoPais: formData.telefonoCodigoPais,
+          telefonoNumero: formData.telefonoNumero,
+          region: formData.region,
+          comuna: formData.comuna,
+          direccion: formData.direccion,
+          condicionPrincipal: formData.condicionPrincipal,
+          condicionPrincipalCodigo: formData.condicionPrincipalCodigo,
+          descripcionCondicion: formData.descripcionCondicion,
+          patologias: formData.patologias,
+          medicamentosActuales: formData.medicamentosActuales,
+          medicamentosEstructurados: formData.medicamentosEstructurados,
+          alergias: formData.alergias,
+          alergiasEstructuradas: formData.alergiasEstructuradas,
+          cirugiasPrevias: formData.cirugiasPrevias,
+          otrasEnfermedades: formData.otrasEnfermedades,
+          otrasEnfermedadesEstructuradas: formData.otrasEnfermedadesEstructuradas,
+        })
+      };
+
+      // Filtrar campos undefined o null
+      const filteredUpdateData = Object.fromEntries(
+        Object.entries(updateData).filter(([_, value]) => value !== undefined && value !== null)
+      );
+
       await fetchWithAuth(`/patient-intakes/${patient.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(filteredUpdateData),
       });
       
       onSuccess();
@@ -244,11 +280,8 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-[#04BFAD]">
-            Editar Paciente
+            Información de paciente
           </h2>
-          <p className="text-gray-600 mt-1">
-            Modifica la información médica y el estado del paciente
-          </p>
         </div>
         <div className="flex gap-2">
             <Button
@@ -256,7 +289,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
             onClick={() => setIsFullEditMode(!isFullEditMode)}
             className="text-[#04BFAD] border-[#04BFAD] hover:bg-[#04BFAD]/10"
             >
-            {isFullEditMode ? 'Bloquear Edición' : 'Editar paciente completo'}
+            {isFullEditMode ? '🔒 Bloquear' : '✏️ Editar'}
             </Button>
             <Button
             variant="ghost"
@@ -392,7 +425,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
               <div>
                 <Label>Teléfono</Label>
                 <Input
-                  value={formData.telefono}
+                  value={formData.telefono || formData.telefonoNumero || ''}
                   onChange={(e) => setFormData({...formData, telefono: e.target.value})}
                   disabled={!isFullEditMode}
                   className={!isFullEditMode ? "mt-1 bg-gray-50" : "mt-1"}
@@ -570,6 +603,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                 }}
                 placeholder="Buscar enfermedad por nombre o código CIE-10..."
                 required
+                disabled={!isFullEditMode}
               />
             </div>
 
@@ -582,6 +616,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                 placeholder="Describe los síntomas y detalles de la condición..."
                 rows={3}
                 className="mt-1"
+                disabled={!isFullEditMode}
               />
             </div>
 
@@ -601,6 +636,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                       setFormData({ ...formData, patologias: newPatologias });
                     }}
                     label={patologia}
+                    disabled={!isFullEditMode}
                   />
                 ))}
               </div>
@@ -622,6 +658,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                 value={formData.otrasEnfermedadesEstructuradas}
                 onChange={(enfermedades) => setFormData({ ...formData, otrasEnfermedadesEstructuradas: enfermedades })}
                 placeholder="Buscar enfermedades por nombre o código CIE-10..."
+                disabled={!isFullEditMode}
               />
             </div>
 
@@ -632,6 +669,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                 value={formData.alergiasEstructuradas}
                 onChange={(alergias) => setFormData({ ...formData, alergiasEstructuradas: alergias })}
                 placeholder="Buscar alergias por nombre o código CIE-10..."
+                disabled={!isFullEditMode}
               />
             </div>
 
@@ -642,6 +680,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                 value={formData.medicamentosEstructurados}
                 onChange={(medicamentos) => setFormData({ ...formData, medicamentosEstructurados: medicamentos })}
                 placeholder="Buscar medicamento o escribir uno personalizado..."
+                disabled={!isFullEditMode}
               />
             </div>
 
@@ -654,6 +693,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                 placeholder="Historial de cirugías..."
                 rows={2}
                 className="mt-1"
+                disabled={!isFullEditMode}
               />
             </div>
           </CardContent>
@@ -673,6 +713,7 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                 <Select
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  disabled={!isFullEditMode}
                 >
                   <SelectTrigger id="status" className="mt-1">
                     <SelectValue />

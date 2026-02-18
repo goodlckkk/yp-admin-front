@@ -11,7 +11,7 @@
  * - Integración con el mismo endpoint que el formulario web
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -27,7 +27,7 @@ import { Checkbox } from '../ui/checkbox';
 import { Badge } from '../ui/badge';
 import { createPatientIntake } from '../../lib/api';
 import type { CreatePatientIntakePayload } from '../../lib/api';
-import { regionesChile, comunasPorRegion, getComunasByRegion } from '../../lib/regiones-comunas';
+import { useCommunes } from '../../hooks/useCommunes';
 
 interface ManualPatientFormProps {
   isOpen: boolean;
@@ -56,6 +56,9 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Hook para obtener comunas desde la API
+  const { communes, loading: communesLoading, getCommunesByRegion, getAllRegions } = useCommunes();
+  
   const [formData, setFormData] = useState<any>({
     nombres: '',
     apellidos: '',
@@ -70,8 +73,6 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     condicionPrincipal: '',
     condicionPrincipalCodigo: '', // ← Código CIE-10 de la condición principal
     patologias: [], // ← Checkboxes de patologías prevalentes
-    // Referencias
-    referralResearchSiteId: '', // ← ID del sitio que deriva (Opcional)
     // Campos estructurados (nuevos)
     medicamentosEstructurados: [] as string[], // Solo nombres de medicamentos
     alergiasEstructuradas: [] as Array<{ codigo: string; nombre: string }>,
@@ -84,15 +85,16 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     aceptaPrivacidad: true,
     aceptaAlmacenamiento15Anos: true,
     source: 'MANUAL_ENTRY',
+    referralResearchSiteId: '',
   });
 
   // Patologías prevalentes en Chile
   const patologiasPrevalentes = [
     'Hipertensión',
     'Diabetes',
-    'Enfermedad pulmonar',
-    'EPOC (Enfermedad Pulmonar Obstructiva Crónica)',
     'Enfermedad coronaria (infarto agudo al miocardio)',
+    'EPOC (Enfermedad Pulmonar Obstructiva Crónica)',
+    'Enfermedad pulmonar',
     'Insuficiencia cardíaca',
     'Enfermedad renal crónica',
     'Asma',
@@ -124,12 +126,17 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     return `${formatted}-${dv}`;
   };
 
-  // Formatear número de teléfono (solo dígitos, máximo 15)
+  // Formatear número de teléfono chileno (+56 fijo y 9 dígitos exactos)
   const formatPhoneNumber = (value: string) => {
-    // Permitir dígitos, espacios, guiones y el signo +
-    // No forzamos ningún formato específico, solo limpiamos caracteres inválidos
-    const cleaned = value.replace(/[^0-9+\-\s]/g, '');
-    return cleaned.slice(0, 20); // Aumentamos un poco el límite para permitir espacios
+    // Solo permitir dígitos, máximo 9 caracteres
+    const cleaned = value.replace(/[^0-9]/g, '');
+    
+    // Validar que tenga exactamente 9 dígitos
+    if (cleaned.length > 9) {
+      return cleaned.slice(0, 9); // Cortar a 9 dígitos máximo
+    }
+    
+    return cleaned;
   };
 
   const handleInputChange = (field: string, value: any) => {
@@ -140,6 +147,58 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
   const handleRutChange = (value: string) => {
     const formatted = formatRut(value);
     handleInputChange('rut', formatted);
+  };
+
+  // Validar RUT en tiempo real (onBlur)
+  const validateRut = (): boolean => {
+    if (!formData.rut?.trim()) return true;
+    
+    const cleanRut = formData.rut.replace(/[^0-9kK]/g, '');
+    if (cleanRut.length < 8 || cleanRut.length > 9) {
+      setError('El RUT debe tener entre 8 y 9 caracteres');
+      return false;
+    }
+    
+    // Validar dígito verificador (algoritmo chileno)
+    const rutBody = cleanRut.slice(0, -1);
+    const dv = cleanRut.slice(-1).toUpperCase();
+    
+    if (!/^\d+$/.test(rutBody)) {
+      setError('El RUT contiene caracteres inválidos');
+      return false;
+    }
+    
+    // Calcular dígito verificador esperado
+    let sum = 0;
+    let multiplier = 2;
+    
+    for (let i = rutBody.length - 1; i >= 0; i--) {
+      sum += parseInt(rutBody[i]) * multiplier;
+      multiplier = multiplier === 7 ? 2 : multiplier + 1;
+    }
+    
+    const expectedDv = 11 - (sum % 11);
+    const calculatedDv = expectedDv === 11 ? '0' : expectedDv === 10 ? 'K' : expectedDv.toString();
+    
+    if (calculatedDv !== dv) {
+      setError('El RUT es inválido');
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Validar email en tiempo real (onBlur)
+  const validateEmail = (): boolean => {
+    if (!formData.email?.trim()) return true;
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('El formato del email es inválido');
+      return false;
+    }
+    
+    return true;
   };
 
   const handlePhoneNumberChange = (value: string) => {
@@ -181,6 +240,12 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
       setError('El número de teléfono es requerido');
       return false;
     }
+    
+    // Validar que el teléfono tenga exactamente 9 dígitos
+    if (formData.telefono.replace(/[^0-9]/g, '').length !== 9) {
+      setError('El número de teléfono debe tener exactamente 9 dígitos');
+      return false;
+    }
     if (!formData.email?.trim()) {
       setError('El email es requerido');
       return false;
@@ -211,9 +276,12 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
     setError(null);
 
     try {
-      // Preparar payload
+      // Preparar payload con teléfono formateado completo (+56 + 9 dígitos)
       const payload = {
         ...formData,
+        telefono: `+56${formData.telefono.replace(/[^0-9]/g, '')}`,
+        telefonoCodigoPais: '+56',
+        telefonoNumero: formData.telefono.replace(/[^0-9]/g, ''),
       };
       
       await createPatientIntake(payload);
@@ -230,7 +298,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
         region: '',
         comuna: '',
         direccion: '',
-        referralResearchSiteId: '', // ← Resetear sitio
+        referralResearchSiteId: '',
         condicionPrincipal: '',
         otrasEnfermedades: '',
         aceptaTerminos: true,
@@ -306,6 +374,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
                   id="rut"
                   value={formData.rut}
                   onChange={(e) => handleRutChange(e.target.value)}
+                  onBlur={validateRut}
                   placeholder="12.345.678-9"
                   disabled={loading}
                   className="mt-1"
@@ -349,20 +418,33 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[#024959]">Contacto</h3>
             
-            {/* Teléfono simplificado */}
+            {/* Teléfono y Email en la misma fila */}
             <div className="grid grid-cols-2 gap-4">
+              {/* Teléfono chileno con prefijo +56 fijo */}
               <div>
                 <Label htmlFor="telefono">Teléfono *</Label>
-                <Input
-                  id="telefono"
-                  value={formData.telefono}
-                  onChange={(e) => handlePhoneNumberChange(e.target.value)}
-                  placeholder="9 1234 5678"
-                  disabled={loading}
-                  className="mt-1"
-                />
+                <div className="flex items-center mt-1">
+                  <div className="inline-flex items-center px-3 h-10 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 rounded-l-md">
+                    +56
+                  </div>
+                  <Input
+                    id="telefono"
+                    value={formData.telefono}
+                    onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                    placeholder="912345678"
+                    disabled={loading}
+                    className="rounded-l-none flex-1"
+                    maxLength={9}
+                  />
+                </div>
+                {formData.telefono && formData.telefono.length !== 9 && (
+                  <p className="text-sm text-red-500 mt-1">
+                    El número debe tener exactamente 9 dígitos
+                  </p>
+                )}
               </div>
-              
+
+              {/* Email */}
               <div>
                 <Label htmlFor="email">Email *</Label>
                 <Input
@@ -370,13 +452,14 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="ejemplo@correo.cl"
+                  onBlur={validateEmail}
+                  placeholder="paciente@ejemplo.cl"
                   disabled={loading}
                   className="mt-1"
                 />
               </div>
             </div>
-          </div>
+            </div>
 
           {/* Ubicación */}
           <div className="space-y-4">
@@ -397,9 +480,9 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
                     <SelectValue placeholder="Seleccionar región" />
                   </SelectTrigger>
                   <SelectContent>
-                    {regionesChile.map((region) => (
-                      <SelectItem key={region.value} value={region.value}>
-                        {region.label}
+                    {getAllRegions().map((region) => (
+                      <SelectItem key={region} value={region}>
+                        {region}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -417,7 +500,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
                     <SelectValue placeholder={formData.region ? "Seleccionar comuna" : "Primero selecciona región"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {formData.region && getComunasByRegion(formData.region).map((comuna) => (
+                    {formData.region && getCommunesByRegion(formData.region).map((comuna) => (
                       <SelectItem key={comuna.value} value={comuna.value}>
                         {comuna.label}
                       </SelectItem>
@@ -442,8 +525,9 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
 
 
 
-          {/* Origen / Institución (Oculto en manual) */}
-          {/* 
+
+
+          {/* Origen del Paciente */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[#024959]">Origen del Paciente</h3>
             
@@ -453,13 +537,10 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
                 onSelect={(siteId) => handleInputChange('referralResearchSiteId', siteId)}
                 label="Institución que deriva (Opcional)"
                 placeholder="Buscar hospital, clínica o centro médico..."
+                disabled={loading}
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Si el paciente fue derivado por una institución específica, selecciónela aquí.
-              </p>
             </div>
           </div>
-          */}
 
           {/* Información Médica */}
           <div className="space-y-4">
@@ -541,7 +622,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
 
           </div>
 
-          {/* Consentimientos */}
+          {/* Consentimiento Informado */}
           <div className="space-y-3">
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-start gap-3">
@@ -580,6 +661,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
                   </Label>
                   <p className="text-xs text-gray-600 mt-1">
                     Confirmo que el paciente acepta que sus datos sean almacenados por un periodo de 15 años después del registro.
+                    <br /><strong>Consentimiento válido por una duración de 15 años después del registro.</strong>
                   </p>
                 </div>
               </div>

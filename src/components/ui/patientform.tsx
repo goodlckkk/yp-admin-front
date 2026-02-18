@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "./button"
 import { InputWithLabel } from "./input"
 import { TextareaWithLabel } from "./textarea"
@@ -11,6 +11,7 @@ import { SelectWithLabel } from "./select"
 import { Icons } from "./icons"
 import { Cie10Autocomplete } from "./Cie10Autocomplete"
 import { Cie10SingleAutocomplete } from "./Cie10SingleAutocomplete"
+import { useCommunes } from "../../hooks/useCommunes"
 
 interface PatientFormProps {
   condition: string
@@ -47,6 +48,9 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
     aceptaPrivacidad: false,
     aceptaAlmacenamiento15Anos: false,
   })
+
+  // Hook para obtener comunas desde la API
+  const { communes, loading: communesLoading, getCommunesByRegion, getAllRegions } = useCommunes();
 
   // Patologías prevalentes en Chile (según feedback)
   const patologiasPrevalentes = [
@@ -112,146 +116,6 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
     { value: "migraña", label: "Migraña Crónica" },
     { value: "otra", label: "Otra condición (especificar)" },
   ]
-
-  const regionesChile = [
-    { value: "arica", label: "Región de Arica y Parinacota" },
-    { value: "tarapaca", label: "Región de Tarapacá" },
-    { value: "antofagasta", label: "Región de Antofagasta" },
-    { value: "atacama", label: "Región de Atacama" },
-    { value: "coquimbo", label: "Región de Coquimbo" },
-    { value: "valparaiso", label: "Región de Valparaíso" },
-    { value: "metropolitana", label: "Región Metropolitana" },
-    { value: "ohiggins", label: "Región del Libertador Gral. Bernardo O'Higgins" },
-    { value: "maule", label: "Región del Maule" },
-    { value: "nuble", label: "Región de Ñuble" },
-    { value: "biobio", label: "Región del Biobío" },
-    { value: "araucania", label: "Región de La Araucanía" },
-    { value: "rios", label: "Región de Los Ríos" },
-    { value: "lagos", label: "Región de Los Lagos" },
-    { value: "aysen", label: "Región de Aysén del Gral. Carlos Ibáñez del Campo" },
-    { value: "magallanes", label: "Región de Magallanes y de la Antártica Chilena" },
-  ]
-
-  const comunasPorRegion: Record<string, { value: string; label: string }[]> = {
-    arica: [
-      { value: "arica", label: "Arica" },
-      { value: "camarones", label: "Camarones" },
-      { value: "putre", label: "Putre" },
-      { value: "general_lagos", label: "General Lagos" },
-    ],
-    tarapaca: [
-      { value: "iquique", label: "Iquique" },
-      { value: "alto_hospicio", label: "Alto Hospicio" },
-      { value: "pica", label: "Pica" },
-      { value: "pozo_almonte", label: "Pozo Almonte" },
-    ],
-    antofagasta: [
-      { value: "antofagasta", label: "Antofagasta" },
-      { value: "calama", label: "Calama" },
-      { value: "tocopilla", label: "Tocopilla" },
-      { value: "mejillones", label: "Mejillones" },
-      { value: "taltal", label: "Taltal" },
-    ],
-    atacama: [
-      { value: "copiapo", label: "Copiapó" },
-      { value: "caldera", label: "Caldera" },
-      { value: "chanaral", label: "Chañaral" },
-      { value: "vallenar", label: "Vallenar" },
-    ],
-    coquimbo: [
-      { value: "la_serena", label: "La Serena" },
-      { value: "coquimbo", label: "Coquimbo" },
-      { value: "ovalle", label: "Ovalle" },
-      { value: "illapel", label: "Illapel" },
-      { value: "vicuna", label: "Vicuña" },
-    ],
-    valparaiso: [
-      { value: "valparaiso", label: "Valparaíso" },
-      { value: "vina_del_mar", label: "Viña del Mar" },
-      { value: "quilpue", label: "Quilpué" },
-      { value: "villa_alemana", label: "Villa Alemana" },
-      { value: "san_antonio", label: "San Antonio" },
-      { value: "quillota", label: "Quillota" },
-      { value: "los_andes", label: "Los Andes" },
-    ],
-    metropolitana: [
-      { value: "santiago", label: "Santiago" },
-      { value: "maipu", label: "Maipú" },
-      { value: "la_florida", label: "La Florida" },
-      { value: "puente_alto", label: "Puente Alto" },
-      { value: "las_condes", label: "Las Condes" },
-      { value: "providencia", label: "Providencia" },
-      { value: "vitacura", label: "Vitacura" },
-      { value: "lo_barnechea", label: "Lo Barnechea" },
-      { value: "nunoa", label: "Ñuñoa" },
-      { value: "san_miguel", label: "San Miguel" },
-      { value: "la_reina", label: "La Reina" },
-      { value: "penalolen", label: "Peñalolén" },
-      { value: "macul", label: "Macul" },
-      { value: "pudahuel", label: "Pudahuel" },
-      { value: "cerrillos", label: "Cerrillos" },
-      { value: "estacion_central", label: "Estación Central" },
-    ],
-    ohiggins: [
-      { value: "rancagua", label: "Rancagua" },
-      { value: "san_fernando", label: "San Fernando" },
-      { value: "rengo", label: "Rengo" },
-      { value: "pichilemu", label: "Pichilemu" },
-      { value: "santa_cruz", label: "Santa Cruz" },
-    ],
-    maule: [
-      { value: "talca", label: "Talca" },
-      { value: "curico", label: "Curicó" },
-      { value: "linares", label: "Linares" },
-      { value: "cauquenes", label: "Cauquenes" },
-      { value: "constitucion", label: "Constitución" },
-    ],
-    nuble: [
-      { value: "chillan", label: "Chillán" },
-      { value: "chillan_viejo", label: "Chillán Viejo" },
-      { value: "san_carlos", label: "San Carlos" },
-      { value: "bulnes", label: "Bulnes" },
-    ],
-    biobio: [
-      { value: "concepcion", label: "Concepción" },
-      { value: "talcahuano", label: "Talcahuano" },
-      { value: "los_angeles", label: "Los Ángeles" },
-      { value: "chillan", label: "Chillán" },
-      { value: "coronel", label: "Coronel" },
-      { value: "san_pedro", label: "San Pedro de la Paz" },
-      { value: "tome", label: "Tomé" },
-    ],
-    araucania: [
-      { value: "temuco", label: "Temuco" },
-      { value: "angol", label: "Angol" },
-      { value: "villarrica", label: "Villarrica" },
-      { value: "pucon", label: "Pucón" },
-      { value: "victoria", label: "Victoria" },
-    ],
-    rios: [
-      { value: "valdivia", label: "Valdivia" },
-      { value: "la_union", label: "La Unión" },
-      { value: "rio_bueno", label: "Río Bueno" },
-      { value: "panguipulli", label: "Panguipulli" },
-    ],
-    lagos: [
-      { value: "puerto_montt", label: "Puerto Montt" },
-      { value: "osorno", label: "Osorno" },
-      { value: "castro", label: "Castro" },
-      { value: "ancud", label: "Ancud" },
-      { value: "puerto_varas", label: "Puerto Varas" },
-    ],
-    aysen: [
-      { value: "coyhaique", label: "Coyhaique" },
-      { value: "puerto_aysen", label: "Puerto Aysén" },
-      { value: "chile_chico", label: "Chile Chico" },
-    ],
-    magallanes: [
-      { value: "punta_arenas", label: "Punta Arenas" },
-      { value: "puerto_natales", label: "Puerto Natales" },
-      { value: "porvenir", label: "Porvenir" },
-    ],
-  }
 
   const sexoOptions = [
     { value: "masculino", label: "Hombre" },
@@ -436,12 +300,13 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Teléfono *</label>
-                <div className="flex gap-2">
+                <div className="flex">
                   <select
                     value={formData.telefonoCodigoPais}
                     onChange={(e) => handleInputChange("telefonoCodigoPais", e.target.value)}
-                    className="w-[90px] px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#024959] text-sm"
+                    className="w-[90px] px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#024959] text-sm text-gray-500"
                   >
+                    <option value="" disabled hidden className="text-gray-400">+56</option>
                     {codigosPais.map((item) => (
                       <option key={item.codigo} value={item.codigo}>
                         {item.codigo}
@@ -456,7 +321,7 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
                       handleInputChange("telefonoNumero", formatted)
                     }}
                     placeholder="912345678"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#024959]"
+                    className="text-gray-400 flex-1 px-3  border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#024959]"
                   />
                 </div>
                 <p className="text-xs text-gray-500">
@@ -483,7 +348,7 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
             <div className="grid md:grid-cols-2 gap-4">
               <SelectWithLabel
                 label="Región *"
-                options={regionesChile}
+                options={getAllRegions().map(region => ({ value: region, label: region }))}
                 value={formData.region}
                 onValueChange={(value: string) => {
                   handleInputChange("region", value)
@@ -493,7 +358,7 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
               />
               <SelectWithLabel
                 label="Comuna *"
-                options={formData.region ? comunasPorRegion[formData.region] : []}
+                options={formData.region ? getCommunesByRegion(formData.region) : []}
                 value={formData.comuna}
                 onValueChange={(value: string) => handleInputChange("comuna", value)}
                 placeholder="Selecciona comuna"

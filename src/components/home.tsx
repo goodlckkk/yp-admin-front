@@ -179,7 +179,7 @@ export default function HomePage() {
           <PatientJourney onPostularClick={() => setShowPatientForm(true)} />
 
           {/* Historias que Inspiran */}
-          <SuccessStories />
+          {/* <SuccessStories /> */}
 
           {/* Privacidad y Seguridad */}
           <PrivacySecurity />
@@ -260,8 +260,8 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* Testimonios */}
-          <section 
+          {/* Testimonios - Comentado hasta tener historias reales */}
+          {/* <section 
             ref={testimonialsRef as any}
             className={`min-h-screen flex items-center py-20 px-4 bg-gradient-to-r from-[#024959] to-[#04BFAD] transition-all duration-1000 ${
               testimonialsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
@@ -318,7 +318,7 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-          </section>
+          </section> */}
 
           {/* Preguntas Frecuentes */}
           <FAQ />

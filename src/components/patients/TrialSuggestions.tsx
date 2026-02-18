@@ -191,7 +191,7 @@ export function TrialSuggestions({ patientId, currentTrialId, onAssign }: TrialS
 
               {/* Información adicional */}
               <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-                <span>📍 {suggestion.trial.research_site_name || 'Sitio no especificado'}</span>
+                <span>📍 {suggestion.trial.researchSite?.nombre || 'Sitio no especificado'}</span>
                 <span>👥 Máx. {suggestion.trial.max_participants} participantes</span>
                 {suggestion.trial.sponsor && (
                   <span>🏢 {suggestion.trial.sponsor.name}</span>
