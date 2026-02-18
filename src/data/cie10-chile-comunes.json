@@ -1001,6 +1001,630 @@
   },
   {
     "codigo": "F07",
+    "nombre": "Trastornos de la personalidad y del comportamiento debidos a enfermedad cerebral"
+  },
+  {
+    "codigo": "F09",
+    "nombre": "Trastorno mental orgánico no especificado"
+  },
+  {
+    "codigo": "F13",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de sedantes"
+  },
+  {
+    "codigo": "F14",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de cocaína"
+  },
+  {
+    "codigo": "F15",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de otros estimulantes"
+  },
+  {
+    "codigo": "F17",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de tabaco"
+  },
+  {
+    "codigo": "F19",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de múltiples drogas"
+  },
+  {
+    "codigo": "F45",
+    "nombre": "Trastornos somatomorfos"
+  },
+  {
+    "codigo": "F48",
+    "nombre": "Otros trastornos neuróticos"
+  },
+  {
+    "codigo": "F50",
+    "nombre": "Trastornos de la conducta alimentaria"
+  },
+  {
+    "codigo": "F51",
+    "nombre": "Trastornos no orgánicos del sueño"
+  },
+  {
+    "codigo": "F52",
+    "nombre": "Disfunción sexual no debida a trastorno orgánico"
+  },
+  {
+    "codigo": "F60",
+    "nombre": "Trastornos específicos de la personalidad"
+  },
+  {
+    "codigo": "F63",
+    "nombre": "Trastornos de los hábitos y del control de los impulsos"
+  },
+  {
+    "codigo": "F64",
+    "nombre": "Trastornos de la identidad de género"
+  },
+  {
+    "codigo": "F70",
+    "nombre": "Retraso mental leve"
+  },
+  {
+    "codigo": "F71",
+    "nombre": "Retraso mental moderado"
+  },
+  {
+    "codigo": "F72",
+    "nombre": "Retraso mental grave"
+  },
+  {
+    "codigo": "F73",
+    "nombre": "Retraso mental profundo"
+  },
+  {
+    "codigo": "F79",
+    "nombre": "Retraso mental no especificado"
+  },
+  {
+    "codigo": "F80",
+    "nombre": "Trastornos específicos del desarrollo del habla y del lenguaje"
+  },
+  {
+    "codigo": "F81",
+    "nombre": "Trastornos específicos del desarrollo de las habilidades escolares"
+  },
+  {
+    "codigo": "F82",
+    "nombre": "Trastorno específico del desarrollo motor"
+  },
+  {
+    "codigo": "F84",
+    "nombre": "Trastornos generalizados del desarrollo"
+  },
+  {
+    "codigo": "F88",
+    "nombre": "Otros trastornos del desarrollo psicológico"
+  },
+  {
+    "codigo": "F89",
+    "nombre": "Trastorno del desarrollo psicológico no especificado"
+  },
+  {
+    "codigo": "F90",
+    "nombre": "Trastornos hipercinéticos"
+  },
+  {
+    "codigo": "F91",
+    "nombre": "Trastornos de la conducta"
+  },
+  {
+    "codigo": "F92",
+    "nombre": "Trastornos mixtos de la conducta y de las emociones"
+  },
+  {
+    "codigo": "F93",
+    "nombre": "Trastornos emocionales de comienzo específico en la infancia"
+  },
+  {
+    "codigo": "F94",
+    "nombre": "Trastornos del funcionamiento social de comienzo específico en la infancia"
+  },
+  {
+    "codigo": "F95",
+    "nombre": "Trastornos por tics"
+  },
+  {
+    "codigo": "F98",
+    "nombre": "Otros trastornos emocionales y del comportamiento"
+  },
+  {
+    "codigo": "G10",
+    "nombre": "Corea de Huntington"
+  },
+  {
+    "codigo": "G11",
+    "nombre": "Ataxia hereditaria"
+  },
+  {
+    "codigo": "G12",
+    "nombre": "Atrofia muscular espinal"
+  },
+  {
+    "codigo": "G21",
+    "nombre": "Parkinsonismo secundario"
+  },
+  {
+    "codigo": "G23",
+    "nombre": "Otras enfermedades degenerativas de los ganglios basales"
+  },
+  {
+    "codigo": "G24",
+    "nombre": "Distonía"
+  },
+  {
+    "codigo": "G25",
+    "nombre": "Otros trastornos extrapiramidales y del movimiento"
+  },
+  {
+    "codigo": "G26",
+    "nombre": "Trastornos extrapiramidales y del movimiento en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G31",
+    "nombre": "Otras enfermedades degenerativas del sistema nervioso"
+  },
+  {
+    "codigo": "G32",
+    "nombre": "Otros trastornos degenerativos del sistema nervioso en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G36",
+    "nombre": "Neuromielitis óptica"
+  },
+  {
+    "codigo": "G37",
+    "nombre": "Otras enfermedades desmielinizantes del sistema nervioso central"
+  },
+  {
+    "codigo": "G40",
+    "nombre": "Epilepsia"
+  },
+  {
+    "codigo": "G41",
+    "nombre": "Estado epiléptico"
+  },
+  {
+    "codigo": "G43",
+    "nombre": "Migraña"
+  },
+  {
+    "codigo": "G44",
+    "nombre": "Otros síndromes de cefalea"
+  },
+  {
+    "codigo": "G45",
+    "nombre": "Ataques isquémicos transitorios"
+  },
+  {
+    "codigo": "G46",
+    "nombre": "Síndromes vasculares encefálicos en enfermedades cerebrovasculares"
+  },
+  {
+    "codigo": "G47",
+    "nombre": "Trastornos del sueño"
+  },
+  {
+    "codigo": "G50",
+    "nombre": "Trastornos del nervio trigémino"
+  },
+  {
+    "codigo": "G51",
+    "nombre": "Trastornos del nervio facial"
+  },
+  {
+    "codigo": "G52",
+    "nombre": "Trastornos de otros nervios craneales"
+  },
+  {
+    "codigo": "G53",
+    "nombre": "Trastornos de los nervios craneales en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G54",
+    "nombre": "Trastornos de las raíces y plexos nerviosos"
+  },
+  {
+    "codigo": "G55",
+    "nombre": "Compresiones de las raíces y plexos nerviosos en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G56",
+    "nombre": "Trastornos del nervio mediano"
+  },
+  {
+    "codigo": "G57",
+    "nombre": "Trastornos del nervio ciático"
+  },
+  {
+    "codigo": "G58",
+    "nombre": "Otras mononeuropatías"
+  },
+  {
+    "codigo": "G59",
+    "nombre": "Mononeuropatía en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G60",
+    "nombre": "Neuropatía hereditaria"
+  },
+  {
+    "codigo": "G61",
+    "nombre": "Polineuropatía inflamatoria"
+  },
+  {
+    "codigo": "G62",
+    "nombre": "Otras polineuropatías"
+  },
+  {
+    "codigo": "G63",
+    "nombre": "Polineuropatía en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G64",
+    "nombre": "Otros trastornos del sistema nervioso periférico"
+  },
+  {
+    "codigo": "G70",
+    "nombre": "Miastenia gravis"
+  },
+  {
+    "codigo": "G71",
+    "nombre": "Trastornos musculares primarios"
+  },
+  {
+    "codigo": "G72",
+    "nombre": "Otras miopatías"
+  },
+  {
+    "codigo": "G73",
+    "nombre": "Trastornos del músculo en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G80",
+    "nombre": "Parálisis cerebral"
+  },
+  {
+    "codigo": "G81",
+    "nombre": "Hemiplejía"
+  },
+  {
+    "codigo": "G82",
+    "nombre": "Paraplejía y tetraplejía"
+  },
+  {
+    "codigo": "G83",
+    "nombre": "Otros síndromes paralíticos"
+  },
+  {
+    "codigo": "G90",
+    "nombre": "Trastornos del sistema nervioso autónomo"
+  },
+  {
+    "codigo": "G91",
+    "nombre": "Hidrocefalia"
+  },
+  {
+    "codigo": "G92",
+    "nombre": "Encefalopatía tóxica"
+  },
+  {
+    "codigo": "G93",
+    "nombre": "Otros trastornos del encéfalo"
+  },
+  {
+    "codigo": "G94",
+    "nombre": "Otros trastornos del encéfalo en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G95",
+    "nombre": "Otras enfermedades de la médula espinal"
+  },
+  {
+    "codigo": "G96",
+    "nombre": "Otros trastornos del sistema nervioso central"
+  },
+  {
+    "codigo": "G97",
+    "nombre": "Trastornos del sistema nervioso consecutivos a procedimientos"
+  },
+  {
+    "codigo": "G98",
+    "nombre": "Otros trastornos del sistema nervioso"
+  },
+  {
+    "codigo": "G99",
+    "nombre": "Otros trastornos del sistema nervioso en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H00",
+    "nombre": "Orzuelo y calacio"
+  },
+  {
+    "codigo": "H01",
+    "nombre": "Otras inflamaciones del párpado"
+  },
+  {
+    "codigo": "H02",
+    "nombre": "Otros trastornos de los párpados"
+  },
+  {
+    "codigo": "H03",
+    "nombre": "Trastornos del párpado en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H04",
+    "nombre": "Trastornos del aparato lagrimal"
+  },
+  {
+    "codigo": "H05",
+    "nombre": "Trastornos de la órbita"
+  },
+  {
+    "codigo": "H06",
+    "nombre": "Trastornos del aparato lagrimal y de la órbita en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H10",
+    "nombre": "Conjuntivitis"
+  },
+  {
+    "codigo": "H11",
+    "nombre": "Otros trastornos de la conjuntiva"
+  },
+  {
+    "codigo": "H13",
+    "nombre": "Trastornos de la conjuntiva en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H15",
+    "nombre": "Trastornos de la esclerótica"
+  },
+  {
+    "codigo": "H16",
+    "nombre": "Queratitis"
+  },
+  {
+    "codigo": "H17",
+    "nombre": "Opacidades y cicatrices corneales"
+  },
+  {
+    "codigo": "H18",
+    "nombre": "Otros trastornos de la córnea"
+  },
+  {
+    "codigo": "H19",
+    "nombre": "Trastornos de la esclerótica y de la córnea en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H20",
+    "nombre": "Iridociclitis"
+  },
+  {
+    "codigo": "H21",
+    "nombre": "Otros trastornos del iris y del cuerpo ciliar"
+  },
+  {
+    "codigo": "H22",
+    "nombre": "Trastornos del iris and del cuerpo ciliar en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H25",
+    "nombre": "Catarata senil"
+  },
+  {
+    "codigo": "H26",
+    "nombre": "Otras cataratas"
+  },
+  {
+    "codigo": "H27",
+    "nombre": "Otros trastornos del cristalino"
+  },
+  {
+    "codigo": "H28",
+    "nombre": "Catarata y otros trastornos del cristalino en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H30",
+    "nombre": "Coriorretinitis"
+  },
+  {
+    "codigo": "H31",
+    "nombre": "Otros trastornos de la coroides"
+  },
+  {
+    "codigo": "H32",
+    "nombre": "Trastornos coroideos en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H33",
+    "nombre": "Desprendimiento y desgarro de la retina"
+  },
+  {
+    "codigo": "H34",
+    "nombre": "Oclusión vascular de la retina"
+  },
+  {
+    "codigo": "H35",
+    "nombre": "Retinopatía"
+  },
+  {
+    "codigo": "H36",
+    "nombre": "Trastornos retinianos en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H40",
+    "nombre": "Glaucoma"
+  },
+  {
+    "codigo": "H42",
+    "nombre": "Glaucoma en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H43",
+    "nombre": "Trastornos del vítreo"
+  },
+  {
+    "codigo": "H44",
+    "nombre": "Trastornos del globo ocular"
+  },
+  {
+    "codigo": "H45",
+    "nombre": "Trastornos del vítreo y del globo ocular en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H46",
+    "nombre": "Neuritis óptica"
+  },
+  {
+    "codigo": "H47",
+    "nombre": "Otros trastornos del nervio óptico"
+  },
+  {
+    "codigo": "H48",
+    "nombre": "Trastornos del nervio óptico en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H49",
+    "nombre": "Estrabismo paralítico"
+  },
+  {
+    "codigo": "H50",
+    "nombre": "Otros estrabismos"
+  },
+  {
+    "codigo": "H51",
+    "nombre": "Otros trastornos del movimiento binocular"
+  },
+  {
+    "codigo": "H52",
+    "nombre": "Trastornos de la refracción y de la acomodación"
+  },
+  {
+    "codigo": "H53",
+    "nombre": "Trastornos visuales"
+  },
+  {
+    "codigo": "H54",
+    "nombre": "Ceguera y baja visión"
+  },
+  {
+    "codigo": "H55",
+    "nombre": "Nistagmo"
+  },
+  {
+    "codigo": "H57",
+    "nombre": "Otros trastornos del ojo y sus anexos"
+  },
+  {
+    "codigo": "H58",
+    "nombre": "Otros trastornos del ojo y sus anexos en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H59",
+    "nombre": "Trastornos del ojo y sus anexos consecutivos a procedimientos"
+  },
+  {
+    "codigo": "H60",
+    "nombre": "Otitis externa"
+  },
+  {
+    "codigo": "H61",
+    "nombre": "Otros trastornos del oído externo"
+  },
+  {
+    "codigo": "H62",
+    "nombre": "Trastornos del oído externo en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H65",
+    "nombre": "Otitis media no supurativa"
+  },
+  {
+    "codigo": "H66",
+    "nombre": "Otitis media supurativa y la no especificada"
+  },
+  {
+    "codigo": "H67",
+    "nombre": "Otitis media en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H68",
+    "nombre": "Inflamación y obstrucción de la trompa de Eustaquio"
+  },
+  {
+    "codigo": "H69",
+    "nombre": "Otros trastornos de la trompa de Eustaquio"
+  },
+  {
+    "codigo": "H70",
+    "nombre": "Mastoiditis"
+  },
+  {
+    "codigo": "H71",
+    "nombre": "Colesteatoma del oído medio"
+  },
+  {
+    "codigo": "H72",
+    "nombre": "Perforación de la membrana timpánica"
+  },
+  {
+    "codigo": "H73",
+    "nombre": "Otros trastornos de la membrana timpánica"
+  },
+  {
+    "codigo": "H74",
+    "nombre": "Trastornos del oído medio y de la mastoides"
+  },
+  {
+    "codigo": "H75",
+    "nombre": "Otros trastornos del oído medio y de la mastoides en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H80",
+    "nombre": "Otosclerosis"
+  },
+  {
+    "codigo": "H81",
+    "nombre": "Trastornos de la función vestibular"
+  },
+  {
+    "codigo": "H82",
+    "nombre": "Síndromes vertiginosos en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H83",
+    "nombre": "Otros trastornos del oído interno"
+  },
+  {
+    "codigo": "H90",
+    "nombre": "Hipoacusia conductiva y neurosensorial"
+  },
+  {
+    "codigo": "H91",
+    "nombre": "Otras hipoacusias"
+  },
+  {
+    "codigo": "H92",
+    "nombre": "Otalgia y secreción del oído"
+  },
+  {
+    "codigo": "H93",
+    "nombre": "Otros trastornos del oído"
+  },
+  {
+    "codigo": "H94",
+    "nombre": "Otros trastornos del oído en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H95",
+    "nombre": "Trastornos del oído y de la apófisis mastoides consecutivos a procedimientos"
+  },
+  {
+    "codigo": "F07",
     "nombre": "Trastornos de la personalidad y del comportamiento"
   },
   {

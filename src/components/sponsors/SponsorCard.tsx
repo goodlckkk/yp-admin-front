@@ -55,7 +55,7 @@ export function SponsorCard({ sponsor, onEdit, onClick }: SponsorCardProps) {
             {/* Información principal */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-lg font-bold text-[#024959] truncate">
+                <h3 className="text-lg font-bold text-[#024959] break-words max-w-[200px] sm:max-w-[250px] md:max-w-[300px] truncate">
                   {sponsor.name}
                 </h3>
                 {sponsor.sponsor_type && (

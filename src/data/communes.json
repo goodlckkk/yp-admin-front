@@ -1,0 +1,977 @@
+[
+  {
+    "id": 1,
+    "nombre": "Arica",
+    "region": "Arica y Parinacota",
+    "codigo_region": "XV",
+    "activa": true
+  },
+  {
+    "id": 2,
+    "nombre": "Camarones",
+    "region": "Arica y Parinacota",
+    "codigo_region": "XV",
+    "activa": true
+  },
+  {
+    "id": 3,
+    "nombre": "Putre",
+    "region": "Arica y Parinacota",
+    "codigo_region": "XV",
+    "activa": true
+  },
+  {
+    "id": 4,
+    "nombre": "General Lagos",
+    "region": "Arica y Parinacota",
+    "codigo_region": "XV",
+    "activa": true
+  },
+  {
+    "id": 5,
+    "nombre": "Iquique",
+    "region": "Tarapacá",
+    "codigo_region": "I",
+    "activa": true
+  },
+  {
+    "id": 6,
+    "nombre": "Alto Hospicio",
+    "region": "Tarapacá",
+    "codigo_region": "I",
+    "activa": true
+  },
+  {
+    "id": 7,
+    "nombre": "Pozo Almonte",
+    "region": "Tarapacá",
+    "codigo_region": "I",
+    "activa": true
+  },
+  {
+    "id": 8,
+    "nombre": "Camiña",
+    "region": "Tarapacá",
+    "codigo_region": "I",
+    "activa": true
+  },
+  {
+    "id": 9,
+    "nombre": "Colchane",
+    "region": "Tarapacá",
+    "codigo_region": "I",
+    "activa": true
+  },
+  {
+    "id": 10,
+    "nombre": "Huara",
+    "region": "Tarapacá",
+    "codigo_region": "I",
+    "activa": true
+  },
+  {
+    "id": 11,
+    "nombre": "Pica",
+    "region": "Tarapacá",
+    "codigo_region": "I",
+    "activa": true
+  },
+  {
+    "id": 12,
+    "nombre": "Antofagasta",
+    "region": "Antofagasta",
+    "codigo_region": "II",
+    "activa": true
+  },
+  {
+    "id": 13,
+    "nombre": "Mejillones",
+    "region": "Antofagasta",
+    "codigo_region": "II",
+    "activa": true
+  },
+  {
+    "id": 14,
+    "nombre": "Sierra Gorda",
+    "region": "Antofagasta",
+    "codigo_region": "II",
+    "activa": true
+  },
+  {
+    "id": 15,
+    "nombre": "Taltal",
+    "region": "Antofagasta",
+    "codigo_region": "II",
+    "activa": true
+  },
+  {
+    "id": 16,
+    "nombre": "Calama",
+    "region": "Antofagasta",
+    "codigo_region": "II",
+    "activa": true
+  },
+  {
+    "id": 17,
+    "nombre": "Ollagüe",
+    "region": "Antofagasta",
+    "codigo_region": "II",
+    "activa": true
+  },
+  {
+    "id": 18,
+    "nombre": "San Pedro de Atacama",
+    "region": "Antofagasta",
+    "codigo_region": "II",
+    "activa": true
+  },
+  {
+    "id": 19,
+    "nombre": "Tocopilla",
+    "region": "Antofagasta",
+    "codigo_region": "II",
+    "activa": true
+  },
+  {
+    "id": 20,
+    "nombre": "María Elena",
+    "region": "Antofagasta",
+    "codigo_region": "II",
+    "activa": true
+  },
+  {
+    "id": 21,
+    "nombre": "Copiapó",
+    "region": "Atacama",
+    "codigo_region": "III",
+    "activa": true
+  },
+  {
+    "id": 22,
+    "nombre": "Caldera",
+    "region": "Atacama",
+    "codigo_region": "III",
+    "activa": true
+  },
+  {
+    "id": 23,
+    "nombre": "Tierra Amarilla",
+    "region": "Atacama",
+    "codigo_region": "III",
+    "activa": true
+  },
+  {
+    "id": 24,
+    "nombre": "Chañaral",
+    "region": "Atacama",
+    "codigo_region": "III",
+    "activa": true
+  },
+  {
+    "id": 25,
+    "nombre": "Diego de Almagro",
+    "region": "Atacama",
+    "codigo_region": "III",
+    "activa": true
+  },
+  {
+    "id": 26,
+    "nombre": "Vallenar",
+    "region": "Atacama",
+    "codigo_region": "III",
+    "activa": true
+  },
+  {
+    "id": 27,
+    "nombre": "Alto del Carmen",
+    "region": "Atacama",
+    "codigo_region": "III",
+    "activa": true
+  },
+  {
+    "id": 28,
+    "nombre": "Freirina",
+    "region": "Atacama",
+    "codigo_region": "III",
+    "activa": true
+  },
+  {
+    "id": 29,
+    "nombre": "Huasco",
+    "region": "Atacama",
+    "codigo_region": "III",
+    "activa": true
+  },
+  {
+    "id": 30,
+    "nombre": "La Serena",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 31,
+    "nombre": "Coquimbo",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 32,
+    "nombre": "Andacollo",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 33,
+    "nombre": "La Higuera",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 34,
+    "nombre": "Paihuano",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 35,
+    "nombre": "Vicuña",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 36,
+    "nombre": "Ovalle",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 37,
+    "nombre": "Combarbalá",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 38,
+    "nombre": "Monte Patria",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 39,
+    "nombre": "Punitaqui",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 40,
+    "nombre": "Río Hurtado",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 41,
+    "nombre": "Illapel",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 42,
+    "nombre": "Canela",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 43,
+    "nombre": "Los Vilos",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 44,
+    "nombre": "Salamanca",
+    "region": "Coquimbo",
+    "codigo_region": "IV",
+    "activa": true
+  },
+  {
+    "id": 45,
+    "nombre": "Valparaíso",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 46,
+    "nombre": "Casablanca",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 47,
+    "nombre": "Concón",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 48,
+    "nombre": "Juan Fernández",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 49,
+    "nombre": "Puchuncaví",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 50,
+    "nombre": "Quintero",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 51,
+    "nombre": "Viña del Mar",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 52,
+    "nombre": "Isla de Pascua",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 53,
+    "nombre": "Los Andes",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 54,
+    "nombre": "Calle Larga",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 55,
+    "nombre": "Rinconada",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 56,
+    "nombre": "San Esteban",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 57,
+    "nombre": "La Ligua",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 58,
+    "nombre": "Cabildo",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 59,
+    "nombre": "Papudo",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 60,
+    "nombre": "Petorca",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 61,
+    "nombre": "Zapallar",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 62,
+    "nombre": "Quillota",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 63,
+    "nombre": "Calera",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 64,
+    "nombre": "Hijuelas",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 65,
+    "nombre": "La Cruz",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 66,
+    "nombre": "Nogales",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 67,
+    "nombre": "San Antonio",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 68,
+    "nombre": "Algarrobo",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 69,
+    "nombre": "Cartagena",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 70,
+    "nombre": "El Quisco",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 71,
+    "nombre": "El Tabo",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 72,
+    "nombre": "Santo Domingo",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 73,
+    "nombre": "San Felipe",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 74,
+    "nombre": "Catemu",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 75,
+    "nombre": "Llaillay",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 76,
+    "nombre": "Panquehue",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 77,
+    "nombre": "Putaendo",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 78,
+    "nombre": "Santa María",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 79,
+    "nombre": "Quilpué",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 80,
+    "nombre": "Limache",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 81,
+    "nombre": "Olmué",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 82,
+    "nombre": "Villa Alemana",
+    "region": "Valparaíso",
+    "codigo_region": "V",
+    "activa": true
+  },
+  {
+    "id": 83,
+    "nombre": "Rancagua",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 84,
+    "nombre": "Codegua",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 85,
+    "nombre": "Coinco",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 86,
+    "nombre": "Coltauco",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 87,
+    "nombre": "Doñihue",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 88,
+    "nombre": "Graneros",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 89,
+    "nombre": "Las Cabras",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 90,
+    "nombre": "Machalí",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 91,
+    "nombre": "Malloa",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 92,
+    "nombre": "Mostazal",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 93,
+    "nombre": "Olivar",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 94,
+    "nombre": "Peumo",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 95,
+    "nombre": "Pichidegua",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 96,
+    "nombre": "Quinta de Tilcoco",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 97,
+    "nombre": "Rengo",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 98,
+    "nombre": "Requínoa",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 99,
+    "nombre": "San Vicente de Tagua Tagua",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 100,
+    "nombre": "Pichilemu",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 101,
+    "nombre": "La Estrella",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 102,
+    "nombre": "Litueche",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 103,
+    "nombre": "Marchihue",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 104,
+    "nombre": "Navidad",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 105,
+    "nombre": "Paredones",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 106,
+    "nombre": "San Fernando",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 107,
+    "nombre": "Chépica",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 108,
+    "nombre": "Chimbarongo",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 109,
+    "nombre": "Lolol",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 110,
+    "nombre": "Nancagua",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 111,
+    "nombre": "Palmilla",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 112,
+    "nombre": "Peralillo",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 113,
+    "nombre": "Placilla",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 114,
+    "nombre": "Pumanque",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 115,
+    "nombre": "Santa Cruz",
+    "region": "Libertador General Bernardo O'Higgins",
+    "codigo_region": "VI",
+    "activa": true
+  },
+  {
+    "id": 116,
+    "nombre": "Talca",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 117,
+    "nombre": "Constitución",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 118,
+    "nombre": "Curepto",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 119,
+    "nombre": "Empedrado",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 120,
+    "nombre": "Maule",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 121,
+    "nombre": "Pelarco",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 122,
+    "nombre": "Pencahue",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 123,
+    "nombre": "Río Claro",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 124,
+    "nombre": "San Clemente",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 125,
+    "nombre": "San Rafael",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 126,
+    "nombre": "Cauquenes",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 127,
+    "nombre": "Chanco",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 128,
+    "nombre": "Pelluhue",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 129,
+    "nombre": "Curicó",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 130,
+    "nombre": "Hualañé",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 131,
+    "nombre": "Licantén",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 132,
+    "nombre": "Molina",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 133,
+    "nombre": "Rauco",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 134,
+    "nombre": "Romeral",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 135,
+    "nombre": "Sagrada Familia",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 136,
+    "nombre": "Teno",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 137,
+    "nombre": "Vichuquén",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 138,
+    "nombre": "Linares",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 139,
+    "nombre": "Colbún",
+    "region": "Maule",
+    "codigo_region": "VII",
+    "activa": true
+  },
+  {
+    "id": 140,
+    "nombre": "Longaví",

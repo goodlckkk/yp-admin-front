@@ -91,15 +91,7 @@ export function SponsorsView() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-[#024959] flex items-center gap-3">
-            <Shield className="h-8 w-8" />
-            Sponsors
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Empresas y organizaciones que patrocinan ensayos clínicos
-          </p>
-        </div>
+        <div />
         <Button
           onClick={() => setIsAddModalOpen(true)}
           className="bg-[#04BFAD] hover:bg-[#024959] text-white"
@@ -114,7 +106,7 @@ export function SponsorsView() {
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Sponsors</p>
+              <p className="text-sm text-gray-600">Patrocinadores/CROs Totales</p>
               <p className="text-2xl font-bold text-[#024959]">{totalSponsors}</p>
             </div>
             <Shield className="h-8 w-8 text-[#04BFAD]" />
@@ -123,21 +115,13 @@ export function SponsorsView() {
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Sponsors Directos</p>
+              <p className="text-sm text-gray-600">Patrocinadores/CROs Activos</p>
               <p className="text-2xl font-bold text-[#024959]">{sponsorTypes['SPONSOR'] || 0}</p>
             </div>
             <Shield className="h-8 w-8 text-[#04BFAD]" />
           </div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">CROs</p>
-              <p className="text-2xl font-bold text-[#024959]">{sponsorTypes['CRO'] || 0}</p>
-            </div>
-            <Shield className="h-8 w-8 text-[#04BFAD]" />
-          </div>
-        </div>
+
       </div>
 
       {/* Búsqueda y Filtros */}

@@ -1,13 +1,17 @@
 /**
  * Componente FAQ - Preguntas Frecuentes
  * 
- * Muestra las preguntas más comunes de los pacientes sobre ensayos clínicos.
+ * Muestra las preguntas más comunes de los pacientes sobre estudios clínicos.
  * Diseño accordion con animaciones suaves.
  */
 
 import { useState } from 'react';
 import { Icons } from '../ui/icons';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
+import { Button } from '../ui/button';
 
 interface FAQItem {
   question: string;
@@ -16,20 +20,20 @@ interface FAQItem {
 
 const faqData: FAQItem[] = [
   {
-    question: '¿Qué es un ensayo clínico?',
-    answer: 'Un ensayo clínico es un estudio de investigación médica diseñado para evaluar la seguridad y eficacia de nuevos tratamientos, medicamentos, dispositivos médicos o procedimientos. Estos estudios son fundamentales para el avance de la medicina y se realizan bajo estrictos protocolos de seguridad aprobados por autoridades sanitarias. Los participantes reciben atención médica especializada y contribuyen al desarrollo de tratamientos que pueden beneficiar a futuras generaciones.',
+    question: '¿Qué es un estudio clínico?',
+    answer: 'Un estudio clínico es una investigación médica diseñada para evaluar la seguridad y eficacia de nuevos tratamientos, medicamentos, dispositivos médicos o procedimientos. Estos estudios son fundamentales para el avance de la medicina y se realizan bajo estrictos protocolos de seguridad aprobados por autoridades sanitarias. Los participantes reciben atención médica especializada y contribuyen al desarrollo de tratamientos que pueden beneficiar a futuras generaciones.',
   },
   {
     question: '¿Cómo sé si puedo participar?',
     answer: 'Para determinar tu elegibilidad, primero completa nuestro formulario de registro con tu información médica básica. Nuestro equipo médico revisará tu perfil y lo comparará con los criterios de inclusión de los estudios activos. Si hay un estudio adecuado para ti, te contactaremos para explicarte los detalles, responder tus preguntas y programar una evaluación inicial. Cada estudio tiene requisitos específicos como edad, condición de salud, historial médico y ubicación geográfica.',
   },
   {
-    question: '¿Es seguro participar en un ensayo clínico?',
-    answer: 'Sí, la seguridad de los participantes es la máxima prioridad. Todos los ensayos clínicos en Chile están regulados por el Instituto de Salud Pública (ISP) y deben ser aprobados por Comités de Ética Científica independientes. Antes de participar, recibirás información detallada sobre los posibles riesgos y beneficios a través del proceso de consentimiento informado. Durante el estudio, serás monitoreado constantemente por profesionales médicos especializados y puedes retirarte en cualquier momento si lo deseas.',
+    question: '¿Es seguro participar en un estudio clínico?',
+    answer: 'Sí, la seguridad de los participantes es la máxima prioridad. Todos los estudios clínicos en Chile están regulados por el Instituto de Salud Pública (ISP) y deben ser aprobados por Comités de Ética Científica independientes. Antes de participar, recibirás información detallada sobre los posibles riesgos y beneficios a través del proceso de consentimiento informado. Durante el estudio, serás monitoreado constantemente por profesionales médicos especializados y puedes retirarte en cualquier momento si lo deseas.',
   },
   {
     question: '¿Tiene algún costo participar?',
-    answer: 'No, participar en un ensayo clínico es completamente gratuito. De hecho, todos los exámenes médicos, consultas, medicamentos del estudio y procedimientos relacionados con la investigación son proporcionados sin costo para ti. Además, muchos estudios ofrecen compensación por gastos de transporte, estacionamiento y tiempo invertido. Nunca tendrás que pagar por participar en un ensayo clínico legítimo.',
+    answer: 'No, participar en un estudio clínico es completamente gratuito. De hecho, todos los exámenes médicos, consultas, medicamentos del estudio y procedimientos relacionados con la investigación son proporcionados sin costo para ti. Además, muchos estudios ofrecen compensación por gastos de transporte, estacionamiento y tiempo invertido. Nunca tendrás que pagar por participar en un estudio clínico legítimo.',
   },
   {
     question: '¿Qué tipo de estudios hay?',
@@ -48,7 +52,7 @@ const faqData: FAQItem[] = [
     answer: 'Tu privacidad y confidencialidad están protegidas por estrictas leyes chilenas e internacionales, incluyendo la Ley N° 19.628 sobre Protección de Datos Personales. Toda tu información médica es codificada y almacenada de forma segura. Solo el equipo médico autorizado del estudio tiene acceso a tus datos personales. En las publicaciones científicas, tu identidad nunca será revelada. Utilizamos sistemas encriptados para el manejo de datos y cumplimos con los más altos estándares de confidencialidad médica. Tus datos solo se usan para fines de investigación y para conectarte con estudios relevantes.',
   },
   {
-    question: '¿Cuánto tiempo dura un ensayo clínico?',
+    question: '¿Cuánto tiempo dura un estudio clínico?',
     answer: 'La duración varía significativamente según el tipo de estudio y la condición que se investiga. Algunos estudios pueden durar semanas, mientras que otros pueden extenderse por varios meses o incluso años. Antes de comprometerte, recibirás información detallada sobre: la duración total del estudio, la frecuencia de las visitas médicas, el tiempo estimado de cada visita, y los procedimientos que se realizarán en cada etapa. También te informaremos si hay un período de seguimiento después de completar el tratamiento. Esta información te permitirá tomar una decisión informada sobre tu participación.',
   },
   {
@@ -60,6 +64,47 @@ const faqData: FAQItem[] = [
 export default function FAQ() {
   const { elementRef, isVisible } = useScrollAnimation({ threshold: 0.2 });
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactForm, setContactForm] = useState({
+    nombre: '',
+    consulta: ''
+  });
+  const [sending, setSending] = useState(false);
+  const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSending(true);
+    
+    try {
+      // Simular envío de correo (aquí se integraría con un servicio de email)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Crear el enlace mailto
+      const subject = `Consulta de ${contactForm.nombre}`;
+      const body = contactForm.consulta;
+      const mailtoLink = `mailto:contacto@yoparticipo.cl?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      
+      // Abrir cliente de correo
+      window.location.href = mailtoLink;
+      
+      setSendStatus('success');
+      setTimeout(() => {
+        setShowContactModal(false);
+        setContactForm({ nombre: '', consulta: '' });
+        setSendStatus('idle');
+      }, 2000);
+      
+    } catch (error) {
+      setSendStatus('error');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setContactForm(prev => ({ ...prev, [field]: value }));
+  };
 
   const toggleQuestion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -144,12 +189,7 @@ export default function FAQ() {
             ¿Tienes más preguntas? Estamos aquí para ayudarte
           </p>
           <button
-            onClick={() => {
-              const form = document.getElementById('patient-form-section');
-              if (form) {
-                form.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
+            onClick={() => setShowContactModal(true)}
             className="inline-flex items-center gap-2 bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:from-[#024959] hover:to-[#04BFAD] text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
             <Icons.MessageCircle className="w-5 h-5" />
@@ -158,6 +198,93 @@ export default function FAQ() {
           </button>
         </div>
       </div>
+
+      {/* Modal de Contacto */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-[#024959]">Enviar consulta</h3>
+              <button
+                onClick={() => setShowContactModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <Icons.X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {sendStatus === 'success' ? (
+              <div className="text-center py-8">
+                <Icons.CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                <p className="text-green-600 font-medium">¡Consulta enviada!</p>
+                <p className="text-gray-600 mt-2">Se abrirá tu cliente de correo</p>
+              </div>
+            ) : sendStatus === 'error' ? (
+              <div className="text-center py-8">
+                <Icons.AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <p className="text-red-600 font-medium">Error al enviar</p>
+                <p className="text-gray-600 mt-2">Intenta nuevamente</p>
+              </div>
+            ) : (
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="nombre">Nombre</Label>
+                  <Input
+                    id="nombre"
+                    value={contactForm.nombre}
+                    onChange={(e) => handleInputChange('nombre', e.target.value)}
+                    required
+                    placeholder="Tu nombre completo"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="consulta">Consulta</Label>
+                  <Textarea
+                    id="consulta"
+                    value={contactForm.consulta}
+                    onChange={(e) => handleInputChange('consulta', e.target.value)}
+                    required
+                    rows={4}
+                    placeholder="Escribe tu consulta aquí..."
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowContactModal(false)}
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={sending}
+                    className="flex-1 bg-[#04BFAD] hover:bg-[#024959] text-white"
+                  >
+                    {sending ? (
+                      <>
+                        <Icons.Spinner className="w-4 h-4 animate-spin mr-2" />
+                        Enviando...
+                      </>
+                    ) : (
+                      'Enviar consulta'
+                    )}
+                  </Button>
+                </div>
+
+                <p className="text-xs text-gray-500 text-center">
+                  Se enviará a: contacto@yoparticipo.cl
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -32,7 +32,15 @@ export function ChangeHistory({ entityName, entityId }: ChangeHistoryProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('es-CL');
+    const date = new Date(dateString);
+    return date.toLocaleString('es-CL', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
   };
 
   const formatChanges = (changes: any) => {

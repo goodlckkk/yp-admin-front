@@ -208,10 +208,10 @@ export function TrialSuggestions({ patientId, onViewTrial }: TrialSuggestionsPro
                   <span>Fase {suggestion.trial.phase}</span>
                 </div>
               )}
-              {suggestion.trial.sponsor_name && (
+              {suggestion.trial.sponsor?.name && (
                 <div className="flex items-center gap-1">
                   <Icons.Building className="w-3 h-3" />
-                  <span>{suggestion.trial.sponsor_name}</span>
+                  <span>{suggestion.trial.sponsor?.name}</span>
                 </div>
               )}
               {suggestion.trial.status && (

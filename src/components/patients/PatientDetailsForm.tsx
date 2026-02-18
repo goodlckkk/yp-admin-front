@@ -425,7 +425,7 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
                 <Label>Ensayo Asignado</Label>
                 <Input
                   value={patient.trial?.title || 'Sin asignar'}
-                  disabled
+                  disabled={true}
                   className="mt-1 bg-gray-50"
                 />
               </div>
@@ -435,9 +435,49 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
               <Label>Fecha de Registro</Label>
               <Input
                 value={formatDate(patient.createdAt)}
+                disabled={true}
+                className="mt-1 bg-gray-50"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sección 5: Consentimiento Informado */}
+        <Card className="border border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-lg text-[#04BFAD] font-semibold">Consentimiento Informado</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Aceptó Términos y Condiciones</Label>
+                <Input
+                  value={patient.aceptaTerminos ? '✅ Sí' : '❌ No'}
+                  disabled
+                  className="mt-1 bg-gray-50"
+                />
+              </div>
+              <div>
+                <Label>Aceptó Política de Privacidad</Label>
+                <Input
+                  value={patient.aceptaPrivacidad ? '✅ Sí' : '❌ No'}
+                  disabled
+                  className="mt-1 bg-gray-50"
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Consentimiento de Almacenamiento</Label>
+              <Input
+                value={patient.aceptaAlmacenamiento15Anos ? '✅ Sí (15 años)' : '❌ No'}
                 disabled
                 className="mt-1 bg-gray-50"
               />
+              {patient.aceptaAlmacenamiento15Anos && (
+                <p className="text-xs text-gray-600 mt-2">
+                  <strong>Consentimiento válido por una duración de 15 años después del registro.</strong>
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -450,18 +490,18 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
           </div>
         )}
 
-        {/* Sugerencias de estudios clínicos - Solo si NO tiene ensayo asignado */}
-        {!patient.trialId && (
-          <div className="mt-6">
-            <TrialSuggestions
-              patientId={patient.id}
-              currentTrialId={patient.trialId}
-              onAssign={onSuccess}
-            />
-          </div>
-        )}
+          {/* Sugerencias de estudios clínicos - Solo si NO tiene ensayo asignado */}
+          {!patient.trialId && (
+            <div className="mt-6">
+              <TrialSuggestions
+                patientId={patient.id}
+                currentTrialId={patient.trialId}
+                onAssign={onSuccess}
+              />
+            </div>
+          )}
 
-        {/* Botones de acción */}
+          {/* Botones de acción */}
         <div className="flex justify-between pt-4 border-t border-gray-200">
           <Button
             type="button"

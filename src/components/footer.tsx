@@ -55,6 +55,11 @@ export function FooterPage({ activeTab, onContactClick, onFaqClick }: FooterPage
                                 Para Instituciones
                                 </a>
                             </li>
+                            <li>
+                                <a href="/enfermedades" className={`${hoverColor} transition-colors`}>
+                                Enfermedades Comunes
+                                </a>
+                            </li>
                         </ul>
                     </div>
 

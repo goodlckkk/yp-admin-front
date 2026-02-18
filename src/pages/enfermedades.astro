@@ -1,0 +1,117 @@
+---
+import EnfermedadesPage from "../components/EnfermedadesPage";
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/logo.svg" />
+		
+		<!-- SEO Meta Tags -->
+		<title>Enfermedades Comunes en Chile | Participa en Estudio Clínico | YoParticipo</title>
+		<meta name="description" content="YoParticipo: Información sobre enfermedades comunes en Chile. Participa en estudio clínico para hipertensión, diabetes, obesidad, depresión y más. Encuentra estudios clínicos y ensayos clínicos disponibles en Chile." />
+		<meta name="keywords" content="yoparticipo, yo participo, estudio clínico, estudios clínicos, participa en estudio clínico, enfermedades Chile, hipertensión Chile, diabetes Chile, obesidad Chile, depresión Chile, ensayos clínicos Chile, yoparticipo estudio clínico, participar en estudio clínico, estudios clínicos enfermedades" />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://yoparticipo.cl/enfermedades" />
+		<meta property="og:title" content="Enfermedades Comunes en Chile | Participa en Estudio Clínico | YoParticipo" />
+		<meta property="og:description" content="YoParticipo: Participa en estudio clínico para enfermedades comunes en Chile. Encuentra estudios clínicos y ensayos clínicos disponibles." />
+		<meta property="og:image" content="https://yoparticipo.cl/logo.svg" />
+		<meta property="og:image:alt" content="YoParticipo - Estudios Clínicos Chile" />
+		<meta property="og:locale" content="es_CL" />
+		
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="Enfermedades Comunes en Chile | Participa en Estudio Clínico | YoParticipo" />
+		<meta name="twitter:description" content="YoParticipo: Participa en estudio clínico para enfermedades comunes en Chile. Encuentra estudios clínicos disponibles." />
+		<meta name="twitter:image" content="https://yoparticipo.cl/logo.svg" />
+		
+		<!-- Additional SEO -->
+		<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+		<meta name="author" content="YoParticipo" />
+		<meta name="language" content="Spanish" />
+		<meta name="geo.region" content="CL" />
+		<meta name="geo.placename" content="Chile" />
+		<link rel="canonical" href="https://yoparticipo.cl/enfermedades" />
+		
+		<!-- Schema.org JSON-LD -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "MedicalWebPage",
+			"name": "Enfermedades Comunes en Chile - Participa en Estudio Clínico | YoParticipo",
+			"description": "YoParticipo ofrece información sobre enfermedades comunes en Chile. Participa en estudio clínico y encuentra ensayos clínicos disponibles para diversas condiciones médicas.",
+			"url": "https://yoparticipo.cl/enfermedades",
+			"inLanguage": "es-CL",
+			"about": {
+				"@type": "MedicalCondition",
+				"name": "Enfermedades Comunes en Chile"
+			},
+			"mainEntity": {
+				"@type": "ItemList",
+				"name": "Enfermedades Prevalentes en Chile",
+				"description": "Lista de enfermedades comunes en Chile con estudios clínicos disponibles. YoParticipo conecta pacientes con ensayos clínicos.",
+				"itemListElement": [
+					{
+						"@type": "MedicalCondition",
+						"name": "Hipertensión Arterial",
+						"alternateName": "Presión Alta"
+					},
+					{
+						"@type": "MedicalCondition",
+						"name": "Diabetes Mellitus Tipo 2"
+					},
+					{
+						"@type": "MedicalCondition",
+						"name": "Obesidad"
+					},
+					{
+						"@type": "MedicalCondition",
+						"name": "Depresión"
+					},
+					{
+						"@type": "MedicalCondition",
+						"name": "Asma Bronquial"
+					}
+				]
+			},
+			"breadcrumb": {
+				"@type": "BreadcrumbList",
+				"itemListElement": [
+					{
+						"@type": "ListItem",
+						"position": 1,
+						"name": "Inicio",
+						"item": "https://yoparticipo.cl"
+					},
+					{
+						"@type": "ListItem",
+						"position": 2,
+						"name": "Enfermedades",
+						"item": "https://yoparticipo.cl/enfermedades"
+					}
+				]
+			}
+		}
+		</script>
+	</head>
+	<body>
+		<EnfermedadesPage client:load />
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+
+<style is:global>
+	@import "../styles/global.css";
+</style>

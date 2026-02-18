@@ -23,7 +23,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Icons } from '../ui/icons';
-import type { Trial, CreateTrialPayload, Sponsor } from '../../lib/api';
+import type { Trial, CreateTrialPayload, Sponsor, TrialStatus } from '../../lib/api';
 import { getTrial, updateTrial, getSponsors, fetchWithAuth } from '../../lib/api';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 
@@ -71,9 +71,8 @@ export function TrialEditPage() {
   // Form data
   const [title, setTitle] = useState('');
   const [publicDescription, setPublicDescription] = useState('');
-  const [clinicCity, setClinicCity] = useState('');
   const [sponsorId, setSponsorId] = useState('');
-  const [status, setStatus] = useState<'RECRUITING' | 'ACTIVE' | 'CLOSED'>('RECRUITING');
+  const [status, setStatus] = useState<TrialStatus>('RECRUITING');
   const [criteria, setCriteria] = useState<InclusionCriteria>(INITIAL_CRITERIA);
 
   // Campos temporales para arrays
@@ -112,9 +111,8 @@ export function TrialEditPage() {
       // Cargar datos del formulario
       setTitle(trialData.title);
       setPublicDescription(trialData.public_description);
-      setClinicCity(trialData.clinic_city);
       setSponsorId(trialData.sponsor?.id || '');
-      setStatus(trialData.status as 'RECRUITING' | 'ACTIVE' | 'CLOSED');
+      setStatus(trialData.status as TrialStatus);
       setCriteria((trialData.inclusion_criteria as InclusionCriteria) || INITIAL_CRITERIA);
 
       // Cargar pacientes asociados
@@ -181,10 +179,6 @@ export function TrialEditPage() {
       setError('La descripción es obligatoria');
       return false;
     }
-    if (!clinicCity.trim()) {
-      setError('La ciudad de la clínica es obligatoria');
-      return false;
-    }
     if (!sponsorId) {
       setError('Debes seleccionar un sponsor');
       return false;
@@ -205,7 +199,7 @@ export function TrialEditPage() {
       const payload: CreateTrialPayload = {
         title: title.trim(),
         public_description: publicDescription.trim(),
-        clinic_city: clinicCity.trim(),
+        research_site_id: trial?.researchSite?.id || '',
         sponsor_id: sponsorId,
         status,
         max_participants: trial?.max_participants || 30,
@@ -403,15 +397,15 @@ export function TrialEditPage() {
                       variant={
                         status === 'RECRUITING'
                           ? 'secondary'
-                          : status === 'ACTIVE'
+                          : status === 'FOLLOW_UP'
                           ? 'default'
                           : 'destructive'
                       }
                     >
                       {status === 'RECRUITING'
                         ? 'Reclutando'
-                        : status === 'ACTIVE'
-                        ? 'Activo'
+                        : status === 'FOLLOW_UP'
+                        ? 'En Seguimiento'
                         : 'Cerrado'}
                     </Badge>
                   </div>
@@ -429,18 +423,6 @@ export function TrialEditPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="clinic_city">Ciudad de la Clínica *</Label>
-                <Input
-                  id="clinic_city"
-                  value={clinicCity}
-                  onChange={(e) => setClinicCity(e.target.value)}
-                  placeholder="Ej: Santiago, Valparaíso, Concepción"
-                  className="mt-1"
-                  disabled={saving}
-                />
-              </div>
-
               <div>
                 <Label htmlFor="sponsor_id">Sponsor / Patrocinador *</Label>
                 <Select

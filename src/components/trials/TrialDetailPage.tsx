@@ -393,7 +393,7 @@ export function TrialDetailPage() {
                     <MapPin className="h-4 w-4" />
                     <span className="font-medium">Ubicación</span>
                   </div>
-                  <p className="text-gray-900 ml-6">{trial.clinic_city}</p>
+                  <p className="text-gray-900 ml-6">{trial.researchSite?.ciudad || 'Ubicación no especificada'}</p>
                 </div>
 
                 {/* Sponsor */}
