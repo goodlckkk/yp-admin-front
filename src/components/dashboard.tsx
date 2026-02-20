@@ -17,13 +17,14 @@ import {
   createPatientIntake,
   updatePatientIntake,
   getUserEmailFromToken,
+  getUserRoleFromToken,
   getResearchSites,
 } from "../lib/api"
 import { Icons } from "./ui/icons"
 import { CustomIcons } from "./ui/custom-icons"
 import { Input } from "./ui/input"
 import { useEffect, useMemo, useState } from "react"
-import type { PatientIntake, Trial, DashboardStats, TrendData } from "../lib/api"
+import type { PatientIntake, Trial, DashboardStats, TrendData, ResearchSite } from "../lib/api"
 import { TrialForm } from './trials/TrialForm';
 import { PatientEditForm } from './patients/PatientEditForm';
 import { ManualPatientForm } from './patients/ManualPatientForm';
@@ -113,6 +114,9 @@ export default function DashboardPage() {
   
   // Estado para las instituciones disponibles
   const [researchSites, setResearchSites] = useState<ResearchSite[]>([]);
+  
+  // Estado para el rol del usuario
+  const [userRole, setUserRole] = useState<string | null>(null);
   
   // Función para cerrar sesión
   const handleLogout = () => {
@@ -305,6 +309,9 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         setLoading(true)
+        // Obtener el rol del usuario desde el token
+        const role = getUserRoleFromToken();
+        setUserRole(role);
         const [trialsResponse, intakesResponse, statsResponse, trendsResponse, sitesResponse] = await Promise.allSettled([
           getTrials(),
           getPatientIntakes(),
@@ -882,31 +889,32 @@ export default function DashboardPage() {
                 ))}
               </div>
 
-              {/* Charts Row */}
-              <div className="grid lg:grid-cols-2 gap-6">
-                <Card className="border-0 shadow-sm">
-                  <CardHeader>
-                    <CardTitle>Crecimiento de Usuarios</CardTitle>
-                    <CardDescription>Últimos 6 meses</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-64 flex items-center justify-center text-gray-400">
-                      <div className="text-center">
-                        <Icons.Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p>Conecta un gráfico real para visualizar métricas</p>
+              {/* Charts Row - Ocultar para usuarios INSTITUTION */}
+              {userRole !== 'INSTITUTION' && (
+                <div className="grid lg:grid-cols-2 gap-6">
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle>Crecimiento de Usuarios</CardTitle>
+                      <CardDescription>Últimos 6 meses</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-64 flex items-center justify-center text-gray-400">
+                        <div className="text-center">
+                          <Icons.Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                          <p>Conecta un gráfico real para visualizar métricas</p>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
 
-                <Card className="border-0 shadow-sm">
-                  <CardHeader>
-                    <CardTitle>Actividad Reciente</CardTitle>
-                    <CardDescription>En tiempo real</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {patientsToDisplay.slice(0, 5).map((intake, index) => (
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle>Actividad Reciente</CardTitle>
+                      <CardDescription>En tiempo real</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {patientsToDisplay.slice(0, 5).map((intake, index) => (
                         <div key={index} className="flex items-start gap-3 pb-4 border-b last:border-0">
                           <div className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: '#04bcbc' }}></div>
                           <div className="flex-1 min-w-0">
@@ -915,10 +923,11 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </div>
           )}
 
@@ -1058,24 +1067,24 @@ export default function DashboardPage() {
                         >
                           <option value="">Todos los orígenes</option>
                           <option value="WEB_FORM">🌐 Formulario Web</option>
-                        <option value="MANUAL_ENTRY">👤 Creado Manual</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Institución</label>
-                      <select
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        value={filters.institution}
-                        onChange={(e) => setFilters({...filters, institution: e.target.value})}
-                      >
-                        <option value="">Todas las instituciones</option>
-                        {researchSites.map((site) => (
-                          <option key={site.id} value={site.id}>
-                            {site.nombre}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                          <option value="MANUAL_ENTRY">👤 Creado Manual</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Institución</label>
+                        <select
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          value={filters.institution}
+                          onChange={(e) => setFilters({...filters, institution: e.target.value})}
+                        >
+                          <option value="">Todas las instituciones</option>
+                          {researchSites.map((site) => (
+                            <option key={site.id} value={site.id}>
+                              {site.nombre}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                     <div className="flex justify-end mt-4">
                       <Button
@@ -1355,6 +1364,7 @@ export default function DashboardPage() {
             <TrialList 
               initialTrials={trials}
               onTrialChange={handleTrialChange}
+              userRole={userRole}
             />
           )}
 
@@ -1385,7 +1395,7 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setShowMobileMenu(false)} />
       )}
 
-      {/* Modal de formulario de estudio clínico */}
+      {/* Modales */}
       <TrialForm
         trial={selectedTrial}
         isOpen={isTrialFormOpen}
@@ -1396,22 +1406,20 @@ export default function DashboardPage() {
         onSuccess={() => {
           setIsTrialFormOpen(false);
           setSelectedTrial(null);
-          // Recargar los estudios clínicos después de crear/actualizar uno
           refreshTrials();
         }}
       />
 
-      {/* Modal de formulario manual de paciente */}
       <ManualPatientForm
         isOpen={isManualPatientFormOpen}
         onClose={() => setIsManualPatientFormOpen(false)}
         onSuccess={() => {
-          refreshPatients(); // Recargar lista de pacientes
+          refreshPatients();
         }}
+        userRole={userRole}
       />
 
-      {/* Modal de detalles del paciente */}
-      {isPatientDetailsOpen && (
+      {isPatientDetailsOpen && selectedPatient && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto p-4">
           <div className="bg-white rounded-lg w-full max-w-4xl my-8">
             <div className="p-6">
@@ -1425,7 +1433,6 @@ export default function DashboardPage() {
                 onSuccess={async () => {
                   setIsPatientDetailsOpen(false);
                   setSelectedPatient(null);
-                  // Recargar pacientes
                   try {
                     const intakesResponse = await getPatientIntakes();
                     setPatientIntakes(intakesResponse);

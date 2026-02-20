@@ -101,6 +101,7 @@ const statusLabels: Record<TrialStatus, string> = {
 interface TrialListContentProps {
   initialTrials?: Trial[];
   onTrialChange?: () => void;
+  userRole?: string | null;
 }
 
 function TrialListContent({ initialTrials = [], onTrialChange }: TrialListContentProps) {
@@ -123,6 +124,7 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
   const [editingTrial, setEditingTrial] = useState<Trial | null>(null);
   const [isInstitutionModalOpen, setIsInstitutionModalOpen] = useState(false);
   const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
+  const [isTrialRequestModalOpen, setIsTrialRequestModalOpen] = useState(false);
   
   // Estados para el modal de confirmación de eliminación
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -237,6 +239,10 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
     setIsFormOpen(true);
   };
 
+  const handleTrialRequest = () => {
+    setIsTrialRequestModalOpen(true);
+  };
+
   const handleEdit = (trialId: string) => {
     // Abrir modal de edición en lugar de redirigir
     const trial = trials.find(t => t.id === trialId);
@@ -349,13 +355,15 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
                 {totalItems} {totalItems === 1 ? 'estudio clínico encontrado' : 'estudios clínicos encontrados'}
               </CardDescription>
             </div>
-            <Button 
-              onClick={handleCreateNew}
+            <Button
+              onClick={userRole === 'INSTITUTION' ? handleTrialRequest : handleCreateNew}
               size="sm"
               className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
             >
               <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Nuevo Estudio</span>
+              <span className="hidden sm:inline">
+                {userRole === 'INSTITUTION' ? 'Solicitar Estudio' : 'Nuevo Estudio'}
+              </span>
             </Button>
           </div>
 
@@ -422,7 +430,11 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
               </div>
             ) : trials.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
-                <p className="text-lg">No se encontraron estudios clínicos que coincidan con los filtros.</p>
+                {userRole === 'INSTITUTION' ? (
+                  <p className="text-lg">No tienes estudios asignados. Usa "Solicitar Estudio" para solicitar uno nuevo.</p>
+                ) : (
+                  <p className="text-lg">No se encontraron estudios clínicos que coincidan con los filtros.</p>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -546,6 +558,54 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
         }}
       />
 
+      {/* Modal de solicitud de estudio para instituciones */}
+      {isTrialRequestModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Solicitar Nuevo Estudio</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Título del Estudio</label>
+                <input 
+                  type="text" 
+                  className="w-full p-2 border rounded"
+                  placeholder="Ingrese el título del estudio"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Descripción</label>
+                <textarea 
+                  className="w-full p-2 border rounded"
+                  rows={4}
+                  placeholder="Describa el estudio que desea solicitar"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Notas adicionales</label>
+                <textarea 
+                  className="w-full p-2 border rounded"
+                  rows={2}
+                  placeholder="Información adicional que considere relevante"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button 
+                onClick={() => setIsTrialRequestModalOpen(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancelar
+              </button>
+              <button 
+                className="px-4 py-2 bg-[#04BFAD] text-white rounded hover:bg-[#024959]"
+              >
+                Enviar Solicitud
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal de confirmación para eliminar */}
       <ConfirmDialog
         isOpen={showDeleteDialog}
@@ -566,10 +626,10 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
   );
 }
 
-export function TrialList({ initialTrials, onTrialChange }: { initialTrials?: Trial[]; onTrialChange?: () => void }) {
+export function TrialList({ initialTrials, onTrialChange, userRole }: { initialTrials?: Trial[]; onTrialChange?: () => void; userRole?: string | null }) {
   return (
     <AppProviders>
-      <TrialListContent initialTrials={initialTrials} onTrialChange={onTrialChange} />
+      <TrialListContent initialTrials={initialTrials} onTrialChange={onTrialChange} userRole={userRole} />
     </AppProviders>
   );
 }
