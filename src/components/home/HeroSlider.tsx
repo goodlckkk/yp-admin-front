@@ -23,6 +23,7 @@ interface HeroSlide {
   ctaText: string | null;
   ctaUrl: string | null;
   order: number;
+  align?: 'left' | 'center' | 'right' | 'left-bottom' | 'left-top';
 }
 
 interface HeroSliderProps {
@@ -36,6 +37,7 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
   const [loading, setLoading] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [defaultIndex, setDefaultIndex] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
 
   // Frases por defecto cuando no hay imágenes - ACTUALIZADAS
   const defaultSlides = [
@@ -53,6 +55,8 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
       description: 'Tu participación es voluntaria, segura y respaldada por equipos de salud especializados.',
       imageUrl: '/slider-2.png',
       ctaText: 'Quiero participar',
+      ctaUrl: null,
+      order: 2,
       align: 'left'
     },
     {
@@ -61,6 +65,8 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
       description: 'Participar es gratuito y ayuda a mejorar los tratamientos del futuro.',
       imageUrl: '/slider-3.png',
       ctaText: 'Quiero participar',
+      ctaUrl: null,
+      order: 3,
       align: 'left'
     }
   ];
@@ -70,7 +76,7 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
    */
   useEffect(() => {
     // Usar slides locales directamente para esta versión
-    setSlides(defaultSlides as any);
+    setSlides(defaultSlides);
     setLoading(false);
   }, []);
 
@@ -143,7 +149,7 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
     );
   }
 
-  // Sin slides configurados - mostrar slider con frases por defecto
+  // Sin slides configurados - mostrar slider con frases por defecto (Fallback defensivo)
   if (slides.length === 0) {
     return (
       <div className="relative w-full h-screen overflow-hidden">
@@ -195,29 +201,13 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
     );
   }
 
-  const currentSlide = slides[currentIndex];
-
   return (
     <div className="relative w-full h-screen overflow-hidden bg-gray-900">
       {/* Slides */}
       <div className="relative w-full h-full">
-        {slides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-500 ${
-              index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          >
-            {/* Imagen de fondo */}
-            <div className="absolute inset-0">
-              <img
-                src={slide.imageUrl}
-                alt={slide.title || 'Slide'}
-                className="w-full h-full object-cover"
-              />
-              {/* Overlay oscuro para mejorar legibilidad del texto */}
-              <div className="absolute inset-0 bg-black/40"></div>
-            </div>
+        {slides.map((slide, index) => {
+          const alignment = slide.align || 'center';
+          const isLeft = alignment.includes('left');
 
             {/* Contenido del slide */}
             {(slide.title || slide.description || slide.ctaText) && (
@@ -248,10 +238,10 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
                     </button>
                   )}
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Navegación: flechas */}
