@@ -1,0 +1,3 @@
+Archivo de prueba - Si este archivo aparece en git status, significa que la sincronización funciona correctamente.
+Fecha: 2024-02-16
+Hora: 15:45

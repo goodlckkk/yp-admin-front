@@ -50,6 +50,24 @@ export function getUserEmailFromToken(): string | null {
   }
 }
 
+/**
+ * Decodificar el JWT y obtener el rol del usuario
+ */
+export function getUserRoleFromToken(): string | null {
+  const token = getToken();
+  if (!token) return null;
+  
+  try {
+    // Decodificar el JWT (formato: header.payload.signature)
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.role || null;
+  } catch (error) {
+    console.error('Error al decodificar el token:', error);
+    return null;
+  }
+}
+
 export type PatientIntakeSource = 'WEB_FORM' | 'MANUAL_ENTRY' | 'REFERRAL' | 'OTHER';
 
 export interface CreatePatientIntakePayload {

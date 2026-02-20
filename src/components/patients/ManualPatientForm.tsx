@@ -33,6 +33,7 @@ interface ManualPatientFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  userRole?: string | null;
 }
 
 // Las regiones y comunas ahora se importan desde el archivo compartido
@@ -52,7 +53,7 @@ const PATOLOGIAS_PREVALENTES = [
   "Otros"
 ];
 
-export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientFormProps) {
+export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: ManualPatientFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -531,15 +532,18 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess }: ManualPatientF
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[#024959]">Origen del Paciente</h3>
             
-            <div>
-              <ResearchSiteAutocomplete
-                value={formData.referralResearchSiteId || ''}
-                onSelect={(siteId) => handleInputChange('referralResearchSiteId', siteId)}
-                label="Institución que deriva (Opcional)"
-                placeholder="Buscar hospital, clínica o centro médico..."
-                disabled={loading}
-              />
-            </div>
+            {/* Ocultar selector de institución para usuarios INSTITUTION */}
+            {userRole !== 'INSTITUTION' && (
+              <div>
+                <ResearchSiteAutocomplete
+                  value={formData.referralResearchSiteId || ''}
+                  onSelect={(siteId) => handleInputChange('referralResearchSiteId', siteId)}
+                  label="Institución que deriva (Opcional)"
+                  placeholder="Buscar hospital, clínica o centro médico..."
+                  disabled={loading}
+                />
+              </div>
+            )}
           </div>
 
           {/* Información Médica */}
