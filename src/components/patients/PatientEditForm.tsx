@@ -42,6 +42,7 @@ interface PatientEditFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  userRole?: string | null;
 }
 
 // Estados disponibles para el paciente (flujo completo)
@@ -69,7 +70,7 @@ const PATOLOGIAS_PREVALENTES = [
   "Fumador/a"
 ];
 
-export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: PatientEditFormProps) {
+export function PatientEditForm({ patient, isOpen, onClose, onSuccess, userRole }: PatientEditFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -908,8 +909,10 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
           </div>
         )}
 
-        {/* Historial de Cambios */}
-        <ChangeHistory entityName="PatientIntake" entityId={patient.id} />
+        {/* Historial de Cambios - Solo visible para ADMIN */}
+        {userRole === 'ADMIN' && (
+          <ChangeHistory entityName="PatientIntake" entityId={patient.id} />
+        )}
 
         {/* Botones de acción */}
         <div className="flex justify-between pt-4 border-t border-gray-200">

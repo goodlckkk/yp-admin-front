@@ -43,20 +43,93 @@ export function ChangeHistory({ entityName, entityId }: ChangeHistoryProps) {
     });
   };
 
+  // Mapa de nombres de campos a español
+  const fieldLabels: Record<string, string> = {
+    status: 'Estado',
+    nombre: 'Nombre',
+    apellido: 'Apellido',
+    email: 'Email',
+    telefono: 'Teléfono',
+    phone: 'Teléfono',
+    phoneCountryCode: 'Código País',
+    phoneNumber: 'Número Teléfono',
+    birth_date: 'Fecha de Nacimiento',
+    genero: 'Género',
+    region: 'Región',
+    comuna: 'Comuna',
+    patologias: 'Patologías',
+    alergias: 'Alergias',
+    medicamentos_actuales: 'Medicamentos Actuales',
+    condiciones_medicas: 'Condiciones Médicas',
+    trialId: 'Estudio Asignado',
+    title: 'Título',
+    public_description: 'Descripción Pública',
+    max_participants: 'Máx. Participantes',
+    current_participants: 'Participantes Actuales',
+    recruitment_deadline: 'Fecha Límite Reclutamiento',
+    research_site_id: 'Sitio de Investigación',
+    sponsor_id: 'Patrocinador',
+    inclusion_criteria: 'Criterios de Inclusión',
+    consentDocumentUrl: 'Documento de Consentimiento',
+    phaseChangeRequested: 'Cambio de Fase Solicitado',
+  };
+
+  // Mapa de valores de estado a español
+  const statusLabels: Record<string, string> = {
+    RECEIVED: 'Recibido',
+    VERIFIED: 'Verificado',
+    STUDY_ASSIGNED: 'Estudio Asignado',
+    AWAITING_STUDY: 'En Espera de Estudio',
+    PENDING_CONTACT: 'Pendiente de Contacto',
+    DISCARDED: 'Descartado',
+    PENDING_APPROVAL: 'Solicitud en Revisión',
+    PREPARATION: 'En Preparación',
+    RECRUITING: 'Reclutamiento Activo',
+    FOLLOW_UP: 'En Seguimiento',
+    CLOSED: 'Cerrado',
+  };
+
+  const translateValue = (key: string, value: any): string => {
+    if (value === null || value === undefined) return 'vacío';
+    if (key === 'status' && typeof value === 'string' && statusLabels[value]) {
+      return statusLabels[value];
+    }
+    if (typeof value === 'boolean') return value ? 'Sí' : 'No';
+    return String(value);
+  };
+
   const formatChanges = (changes: any) => {
     if (!changes) return <span className="text-xs text-gray-500">Sin detalles</span>;
     
-    // Si changes tiene diff, mostrar eso (estructura sugerida en backend)
     const displayChanges = changes.diff || changes;
 
     if (typeof displayChanges === 'object') {
-       return Object.entries(displayChanges).map(([key, value]) => (
-         <div key={key} className="text-xs text-gray-600 break-all">
-           <span className="font-semibold text-gray-700">{key}:</span> {
-             typeof value === 'object' ? JSON.stringify(value) : String(value)
-           }
-         </div>
-       ));
+       return Object.entries(displayChanges).map(([key, value]) => {
+         const label = fieldLabels[key] || key;
+         
+         // Si el valor es un objeto con before/after, mostrar transición legible
+         if (value && typeof value === 'object' && 'before' in (value as any) && 'after' in (value as any)) {
+           const v = value as { before: any; after: any };
+           const beforeText = translateValue(key, v.before);
+           const afterText = translateValue(key, v.after);
+           return (
+             <div key={key} className="text-xs flex items-center gap-1.5 py-0.5">
+               <span className="font-semibold text-gray-700">{label}:</span>
+               <span className="text-red-600 line-through">{beforeText}</span>
+               <span className="text-gray-400">→</span>
+               <span className="text-green-700 font-medium">{afterText}</span>
+             </div>
+           );
+         }
+         
+         // Valor simple
+         return (
+           <div key={key} className="text-xs text-gray-600 py-0.5">
+             <span className="font-semibold text-gray-700">{label}:</span>{' '}
+             {translateValue(key, value)}
+           </div>
+         );
+       });
     }
     return <span className="text-xs text-gray-600">{String(displayChanges)}</span>;
   };

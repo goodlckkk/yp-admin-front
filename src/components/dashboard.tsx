@@ -675,6 +675,9 @@ export default function DashboardPage() {
     );
   };
 
+  // Determinar si el usuario es MODERATOR
+  const isModerator = userRole === 'MODERATOR';
+
   // Estructura del menú con grupos — filtrado por rol
   const menuGroups: (MenuItem | MenuGroup)[] = isInstitution
     ? [
@@ -682,6 +685,22 @@ export default function DashboardPage() {
         { id: "overview" as Section, label: "Vista General", icon: Icons.Activity },
         { id: "pacientes" as Section, label: "Pacientes", icon: Icons.Users },
         { id: "estudios" as Section, label: "Estudios Clínicos", icon: Icons.FileText },
+      ]
+    : isModerator
+    ? [
+        // Menú para moderadores: gestión de ensayos y pacientes, sin Gestión Web
+        { id: "overview" as Section, label: "Vista General", icon: Icons.Activity },
+        { id: "pacientes" as Section, label: "Pacientes", icon: Icons.Users },
+        {
+          id: 'ensayos',
+          label: 'Gestión de Ensayos',
+          icon: Icons.Microscope,
+          items: [
+            { id: "estudios" as Section, label: "Estudios Clínicos", icon: Icons.FileText },
+            { id: "sitios" as Section, label: "Sitios/Instituciones", icon: Icons.Building },
+            { id: "sponsors" as Section, label: "Patrocinadores/CROs", icon: Icons.Shield },
+          ]
+        },
       ]
     : [
         // Menú completo para administradores
@@ -833,15 +852,18 @@ export default function DashboardPage() {
           <div className="p-4 border-t border-gray-200 space-y-2">
             <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-gray-50">
               <Avatar className="w-10 h-10">
-                <AvatarFallback>{isInstitution ? 'IN' : 'AD'}</AvatarFallback>
+                <AvatarFallback>{isInstitution ? 'IN' : isModerator ? 'MO' : 'AD'}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {isInstitution ? (userInstitutionName || 'Institución') : 'Admin'}
+                  {isInstitution ? (userInstitutionName || 'Institución') : isModerator ? 'Moderador' : 'Admin'}
                 </p>
                 <p className="text-xs text-gray-500 truncate">{getUserEmailFromToken() || 'admin@yoparticipo.cl'}</p>
                 {isInstitution && (
                   <span className="inline-block mt-1 text-[10px] font-medium bg-[#A7F2EB] text-[#024959] px-2 py-0.5 rounded-full">Institución</span>
+                )}
+                {isModerator && (
+                  <span className="inline-block mt-1 text-[10px] font-medium bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Moderador</span>
                 )}
               </div>
             </div>
@@ -875,7 +897,7 @@ export default function DashboardPage() {
                     {getActiveSectionLabel(activeSection)}
                   </h2>
                   <p className="text-xs sm:text-sm text-gray-500 hidden sm:block truncate">
-                    {isInstitution ? `Panel de ${userInstitutionName || 'Institución'}` : 'Gestiona toda la información de la plataforma'}
+                    {isInstitution ? `Panel de ${userInstitutionName || 'Institución'}` : isModerator ? 'Gestión de estudios y pacientes' : 'Gestiona toda la información de la plataforma'}
                   </p>
                 </div>
               </div>
@@ -1471,6 +1493,7 @@ export default function DashboardPage() {
                   setIsPatientDetailsOpen(false);
                   setSelectedPatient(null);
                 }}
+                userRole={userRole}
                 onSuccess={async () => {
                   setIsPatientDetailsOpen(false);
                   setSelectedPatient(null);
