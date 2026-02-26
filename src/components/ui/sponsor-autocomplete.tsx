@@ -15,7 +15,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Input } from './input';
 import { Label } from './label';
 import { Button } from './button';
-import { searchSponsors, createSponsor } from '../../lib/api';
+import { searchSponsors } from '../../lib/api';
 import type { Sponsor } from '../../lib/api';
 
 interface SponsorAutocompleteProps {
@@ -47,7 +47,6 @@ export function SponsorAutocomplete({
   const [suggestions, setSuggestions] = useState<Sponsor[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [creating, setCreating] = useState(false);
   const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
   
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -146,7 +145,7 @@ export function SponsorAutocomplete({
           onChange={handleInputChange}
           onFocus={handleFocus}
           placeholder={placeholder}
-          disabled={disabled || creating}
+          disabled={disabled}
           className={hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : (selectedSponsor ? 'border-green-500' : '')}
         />
         

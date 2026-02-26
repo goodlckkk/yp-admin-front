@@ -1,9 +1,6 @@
 import axiosInstance from './axios-instance';
 import { TokenService } from '../services/token.service';
 
-// URL de producción con HTTPS
-const API_BASE_URL = import.meta.env.PUBLIC_API_URL ?? "https://api.yoparticipo.cl/api";
-
 /**
  * Re-exportar funciones del TokenService para mantener compatibilidad
  * con código existente. Estas funciones ahora delegan al TokenService.
@@ -68,6 +65,36 @@ export function getUserRoleFromToken(): string | null {
   }
 }
 
+/**
+ * Decodificar el JWT y obtener el institutionId del usuario
+ */
+export function getUserInstitutionIdFromToken(): string | null {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.institutionId || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Decodificar el JWT y obtener el nombre de la institución del usuario
+ */
+export function getUserInstitutionNameFromToken(): string | null {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.institutionName || null;
+  } catch {
+    return null;
+  }
+}
+
 export type PatientIntakeSource = 'WEB_FORM' | 'MANUAL_ENTRY' | 'REFERRAL' | 'OTHER';
 
 export interface CreatePatientIntakePayload {
@@ -113,6 +140,7 @@ export interface PatientIntake extends CreatePatientIntakePayload {
   createdAt?: string;
   trial?: Trial | null;
   referralResearchSite?: ResearchSite | null;
+  consentDocumentUrl?: string | null;
   status?: 'RECEIVED' | 'VERIFIED' | 'STUDY_ASSIGNED' | 'AWAITING_STUDY' | 'PENDING_CONTACT' | 'DISCARDED';
 }
 
@@ -366,6 +394,20 @@ export async function deleteTrial(trialId: string): Promise<void> {
   });
 }
 
+// Solicitud de estudio clínico (para instituciones)
+export interface TrialRequestPayload {
+  title: string;
+  description: string;
+  additionalNotes?: string;
+}
+
+export async function requestTrial(payload: TrialRequestPayload) {
+  return fetchWithAuth<{ success: boolean; message: string }>(`/trials/request`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 // Users
 export enum UserRole {
   PATIENT = 'PATIENT',
@@ -407,6 +449,14 @@ export async function updateUser(userId: string, payload: UpdateUserPayload) {
     method: "PATCH",
     body: JSON.stringify(payload),
   });
+}
+
+export async function getUserByInstitution(institutionId: string): Promise<User | null> {
+  try {
+    return await fetchWithAuth<User>(`/users/by-institution/${institutionId}`);
+  } catch {
+    return null;
+  }
 }
 
 export async function deleteUser(userId: string): Promise<void> {
@@ -563,4 +613,52 @@ export interface Comuna {
 
 export async function getAllComunas(): Promise<Comuna[]> {
   return fetchWithAuth<Comuna[]>('/comunas');
+}
+
+// ==================== UPLOADS (Documentos de Consentimiento) ====================
+
+/**
+ * Sube un documento de consentimiento firmado para un paciente.
+ * El archivo se almacena en S3 y la URL se guarda en el registro del paciente.
+ *
+ * @param patientId - UUID del paciente
+ * @param file - Archivo (PDF, JPG, PNG o WebP, máx 10MB)
+ * @returns Objeto con la URL del documento y el patientId
+ */
+export async function uploadConsentDocument(
+  patientId: string,
+  file: File,
+): Promise<{ message: string; consentDocumentUrl: string; patientId: string }> {
+  const token = getToken();
+  if (!token) throw new Error('No autenticado');
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await axiosInstance.request({
+    url: `/uploads/consent/${patientId}`,
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      // No establecer Content-Type — axios lo pone automáticamente con el boundary de FormData
+    },
+    data: formData,
+  });
+
+  return response.data;
+}
+
+/**
+ * Obtiene una URL presignada temporal para ver/descargar el documento de consentimiento.
+ * La URL expira en 1 hora.
+ *
+ * @param patientId - UUID del paciente
+ * @returns Objeto con presignedUrl
+ */
+export async function getConsentDocumentUrl(
+  patientId: string,
+): Promise<{ presignedUrl: string; patientId: string }> {
+  return fetchWithAuth<{ presignedUrl: string; patientId: string }>(
+    `/uploads/consent/${patientId}/url`,
+  );
 }

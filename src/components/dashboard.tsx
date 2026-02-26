@@ -14,14 +14,14 @@ import {
   updateLastActivityTimestamp,
   getStats,
   getTrends,
-  createPatientIntake,
   updatePatientIntake,
   getUserEmailFromToken,
   getUserRoleFromToken,
+  getUserInstitutionIdFromToken,
+  getUserInstitutionNameFromToken,
   getResearchSites,
 } from "../lib/api"
 import { Icons } from "./ui/icons"
-import { CustomIcons } from "./ui/custom-icons"
 import { Input } from "./ui/input"
 import { useEffect, useMemo, useState } from "react"
 import type { PatientIntake, Trial, DashboardStats, TrendData, ResearchSite } from "../lib/api"
@@ -115,8 +115,10 @@ export default function DashboardPage() {
   // Estado para las instituciones disponibles
   const [researchSites, setResearchSites] = useState<ResearchSite[]>([]);
   
-  // Estado para el rol del usuario
+  // Estado para el rol del usuario y datos de institución
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [userInstitutionId, setUserInstitutionId] = useState<string | null>(null);
+  const [userInstitutionName, setUserInstitutionName] = useState<string | null>(null);
   
   // Función para cerrar sesión
   const handleLogout = () => {
@@ -309,9 +311,13 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         setLoading(true)
-        // Obtener el rol del usuario desde el token
+        // Obtener el rol del usuario y datos de institución desde el token
         const role = getUserRoleFromToken();
         setUserRole(role);
+        const instId = getUserInstitutionIdFromToken();
+        setUserInstitutionId(instId);
+        const instName = getUserInstitutionNameFromToken();
+        setUserInstitutionName(instName);
         const [trialsResponse, intakesResponse, statsResponse, trendsResponse, sitesResponse] = await Promise.allSettled([
           getTrials(),
           getPatientIntakes(),
@@ -567,10 +573,13 @@ export default function DashboardPage() {
     }
   };
 
-  const statsOverview = useMemo(
-    () => [
+  // Determinar si el usuario es INSTITUTION (usado en stats, menú, perfil)
+  const isInstitution = userRole === 'INSTITUTION';
+
+  const statsOverview = useMemo(() => {
+    const baseStats = [
       {
-        label: "Total Postulaciones",
+        label: isInstitution ? "Mis Pacientes" : "Total Postulaciones",
         value: (stats?.totalPatients || patientIntakes.length).toString(),
         change: `+${patientIntakes.filter((intake) => intake.status === "RECEIVED").length}`,
         icon: Icons.Users,
@@ -593,25 +602,42 @@ export default function DashboardPage() {
         color: "text-orange-600",
         bg: "bg-orange-100",
       },
-      {
-        label: "Por sitios e instituciones",
+    ];
+
+    if (isInstitution) {
+      // Para instituciones: Pacientes asignados a estudio en vez de "Sitios activos"
+      baseStats.push({
+        label: "Asignados a Estudio",
         value: patientIntakes.filter((intake) => intake.status === "STUDY_ASSIGNED").length.toString(),
         change: `+${patientIntakes.filter((intake) => intake.status === "STUDY_ASSIGNED").length}`,
-        icon: Icons.Building,
+        icon: Icons.FileText,
         color: "text-purple-600",
         bg: "bg-purple-100",
-      },
-      {
-        label: "Estudios Clínicos Activos",
-        value: (stats?.activeTrials || trials.filter((trial) => trial.status === "RECRUITING" || trial.status === "FOLLOW_UP").length).toString(),
-        change: `+${trials.filter((trial) => trial.status === "RECRUITING").length}`,
-        icon: Icons.Microscope,
-        color: "text-green-600",
-        bg: "bg-green-100",
-      },
-    ],
-    [patientIntakes, trials, stats],
-  )
+      });
+    } else {
+      // Para admin: Stats completas
+      baseStats.push(
+        {
+          label: "Sitios activos",
+          value: patientIntakes.filter((intake) => intake.status === "STUDY_ASSIGNED").length.toString(),
+          change: `+${patientIntakes.filter((intake) => intake.status === "STUDY_ASSIGNED").length}`,
+          icon: Icons.Building,
+          color: "text-purple-600",
+          bg: "bg-purple-100",
+        },
+        {
+          label: "Estudios Clínicos Activos",
+          value: (stats?.activeTrials || trials.filter((trial) => trial.status === "RECRUITING" || trial.status === "FOLLOW_UP").length).toString(),
+          change: `+${trials.filter((trial) => trial.status === "RECRUITING").length}`,
+          icon: Icons.Microscope,
+          color: "text-green-600",
+          bg: "bg-green-100",
+        },
+      );
+    }
+
+    return baseStats;
+  }, [patientIntakes, trials, stats, isInstitution])
 
   const formatDate = (isoDate?: string) => {
     if (!isoDate) return "Sin registro"
@@ -649,30 +675,38 @@ export default function DashboardPage() {
     );
   };
 
-  // Estructura del menú con grupos
-  const menuGroups: (MenuItem | MenuGroup)[] = [
-    { id: "overview" as Section, label: "Vista General", icon: Icons.Activity },
-    { id: "pacientes" as Section, label: "Pacientes", icon: Icons.Users },
-    {
-      id: 'ensayos',
-      label: 'Gestión de Ensayos',
-      icon: Icons.Microscope,
-      items: [
+  // Estructura del menú con grupos — filtrado por rol
+  const menuGroups: (MenuItem | MenuGroup)[] = isInstitution
+    ? [
+        // Menú limitado para instituciones
+        { id: "overview" as Section, label: "Vista General", icon: Icons.Activity },
+        { id: "pacientes" as Section, label: "Pacientes", icon: Icons.Users },
         { id: "estudios" as Section, label: "Estudios Clínicos", icon: Icons.FileText },
-        { id: "sitios" as Section, label: "Sitios/Instituciones", icon: Icons.Building },
-        { id: "sponsors" as Section, label: "Patrocinadores/CROs", icon: Icons.Shield },
       ]
-    },
-    {
-      id: 'web',
-      label: 'Gestión Web',
-      icon: Icons.Globe,
-      items: [
-        { id: "slider" as Section, label: "Slider Principal", icon: Icons.Image },
-        { id: "historias" as Section, label: "Historias que Inspiran", icon: Icons.Heart },
+    : [
+        // Menú completo para administradores
+        { id: "overview" as Section, label: "Vista General", icon: Icons.Activity },
+        { id: "pacientes" as Section, label: "Pacientes", icon: Icons.Users },
+        {
+          id: 'ensayos',
+          label: 'Gestión de Ensayos',
+          icon: Icons.Microscope,
+          items: [
+            { id: "estudios" as Section, label: "Estudios Clínicos", icon: Icons.FileText },
+            { id: "sitios" as Section, label: "Sitios/Instituciones", icon: Icons.Building },
+            { id: "sponsors" as Section, label: "Patrocinadores/CROs", icon: Icons.Shield },
+          ]
+        },
+        {
+          id: 'web',
+          label: 'Gestión Web',
+          icon: Icons.Globe,
+          items: [
+            { id: "slider" as Section, label: "Slider Principal", icon: Icons.Image },
+            { id: "historias" as Section, label: "Historias que Inspiran", icon: Icons.Heart },
+          ]
+        },
       ]
-    },
-  ]
 
   // Función helper para obtener el label de la sección activa
   const getActiveSectionLabel = (section: Section): string => {
@@ -715,17 +749,15 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
-            {!isSidebarCollapsed && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleSidebar}
-                className="h-8 w-8"
-                title="Colapsar sidebar"
-              >
-                <Icons.Menu className="h-4 w-4" />
-              </Button>
-            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="h-8 w-8"
+              title={isSidebarCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+            >
+              {isSidebarCollapsed ? <Icons.ChevronRight className="h-4 w-4" /> : <Icons.Menu className="h-4 w-4" />}
+            </Button>
           </div>
 
           {/* Navigation */}
@@ -801,11 +833,16 @@ export default function DashboardPage() {
           <div className="p-4 border-t border-gray-200 space-y-2">
             <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-gray-50">
               <Avatar className="w-10 h-10">
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarFallback>{isInstitution ? 'IN' : 'AD'}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">Admin</p>
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {isInstitution ? (userInstitutionName || 'Institución') : 'Admin'}
+                </p>
                 <p className="text-xs text-gray-500 truncate">{getUserEmailFromToken() || 'admin@yoparticipo.cl'}</p>
+                {isInstitution && (
+                  <span className="inline-block mt-1 text-[10px] font-medium bg-[#A7F2EB] text-[#024959] px-2 py-0.5 rounded-full">Institución</span>
+                )}
               </div>
             </div>
             <Button 
@@ -821,7 +858,7 @@ export default function DashboardPage() {
       </aside>
 
       {/* Main Content */}
-      <div className="lg:ml-64">
+      <div className={`transition-all duration-300 ${isSidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
         {/* Header */}
         <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
           <div className="px-3 py-3 sm:px-4 sm:py-4 lg:px-8">
@@ -837,7 +874,9 @@ export default function DashboardPage() {
                   <h2 className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">
                     {getActiveSectionLabel(activeSection)}
                   </h2>
-                  <p className="text-xs sm:text-sm text-gray-500 hidden sm:block truncate">Gestiona toda la información de la plataforma</p>
+                  <p className="text-xs sm:text-sm text-gray-500 hidden sm:block truncate">
+                    {isInstitution ? `Panel de ${userInstitutionName || 'Institución'}` : 'Gestiona toda la información de la plataforma'}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-1 sm:gap-2">
@@ -1124,7 +1163,7 @@ export default function DashboardPage() {
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Condición</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Estudio Clínico</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Sitio / Institución</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Vigencia</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Consentimiento</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Estado</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#04BFAD] uppercase">Acciones</th>
                         </tr>

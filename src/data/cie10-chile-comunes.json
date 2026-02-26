@@ -1870,5 +1870,733 @@
   {
     "codigo": "G95",
     "nombre": "Otras enfermedades de la médula espinal"
+  },
+  {
+    "codigo": "M350",
+    "nombre": "Síndrome seco [Sjögren]"
+  },
+  {
+    "codigo": "L400",
+    "nombre": "Psoriasis vulgar"
+  },
+  {
+    "codigo": "M321",
+    "nombre": "Lupus eritematoso sistémico con compromiso de órganos o sistemas"
+  },
+  {
+    "codigo": "M060",
+    "nombre": "Artritis reumatoide seronegativa"
+  },
+  {
+    "codigo": "M050",
+    "nombre": "Síndrome de Felty"
+  },
+  {
+    "codigo": "L209",
+    "nombre": "Dermatitis atópica"
+  },
+  {
+    "codigo": "L500",
+    "nombre": "Urticaria alérgica"
+  },
+  {
+    "codigo": "K500",
+    "nombre": "Enfermedad de Crohn del intestino delgado"
+  },
+  {
+    "codigo": "K510",
+    "nombre": "Enterocolitis (crónica) ulcerativa"
+  },
+  {
+    "codigo": "K580",
+    "nombre": "Síndrome del colon irritable con diarrea"
+  },
+  {
+    "codigo": "K800",
+    "nombre": "Cálculo de la vesícula biliar con colecistitis aguda"
+  },
+  {
+    "codigo": "K810",
+    "nombre": "Colecistitis aguda"
+  },
+  {
+    "codigo": "K81",
+    "nombre": "Colecistitis"
+  },
+  {
+    "codigo": "N410",
+    "nombre": "Prostatitis aguda"
+  },
+  {
+    "codigo": "N800",
+    "nombre": "Endometriosis del útero"
+  },
+  {
+    "codigo": "N810",
+    "nombre": "Uretrocele femenino"
+  },
+  {
+    "codigo": "D500",
+    "nombre": "Anemia por deficiencia de hierro secundaria a pérdida de sangre (crónica)"
+  },
+  {
+    "codigo": "D510",
+    "nombre": "Anemia por deficiencia de vitamina B12 debida a deficiencia del factor intrínseco"
+  },
+  {
+    "codigo": "D560",
+    "nombre": "Alfa talasemia"
+  },
+  {
+    "codigo": "D570",
+    "nombre": "Anemia falciforme con crisis"
+  },
+  {
+    "codigo": "D57",
+    "nombre": "Trastornos falciformes"
+  },
+  {
+    "codigo": "D640",
+    "nombre": "Anemia sideroblástica hereditaria"
+  },
+  {
+    "codigo": "B20",
+    "nombre": "Enfermedad por virus de la inmunodeficiencia humana [VIH]"
+  },
+  {
+    "codigo": "A150",
+    "nombre": "Tuberculosis del pulmón"
+  },
+  {
+    "codigo": "A15",
+    "nombre": "Tuberculosis respiratoria"
+  },
+  {
+    "codigo": "A160",
+    "nombre": "Tuberculosis del pulmón"
+  },
+  {
+    "codigo": "A16",
+    "nombre": "Tuberculosis respiratoria"
+  },
+  {
+    "codigo": "A040",
+    "nombre": "Infección debida a Escherichia coli enteropatógena"
+  },
+  {
+    "codigo": "A04",
+    "nombre": "Otras infecciones intestinales bacterianas"
+  },
+  {
+    "codigo": "A080",
+    "nombre": "Enteritis debida a rotavirus"
+  },
+  {
+    "codigo": "A08",
+    "nombre": "Infecciones intestinales debidas a virus y otros organismos especificados"
+  },
+  {
+    "codigo": "B150",
+    "nombre": "Hepatitis aguda tipo A"
+  },
+  {
+    "codigo": "B15",
+    "nombre": "Hepatitis aguda tipo A"
+  },
+  {
+    "codigo": "B160",
+    "nombre": "Hepatitis aguda tipo B"
+  },
+  {
+    "codigo": "B170",
+    "nombre": "Infección (superinfección) aguda por agente delta en el portador de hepatitis B"
+  },
+  {
+    "codigo": "B180",
+    "nombre": "Hepatitis viral tipo B crónica"
+  },
+  {
+    "codigo": "C670",
+    "nombre": "Tumor maligno del trígono vesical"
+  },
+  {
+    "codigo": "C710",
+    "nombre": "Tumor maligno del cerebro"
+  },
+  {
+    "codigo": "C780",
+    "nombre": "Tumor maligno secundario del pulmón"
+  },
+  {
+    "codigo": "C790",
+    "nombre": "Tumor maligno secundario del riñón y de la pelvis renal"
+  },
+  {
+    "codigo": "C920",
+    "nombre": "Leucemia mieloide aguda"
+  },
+  {
+    "codigo": "C910",
+    "nombre": "Leucemia linfoblástica aguda"
+  },
+  {
+    "codigo": "D46",
+    "nombre": "Síndromes mielodisplásicos"
+  },
+  {
+    "codigo": "D47",
+    "nombre": "Otros tumores de comportamiento incierto o desconocido del tejido linfático"
+  },
+  {
+    "codigo": "E030",
+    "nombre": "Hipotiroidismo congénito con bocio difuso"
+  },
+  {
+    "codigo": "E050",
+    "nombre": "Tirotoxicosis con bocio difuso"
+  },
+  {
+    "codigo": "E060",
+    "nombre": "Tiroiditis aguda"
+  },
+  {
+    "codigo": "E210",
+    "nombre": "Hiperparatiroidismo primario"
+  },
+  {
+    "codigo": "E220",
+    "nombre": "Acromegalia y gigantismo hipofisario"
+  },
+  {
+    "codigo": "E230",
+    "nombre": "Hipopituitarismo"
+  },
+  {
+    "codigo": "E240",
+    "nombre": "Enfermedad de Cushing dependiente de la hipófisis"
+  },
+  {
+    "codigo": "E270",
+    "nombre": "Otra hiperactividad corticosuprarrenal"
+  },
+  {
+    "codigo": "E280",
+    "nombre": "Exceso de estrógenos"
+  },
+  {
+    "codigo": "E290",
+    "nombre": "Hiperfunción testicular"
+  },
+  {
+    "codigo": "E660",
+    "nombre": "Obesidad debida a exceso de calorías"
+  },
+  {
+    "codigo": "E780",
+    "nombre": "Hipercolesterolemia pura"
+  },
+  {
+    "codigo": "E830",
+    "nombre": "Trastornos del metabolismo del cobre"
+  },
+  {
+    "codigo": "E840",
+    "nombre": "Fibrosis quística con manifestaciones pulmonares"
+  },
+  {
+    "codigo": "E850",
+    "nombre": "Amiloidosis heredofamiliar no neuropática"
+  },
+  {
+    "codigo": "F100",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso del alcohol: intoxicacion aguda"
+  },
+  {
+    "codigo": "F110",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de opiaceos: intoxicacion aguda"
+  },
+  {
+    "codigo": "F120",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de cannabinoides: intoxicacion aguda"
+  },
+  {
+    "codigo": "F130",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de sedantes o hipnoticos: intoxicacion aguda"
+  },
+  {
+    "codigo": "F140",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de cocaina: intoxicacion aguda"
+  },
+  {
+    "codigo": "F170",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de tabaco: intoxicacion aguda"
+  },
+  {
+    "codigo": "F190",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de multiples drogas y al uso de otras sustancias psicoactivas: intoxicacion aguda"
+  },
+  {
+    "codigo": "G470",
+    "nombre": "Trastornos del inicio y del mantenimiento del sueño [insomnios]"
+  },
+  {
+    "codigo": "I26",
+    "nombre": "Embolia pulmonar"
+  },
+  {
+    "codigo": "I27",
+    "nombre": "Otras enfermedades cardiopulmonares"
+  },
+  {
+    "codigo": "I30",
+    "nombre": "Pericarditis aguda"
+  },
+  {
+    "codigo": "I33",
+    "nombre": "Endocarditis aguda y subaguda"
+  },
+  {
+    "codigo": "I34",
+    "nombre": "Trastornos no reumáticos de la válvula mitral"
+  },
+  {
+    "codigo": "I35",
+    "nombre": "Trastornos no reumáticos de la válvula aórtica"
+  },
+  {
+    "codigo": "I42",
+    "nombre": "Cardiomiopatía"
+  },
+  {
+    "codigo": "I44",
+    "nombre": "Bloqueo auriculoventricular y de rama izquierda del haz"
+  },
+  {
+    "codigo": "I45",
+    "nombre": "Otros trastornos de la conducción"
+  },
+  {
+    "codigo": "I47",
+    "nombre": "Taquicardia paroxística"
+  },
+  {
+    "codigo": "I60",
+    "nombre": "Hemorragia subaracnoidea"
+  },
+  {
+    "codigo": "I61",
+    "nombre": "Hemorragia intraencefálica"
+  },
+  {
+    "codigo": "I62",
+    "nombre": "Otras hemorragias intracraneales no traumáticas"
+  },
+  {
+    "codigo": "I67",
+    "nombre": "Otras enfermedades cerebrovasculares"
+  },
+  {
+    "codigo": "I71",
+    "nombre": "Aneurisma y disección aórticos"
+  },
+  {
+    "codigo": "I73",
+    "nombre": "Otras enfermedades vasculares periféricas"
+  },
+  {
+    "codigo": "I74",
+    "nombre": "Embolia y trombosis arteriales"
+  },
+  {
+    "codigo": "I77",
+    "nombre": "Otros trastornos arteriales o arteriolares"
+  },
+  {
+    "codigo": "I84",
+    "nombre": "Hemorroides"
+  },
+  {
+    "codigo": "I85",
+    "nombre": "Várices esofágicas"
+  },
+  {
+    "codigo": "I86",
+    "nombre": "Várices de otros sitios"
+  },
+  {
+    "codigo": "J01",
+    "nombre": "Sinusitis aguda"
+  },
+  {
+    "codigo": "J02",
+    "nombre": "Faringitis aguda"
+  },
+  {
+    "codigo": "J03",
+    "nombre": "Amigdalitis aguda"
+  },
+  {
+    "codigo": "J04",
+    "nombre": "Laringitis y traqueítis agudas"
+  },
+  {
+    "codigo": "J05",
+    "nombre": "Laringitis obstructiva aguda [crup] y epiglotitis"
+  },
+  {
+    "codigo": "J09",
+    "nombre": "Influenza debida a virus de la influenza aviar identificado"
+  },
+  {
+    "codigo": "J10",
+    "nombre": "Influenza debida a otro virus de la influenza identificado"
+  },
+  {
+    "codigo": "J11",
+    "nombre": "Influenza debida a virus no identificado"
+  },
+  {
+    "codigo": "J12",
+    "nombre": "Neumonía viral"
+  },
+  {
+    "codigo": "J13",
+    "nombre": "Neumonía debida a Streptococcus pneumoniae"
+  },
+  {
+    "codigo": "J14",
+    "nombre": "Neumonía debida a Haemophilus influenzae"
+  },
+  {
+    "codigo": "J15",
+    "nombre": "Neumonía bacteriana"
+  },
+  {
+    "codigo": "J16",
+    "nombre": "Neumonía debida a otros microorganismos infecciosos"
+  },
+  {
+    "codigo": "J17",
+    "nombre": "Neumonía en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "J21",
+    "nombre": "Bronquiolitis aguda"
+  },
+  {
+    "codigo": "J22",
+    "nombre": "Infección aguda no especificada de las vías respiratorias inferiores"
+  },
+  {
+    "codigo": "J31",
+    "nombre": "Rinitis"
+  },
+  {
+    "codigo": "J33",
+    "nombre": "Pólipo nasal"
+  },
+  {
+    "codigo": "J34",
+    "nombre": "Otros trastornos de la nariz y de los senos paranasales"
+  },
+  {
+    "codigo": "J35",
+    "nombre": "Enfermedades crónicas de las amígdalas y de las adenoides"
+  },
+  {
+    "codigo": "J36",
+    "nombre": "Absceso periamigdalino"
+  },
+  {
+    "codigo": "J37",
+    "nombre": "Laringitis y laringotraqueítis crónicas"
+  },
+  {
+    "codigo": "J38",
+    "nombre": "Enfermedades de las cuerdas vocales y de la laringe"
+  },
+  {
+    "codigo": "J39",
+    "nombre": "Otras enfermedades de las vías respiratorias superiores"
+  },
+  {
+    "codigo": "K20",
+    "nombre": "Esofagitis"
+  },
+  {
+    "codigo": "K27",
+    "nombre": "Úlcera péptica"
+  },
+  {
+    "codigo": "K30",
+    "nombre": "Dispepsia"
+  },
+  {
+    "codigo": "K36",
+    "nombre": "Otros tipos de apendicitis"
+  },
+  {
+    "codigo": "K37",
+    "nombre": "Apendicitis"
+  },
+  {
+    "codigo": "K41",
+    "nombre": "Hernia femoral"
+  },
+  {
+    "codigo": "K42",
+    "nombre": "Hernia umbilical"
+  },
+  {
+    "codigo": "K43",
+    "nombre": "Hernia ventral"
+  },
+  {
+    "codigo": "K56",
+    "nombre": "Íleo paralítico y obstrucción intestinal sin hernia"
+  },
+  {
+    "codigo": "K57",
+    "nombre": "Enfermedad diverticular del intestino"
+  },
+  {
+    "codigo": "K60",
+    "nombre": "Fisura y fístula de las regiones anal y rectal"
+  },
+  {
+    "codigo": "K61",
+    "nombre": "Absceso de las regiones anal y rectal"
+  },
+  {
+    "codigo": "K62",
+    "nombre": "Otras enfermedades del ano y del recto"
+  },
+  {
+    "codigo": "K63",
+    "nombre": "Otras enfermedades de los intestinos"
+  },
+  {
+    "codigo": "K65",
+    "nombre": "Peritonitis"
+  },
+  {
+    "codigo": "K66",
+    "nombre": "Otros trastornos del peritoneo"
+  },
+  {
+    "codigo": "K71",
+    "nombre": "Enfermedad tóxica del hígado"
+  },
+  {
+    "codigo": "K72",
+    "nombre": "Insuficiencia hepática"
+  },
+  {
+    "codigo": "K73",
+    "nombre": "Hepatitis crónica"
+  },
+  {
+    "codigo": "K75",
+    "nombre": "Otras enfermedades inflamatorias del hígado"
+  },
+  {
+    "codigo": "K90",
+    "nombre": "Malabsorción intestinal"
+  },
+  {
+    "codigo": "K91",
+    "nombre": "Trastornos del sistema digestivo consecutivos a procedimientos"
+  },
+  {
+    "codigo": "L01",
+    "nombre": "Impétigo"
+  },
+  {
+    "codigo": "L02",
+    "nombre": "Absceso cutáneo"
+  },
+  {
+    "codigo": "L03",
+    "nombre": "Celulitis"
+  },
+  {
+    "codigo": "L04",
+    "nombre": "Linfadenitis aguda"
+  },
+  {
+    "codigo": "L05",
+    "nombre": "Quiste pilonidal"
+  },
+  {
+    "codigo": "L08",
+    "nombre": "Otras infecciones locales de la piel y del tejido subcutáneo"
+  },
+  {
+    "codigo": "L10",
+    "nombre": "Pénfigo"
+  },
+  {
+    "codigo": "L12",
+    "nombre": "Penfigoide"
+  },
+  {
+    "codigo": "L13",
+    "nombre": "Otros trastornos flictenulares"
+  },
+  {
+    "codigo": "L21",
+    "nombre": "Dermatitis seborreica"
+  },
+  {
+    "codigo": "L22",
+    "nombre": "Dermatitis del pañal"
+  },
+  {
+    "codigo": "L23",
+    "nombre": "Dermatitis alérgica de contacto"
+  },
+  {
+    "codigo": "L24",
+    "nombre": "Dermatitis de contacto por irritantes"
+  },
+  {
+    "codigo": "L25",
+    "nombre": "Dermatitis de contacto"
+  },
+  {
+    "codigo": "L27",
+    "nombre": "Dermatitis debida a sustancias ingeridas"
+  },
+  {
+    "codigo": "L28",
+    "nombre": "Liquen simple crónico y prurigo"
+  },
+  {
+    "codigo": "L29",
+    "nombre": "Prurito"
+  },
+  {
+    "codigo": "L30",
+    "nombre": "Otras dermatitis"
+  },
+  {
+    "codigo": "L42",
+    "nombre": "Pitiriasis rosada"
+  },
+  {
+    "codigo": "L43",
+    "nombre": "Liquen plano"
+  },
+  {
+    "codigo": "L44",
+    "nombre": "Otros trastornos papuloescamosos"
+  },
+  {
+    "codigo": "L51",
+    "nombre": "Eritema multiforme"
+  },
+  {
+    "codigo": "L53",
+    "nombre": "Otras afecciones eritematosas"
+  },
+  {
+    "codigo": "L55",
+    "nombre": "Quemadura solar"
+  },
+  {
+    "codigo": "L56",
+    "nombre": "Otros cambios agudos de la piel debidos a radiación ultravioleta"
+  },
+  {
+    "codigo": "L57",
+    "nombre": "Cambios de la piel debidos a exposición crónica a radiación no ionizante"
+  },
+  {
+    "codigo": "L60",
+    "nombre": "Trastornos de las uñas"
+  },
+  {
+    "codigo": "L63",
+    "nombre": "Alopecia areata"
+  },
+  {
+    "codigo": "L64",
+    "nombre": "Alopecia andrógena"
+  },
+  {
+    "codigo": "L65",
+    "nombre": "Otra pérdida no cicatricial del pelo"
+  },
+  {
+    "codigo": "L66",
+    "nombre": "Alopecia cicatricial [pérdida cicatricial del pelo]"
+  },
+  {
+    "codigo": "L70",
+    "nombre": "Acné"
+  },
+  {
+    "codigo": "L71",
+    "nombre": "Rosácea"
+  },
+  {
+    "codigo": "L72",
+    "nombre": "Quiste folicular de la piel y del tejido subcutáneo"
+  },
+  {
+    "codigo": "L73",
+    "nombre": "Otros trastornos foliculares"
+  },
+  {
+    "codigo": "L80",
+    "nombre": "Vitíligo"
+  },
+  {
+    "codigo": "L81",
+    "nombre": "Otros trastornos de la pigmentación"
+  },
+  {
+    "codigo": "L82",
+    "nombre": "Queratosis seborreica"
+  },
+  {
+    "codigo": "L84",
+    "nombre": "Callos y callosidades"
+  },
+  {
+    "codigo": "L85",
+    "nombre": "Otros tipos de engrosamiento epidérmico"
+  },
+  {
+    "codigo": "L90",
+    "nombre": "Trastornos atróficos de la piel"
+  },
+  {
+    "codigo": "L91",
+    "nombre": "Trastornos hipertróficos de la piel"
+  },
+  {
+    "codigo": "L92",
+    "nombre": "Trastornos granulomatosos de la piel y del tejido subcutáneo"
+  },
+  {
+    "codigo": "L93",
+    "nombre": "Lupus eritematoso"
+  },
+  {
+    "codigo": "L94",
+    "nombre": "Otros trastornos localizados del tejido conjuntivo"
+  },
+  {
+    "codigo": "L95",
+    "nombre": "Vasculitis limitada a la piel"
+  },
+  {
+    "codigo": "L97",
+    "nombre": "Úlcera de miembro inferior"
+  },
+  {
+    "codigo": "L98",
+    "nombre": "Otros trastornos de la piel y del tejido subcutáneo"
   }
 ]

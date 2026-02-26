@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Badge } from '../ui/badge';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import type { Trial, TrialStatus, TrialsFilterParams } from '../../lib/api';
-import { getTrials, deleteTrial } from '../../lib/api';
+import { getTrials, deleteTrial, requestTrial } from '../../lib/api';
 import { TrialFilters } from './TrialFilters';
 import { TrialForm } from './TrialForm';
 import { AddInstitutionModal } from './AddInstitutionModal';
@@ -104,7 +104,7 @@ interface TrialListContentProps {
   userRole?: string | null;
 }
 
-function TrialListContent({ initialTrials = [], onTrialChange }: TrialListContentProps) {
+function TrialListContent({ initialTrials = [], onTrialChange, userRole }: TrialListContentProps) {
   const { showToast } = useToast();
   const [trials, setTrials] = useState<Trial[]>(initialTrials);
   const [initialLoading, setInitialLoading] = useState(initialTrials.length === 0);
@@ -125,6 +125,10 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
   const [isInstitutionModalOpen, setIsInstitutionModalOpen] = useState(false);
   const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
   const [isTrialRequestModalOpen, setIsTrialRequestModalOpen] = useState(false);
+  const [trialRequestTitle, setTrialRequestTitle] = useState('');
+  const [trialRequestDescription, setTrialRequestDescription] = useState('');
+  const [trialRequestNotes, setTrialRequestNotes] = useState('');
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
   
   // Estados para el modal de confirmación de eliminación
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -370,26 +374,30 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
           {/* Botones de Acción */}
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex gap-2 flex-1">
-              <Button 
-                onClick={() => setIsInstitutionModalOpen(true)}
-                variant="outline"
-                size="sm"
-                className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
-              >
-                <Plus className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Agregar Institución</span>
-                <span className="sm:hidden">Institución</span>
-              </Button>
-              <Button 
-                onClick={() => setIsSponsorModalOpen(true)}
-                variant="outline"
-                size="sm"
-                className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
-              >
-                <Plus className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Agregar Sponsor</span>
-                <span className="sm:hidden">Sponsor</span>
-              </Button>
+              {userRole !== 'INSTITUTION' && (
+                <>
+                  <Button 
+                    onClick={() => setIsInstitutionModalOpen(true)}
+                    variant="outline"
+                    size="sm"
+                    className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
+                  >
+                    <Plus className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Agregar Institución</span>
+                    <span className="sm:hidden">Institución</span>
+                  </Button>
+                  <Button 
+                    onClick={() => setIsSponsorModalOpen(true)}
+                    variant="outline"
+                    size="sm"
+                    className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
+                  >
+                    <Plus className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Agregar Sponsor</span>
+                    <span className="sm:hidden">Sponsor</span>
+                  </Button>
+                </>
+              )}
               <Button 
                 variant="outline" 
                 size="sm"
@@ -483,29 +491,31 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
                         </div>
                       </div>
 
-                      <div className="flex gap-2 pt-3 border-t">
-                        <Button 
-                          variant="outline"
-                          size="sm" 
-                          onClick={() => handleEdit(trial.id)}
-                          className="flex-1 border-[#04BFAD] text-[#024959] hover:bg-[#04BFAD] hover:text-white transition-all"
-                        >
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          Editar
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDelete(trial.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </Button>
-                      </div>
+                      {userRole !== 'INSTITUTION' && (
+                        <div className="flex gap-2 pt-3 border-t">
+                          <Button 
+                            variant="outline"
+                            size="sm" 
+                            onClick={() => handleEdit(trial.id)}
+                            className="flex-1 border-[#04BFAD] text-[#024959] hover:bg-[#04BFAD] hover:text-white transition-all"
+                          >
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Editar
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDelete(trial.id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </Button>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
@@ -562,44 +572,82 @@ function TrialListContent({ initialTrials = [], onTrialChange }: TrialListConten
       {isTrialRequestModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Solicitar Nuevo Estudio</h3>
+            <h3 className="text-lg font-semibold mb-4 text-[#024959]">Solicitar Nuevo Estudio</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Complete el formulario para solicitar un nuevo estudio clínico. El administrador será notificado y evaluará su solicitud.
+            </p>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Título del Estudio</label>
+                <label className="block text-sm font-medium mb-1">Título del Estudio *</label>
                 <input 
                   type="text" 
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-[#04BFAD] focus:border-[#04BFAD] outline-none"
                   placeholder="Ingrese el título del estudio"
+                  value={trialRequestTitle}
+                  onChange={(e) => setTrialRequestTitle(e.target.value)}
+                  disabled={isSubmittingRequest}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Descripción</label>
+                <label className="block text-sm font-medium mb-1">Descripción *</label>
                 <textarea 
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-[#04BFAD] focus:border-[#04BFAD] outline-none"
                   rows={4}
                   placeholder="Describa el estudio que desea solicitar"
+                  value={trialRequestDescription}
+                  onChange={(e) => setTrialRequestDescription(e.target.value)}
+                  disabled={isSubmittingRequest}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Notas adicionales</label>
                 <textarea 
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-[#04BFAD] focus:border-[#04BFAD] outline-none"
                   rows={2}
                   placeholder="Información adicional que considere relevante"
+                  value={trialRequestNotes}
+                  onChange={(e) => setTrialRequestNotes(e.target.value)}
+                  disabled={isSubmittingRequest}
                 />
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6">
               <button 
-                onClick={() => setIsTrialRequestModalOpen(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                onClick={() => {
+                  setIsTrialRequestModalOpen(false);
+                  setTrialRequestTitle('');
+                  setTrialRequestDescription('');
+                  setTrialRequestNotes('');
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 rounded transition-colors"
+                disabled={isSubmittingRequest}
               >
                 Cancelar
               </button>
               <button 
-                className="px-4 py-2 bg-[#04BFAD] text-white rounded hover:bg-[#024959]"
+                className="px-4 py-2 bg-[#04BFAD] text-white rounded hover:bg-[#024959] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isSubmittingRequest || !trialRequestTitle.trim() || !trialRequestDescription.trim()}
+                onClick={async () => {
+                  setIsSubmittingRequest(true);
+                  try {
+                    await requestTrial({
+                      title: trialRequestTitle.trim(),
+                      description: trialRequestDescription.trim(),
+                      additionalNotes: trialRequestNotes.trim() || undefined,
+                    });
+                    showToast('Solicitud de estudio enviada exitosamente. El administrador será notificado.', 'success');
+                    setIsTrialRequestModalOpen(false);
+                    setTrialRequestTitle('');
+                    setTrialRequestDescription('');
+                    setTrialRequestNotes('');
+                  } catch (err: any) {
+                    showToast(err.message || 'Error al enviar la solicitud', 'error');
+                  } finally {
+                    setIsSubmittingRequest(false);
+                  }
+                }}
               >
-                Enviar Solicitud
+                {isSubmittingRequest ? 'Enviando...' : 'Enviar Solicitud'}
               </button>
             </div>
           </div>

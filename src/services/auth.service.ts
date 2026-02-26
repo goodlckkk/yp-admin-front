@@ -1,4 +1,4 @@
-import { login as apiLogin, getToken, removeToken, saveToken, getTokenExpiration, updateLastActivityTimestamp, getLastActivityTimestamp } from '../lib/api';
+import { login as apiLogin, getToken, removeToken, saveToken, getTokenExpiration, updateLastActivityTimestamp } from '../lib/api';
 import type { LoginPayload, LoginResponse } from '../lib/api';
 
 const TOKEN_REFRESH_THRESHOLD = 5 * 60 * 1000; // 5 minutos antes de que expire

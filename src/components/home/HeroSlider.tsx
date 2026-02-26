@@ -206,37 +206,50 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
       {/* Slides */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => {
-          const alignment = slide.align || 'center';
-          const isLeft = alignment.includes('left');
+          const isLeft = (slide.align || 'center').includes('left');
+          return (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
+            >
+              {/* Imagen de fondo */}
+              <img
+                src={slide.imageUrl}
+                alt={slide.title || ''}
+                className="absolute inset-0 w-full h-full object-cover"
+                onLoad={() => setImageLoaded(prev => ({ ...prev, [slide.id]: true }))}
+              />
+              <div className="absolute inset-0 bg-black/40" />
 
-            {/* Contenido del slide */}
-            {(slide.title || slide.description || slide.ctaText) && (
-              <div className={`relative z-10 h-full flex flex-col 
-                ${(slide as any).align === 'left' ? 'items-start justify-center' : 'items-center justify-center'}
-                px-4 sm:px-6 md:px-8 lg:px-12`}
-              >
-                <div className="text-white max-w-4xl">
-                  {slide.title && (
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
-                      {slide.title}
-                    </h1>
-                  )}
-                  
-                  {slide.description && (
-                    <p className="text-xl sm:text-2xl md:text-3xl opacity-90 mb-6 md:mb-8">
-                      {slide.description}
-                    </p>
-                  )}
-                  
-                  {slide.ctaText && onPostularClick && (
-                    <button
-                      onClick={onPostularClick}
-                      className="inline-flex items-center gap-2 bg-white text-[#024959] hover:bg-gray-100 font-bold px-6 py-3 md:px-8 md:py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-                    >
-                      {slide.ctaText}
-                      <Icons.ArrowRight className="h-5 w-5" />
-                    </button>
-                  )}
+              {/* Contenido del slide */}
+              {(slide.title || slide.description || slide.ctaText) && (
+                <div className={`relative z-10 h-full flex flex-col 
+                  ${isLeft ? 'items-start justify-center pl-8 md:pl-16' : 'items-center justify-center'}
+                  px-4 sm:px-6 md:px-8 lg:px-12`}
+                >
+                  <div className="text-white max-w-4xl">
+                    {slide.title && (
+                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
+                        {slide.title}
+                      </h1>
+                    )}
+                    {slide.description && (
+                      <p className="text-xl sm:text-2xl md:text-3xl opacity-90 mb-6 md:mb-8">
+                        {slide.description}
+                      </p>
+                    )}
+                    {slide.ctaText && onPostularClick && (
+                      <button
+                        onClick={onPostularClick}
+                        className="inline-flex items-center gap-2 bg-white text-[#024959] hover:bg-gray-100 font-bold px-6 py-3 md:px-8 md:py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+                      >
+                        {slide.ctaText}
+                        <Icons.ArrowRight className="h-5 w-5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

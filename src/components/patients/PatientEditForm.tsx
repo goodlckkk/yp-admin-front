@@ -19,7 +19,7 @@ import { Checkbox } from '../ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { TrialSuggestions } from './TrialSuggestions';
 import type { PatientIntake } from '../../lib/api';
-import { fetchWithAuth } from '../../lib/api';
+import { fetchWithAuth, uploadConsentDocument, getConsentDocumentUrl } from '../../lib/api';
 // Usar componentes con lista COMPLETA de CIE-10 (14,000+ enfermedades) para el dashboard
 import { Cie10SingleAutocompleteComplete } from '../ui/Cie10SingleAutocompleteComplete';
 import { Cie10MultipleAutocomplete } from '../ui/Cie10MultipleAutocomplete';
@@ -58,13 +58,14 @@ const PATIENT_STATUSES = [
 const PATOLOGIAS_PREVALENTES = [
   "Hipertensión",
   "Diabetes",
-  "Enfermedad pulmonar",
-  "EPOC (Enfermedad Pulmonar Obstructiva Crónica)",
   "Enfermedad coronaria (infarto agudo al miocardio)",
+  "EPOC (Enfermedad Pulmonar Obstructiva Crónica)",
+  "Enfermedad pulmonar",
   "Insuficiencia cardíaca",
   "Enfermedad renal crónica",
   "Asma",
   "Obesidad",
+  "Síndrome de Sjögren",
   "Fumador/a"
 ];
 
@@ -73,6 +74,12 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
   const [error, setError] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isFullEditMode, setIsFullEditMode] = useState(false);
+  
+  // Estado para documento de consentimiento
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [consentDocUrl, setConsentDocUrl] = useState<string | null>(null);
+  const [consentPresignedUrl, setConsentPresignedUrl] = useState<string | null>(null);
   
   // Estado del formulario editable
   const [formData, setFormData] = useState({
@@ -104,6 +111,19 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
     cirugiasPrevias: '',
     status: 'RECEIVED',
   });
+
+  // Cargar URL presignada del documento de consentimiento si existe
+  useEffect(() => {
+    if (patient?.consentDocumentUrl && isOpen) {
+      setConsentDocUrl(patient.consentDocumentUrl);
+      getConsentDocumentUrl(patient.id)
+        .then((res) => setConsentPresignedUrl(res.presignedUrl))
+        .catch(() => setConsentPresignedUrl(null));
+    } else {
+      setConsentDocUrl(null);
+      setConsentPresignedUrl(null);
+    }
+  }, [patient?.consentDocumentUrl, isOpen]);
 
   // Cargar datos del paciente cuando cambia
   useEffect(() => {
@@ -246,27 +266,6 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
     }
   };
 
-  // Eliminar paciente
-  const handleDelete = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      await fetchWithAuth(`/patient-intakes/${patient.id}`, {
-        method: 'DELETE'
-      });
-      
-      setShowDeleteDialog(false);
-      onSuccess();
-      onClose();
-    } catch (err: any) {
-      console.error('Error al eliminar paciente:', err);
-      setError(err.message || 'No se pudo eliminar el paciente');
-      setShowDeleteDialog(false);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Obtener el color del badge según el estado
   const getStatusColor = (status: string) => {
@@ -363,6 +362,8 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
                   value={isFullEditMode ? formData.fechaNacimiento : formatDateDisplay(formData.fechaNacimiento)}
                   onChange={(e) => setFormData({...formData, fechaNacimiento: e.target.value})}
                   disabled={!isFullEditMode}
+                  max={new Date().toISOString().split('T')[0]}
+                  min="1900-01-01"
                   className={!isFullEditMode ? "mt-1 bg-gray-50" : "mt-1"}
                 />
               </div>
@@ -761,6 +762,133 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
           </CardContent>
         </Card>
 
+        {/* Sección 5: Documento de Consentimiento Informado */}
+        <Card className="border border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-lg text-[#024959] font-semibold flex items-center gap-2">
+              <span>📄</span> Consentimiento Informado
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {consentDocUrl ? (
+              // Documento ya subido
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <span className="text-2xl">✅</span>
+                  <div className="flex-1">
+                    <p className="font-semibold text-green-800">Documento de consentimiento registrado</p>
+                    <p className="text-sm text-green-600 mt-1">
+                      El paciente firmó el consentimiento informado.
+                    </p>
+                  </div>
+                  {consentPresignedUrl && (
+                    <a
+                      href={consentPresignedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#04BFAD] hover:bg-[#024959] text-white rounded-lg text-sm font-medium transition-colors"
+                    >
+                      📥 Ver / Descargar
+                    </a>
+                  )}
+                </div>
+
+                {/* Opción para reemplazar el documento */}
+                <div className="pt-2">
+                  <Label className="text-sm text-gray-500">Reemplazar documento:</Label>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !patient) return;
+                      setUploading(true);
+                      setUploadError(null);
+                      try {
+                        const result = await uploadConsentDocument(patient.id, file);
+                        setConsentDocUrl(result.consentDocumentUrl);
+                        const urlRes = await getConsentDocumentUrl(patient.id);
+                        setConsentPresignedUrl(urlRes.presignedUrl);
+                      } catch (err: any) {
+                        setUploadError(err?.response?.data?.message || err.message || 'Error al subir el documento');
+                      } finally {
+                        setUploading(false);
+                        e.target.value = ''; // Reset input
+                      }
+                    }}
+                    disabled={uploading}
+                    className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer"
+                  />
+                </div>
+              </div>
+            ) : (
+              // Sin documento — mostrar uploader
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <span className="text-2xl">⚠️</span>
+                  <div>
+                    <p className="font-semibold text-amber-800">Sin consentimiento registrado</p>
+                    <p className="text-sm text-amber-600 mt-1">
+                      Sube el documento de consentimiento informado firmado por el paciente (PDF, JPG, PNG o WebP, máx. 10MB).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#04BFAD] transition-colors">
+                  <input
+                    type="file"
+                    id="consent-upload"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !patient) return;
+                      setUploading(true);
+                      setUploadError(null);
+                      try {
+                        const result = await uploadConsentDocument(patient.id, file);
+                        setConsentDocUrl(result.consentDocumentUrl);
+                        const urlRes = await getConsentDocumentUrl(patient.id);
+                        setConsentPresignedUrl(urlRes.presignedUrl);
+                      } catch (err: any) {
+                        setUploadError(err?.response?.data?.message || err.message || 'Error al subir el documento');
+                      } finally {
+                        setUploading(false);
+                        e.target.value = ''; // Reset input
+                      }
+                    }}
+                    disabled={uploading}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="consent-upload"
+                    className="cursor-pointer flex flex-col items-center gap-2"
+                  >
+                    {uploading ? (
+                      <>
+                        <span className="text-3xl animate-spin">⏳</span>
+                        <p className="text-sm font-medium text-gray-600">Subiendo documento...</p>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-3xl">📎</span>
+                        <p className="text-sm font-medium text-[#024959]">Haz clic para seleccionar archivo</p>
+                        <p className="text-xs text-gray-400">PDF, JPG, PNG o WebP — Máximo 10MB</p>
+                      </>
+                    )}
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {/* Error de upload */}
+            {uploadError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-700">❌ {uploadError}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Mensaje de error */}
         {error && (
           <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm flex items-center gap-2">
@@ -815,24 +943,18 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess }: Patient
         </div>
       </div>
 
-      {/* Dialog de confirmación de eliminación */}
+      {/* Dialog informativo: no se puede eliminar directamente */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogTitle>Eliminación no disponible</AlertDialogTitle>
             <AlertDialogDescription>
-            Contacta a soporte.
-          </AlertDialogDescription>
+              Por razones de seguridad y trazabilidad, los registros de pacientes no pueden ser eliminados directamente desde el panel.
+              Si necesitas eliminar este registro, por favor contacta al equipo de soporte técnico.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={loading}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {loading ? 'Eliminando...' : 'Sí, eliminar'}
-            </AlertDialogAction>
+            <AlertDialogCancel>Entendido</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

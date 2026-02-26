@@ -13,7 +13,8 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { createResearchSite, updateResearchSite, getResearchSite, type CreateResearchSitePayload } from '../../lib/api';
+import { createResearchSite, updateResearchSite, getResearchSite, createUser, getUserByInstitution, UserRole, type CreateResearchSitePayload, type User } from '../../lib/api';
+import { Eye, EyeOff } from 'lucide-react';
 import { regionesChile, getComunasByRegion } from '../../lib/regiones-comunas';
 
 // Las regiones y comunas ahora se importan desde el archivo compartido
@@ -29,6 +30,7 @@ interface AddInstitutionModalProps {
 export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = '', siteId = null }: AddInstitutionModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState<CreateResearchSitePayload>({
     nombre: initialName,
     region: '',
@@ -36,12 +38,33 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
     direccion: '',
   });
 
+  // Estado para creación de usuario
+  const [createUserAccount, setCreateUserAccount] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Estado para usuario existente vinculado a la institución
+  const [existingUser, setExistingUser] = useState<User | null>(null);
+  const [loadingUser, setLoadingUser] = useState(false);
+
   // Cargar datos del sitio si estamos editando
   useEffect(() => {
     if (isOpen && siteId) {
       setLoading(true);
-      getResearchSite(siteId)
-        .then((site) => {
+      setExistingUser(null);
+      setCreateUserAccount(false);
+      setUserEmail('');
+      setUserPassword('');
+      setSuccessMessage(null);
+      setError(null);
+
+      // Cargar datos del sitio y verificar si tiene usuario vinculado en paralelo
+      Promise.all([
+        getResearchSite(siteId),
+        getUserByInstitution(siteId),
+      ])
+        .then(([site, user]) => {
           setFormData({
             nombre: site.nombre,
             region: site.region || '',
@@ -53,6 +76,7 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
             sitio_web: site.sitio_web || '',
             descripcion: site.descripcion || '',
           });
+          setExistingUser(user);
         })
         .catch((err) => {
           setError('Error al cargar los datos del sitio');
@@ -67,6 +91,12 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
         comuna: '',
         direccion: '',
       });
+      setExistingUser(null);
+      setCreateUserAccount(false);
+      setUserEmail('');
+      setUserPassword('');
+      setSuccessMessage(null);
+      setError(null);
     }
   }, [isOpen, siteId, initialName]);
 
@@ -84,9 +114,32 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
         // Crear nuevo sitio
         result = await createResearchSite(formData);
       }
+
+      // Crear usuario asociado si se solicitó (al crear nueva institución O al editar una sin usuario)
+      if (createUserAccount && userEmail && userPassword && !existingUser) {
+        try {
+          await createUser({
+            fullName: formData.nombre,
+            email: userEmail,
+            role: UserRole.INSTITUTION,
+            institutionId: result.id || siteId || undefined,
+            password: userPassword,
+          });
+          setSuccessMessage(siteId 
+            ? 'Institución actualizada y usuario creado exitosamente.' 
+            : 'Institución y usuario creados exitosamente.');
+        } catch (userErr: any) {
+          setError(`Institución ${siteId ? 'actualizada' : 'creada'} exitosamente, pero hubo un error al crear el usuario: ${userErr.message}`);
+          onSuccess(result);
+          return;
+        }
+      }
       
       // Reset form
       setFormData({ nombre: '', region: '', comuna: '', direccion: '' });
+      setCreateUserAccount(false);
+      setUserEmail('');
+      setUserPassword('');
       onSuccess(result);
       onClose();
     } catch (err: any) {
@@ -173,6 +226,83 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
               disabled={loading}
               className="mt-1"
             />
+          </div>
+
+          {/* Sección de cuenta de usuario vinculada */}
+          <div className="border-t pt-4 mt-4">
+            {/* Si ya tiene usuario vinculado, mostrar info */}
+            {existingUser ? (
+              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-sm font-semibold text-green-800 mb-1">✓ Esta institución tiene una cuenta de usuario</p>
+                <p className="text-sm text-green-700">Correo: <span className="font-medium">{existingUser.email}</span></p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-3 mb-3">
+                  <input
+                    type="checkbox"
+                    id="createUser"
+                    checked={createUserAccount}
+                    onChange={(e) => setCreateUserAccount(e.target.checked)}
+                    disabled={loading}
+                    className="h-4 w-4 rounded border-gray-300 text-[#04BFAD] focus:ring-[#04BFAD]"
+                  />
+                  <Label htmlFor="createUser" className="text-sm font-semibold text-[#024959] cursor-pointer">
+                    {siteId ? 'Crear cuenta de usuario para esta institución' : 'Crear cuenta de usuario para esta institución'}
+                  </Label>
+                </div>
+                {siteId && (
+                  <p className="text-xs text-amber-600 mb-3 flex items-center gap-1">
+                    <span>⚠️</span> Esta institución aún no tiene un usuario vinculado. Active la opción para crear uno.
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mb-3">
+                  Al activar esta opción, se creará un usuario con rol "Institución" que podrá acceder al dashboard con permisos limitados (solo ver sus pacientes y solicitar estudios).
+                </p>
+
+                {createUserAccount && (
+                  <div className="space-y-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div>
+                      <Label htmlFor="userEmail">Correo electrónico del usuario *</Label>
+                      <Input
+                        id="userEmail"
+                        type="email"
+                        value={userEmail}
+                        onChange={(e) => setUserEmail(e.target.value)}
+                        placeholder="correo@institucion.cl"
+                        required={createUserAccount}
+                        disabled={loading}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="userPassword">Contraseña *</Label>
+                      <div className="relative mt-1">
+                        <Input
+                          id="userPassword"
+                          type={showPassword ? 'text' : 'password'}
+                          value={userPassword}
+                          onChange={(e) => setUserPassword(e.target.value)}
+                          placeholder="Mínimo 6 caracteres"
+                          required={createUserAccount}
+                          minLength={6}
+                          disabled={loading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          tabIndex={-1}
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">La institución usará este correo y contraseña para iniciar sesión en el dashboard.</p>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {error && (

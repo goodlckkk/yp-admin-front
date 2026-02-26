@@ -28,6 +28,7 @@ import { Badge } from '../ui/badge';
 import { createPatientIntake } from '../../lib/api';
 import type { CreatePatientIntakePayload } from '../../lib/api';
 import { useCommunes } from '../../hooks/useCommunes';
+import { formatRut, validateRutModulo11 } from '../../utils/rut-utils';
 
 interface ManualPatientFormProps {
   isOpen: boolean;
@@ -37,21 +38,6 @@ interface ManualPatientFormProps {
 }
 
 // Las regiones y comunas ahora se importan desde el archivo compartido
-
-// Patologías más prevalentes en Chile
-const PATOLOGIAS_PREVALENTES = [
-  "Hipertensión",
-  "Diabetes",
-  "Enfermedad pulmonar",
-  "EPOC (Enfermedad Pulmonar Obstructiva Crónica)",
-  "Enfermedad coronaria (infarto agudo al miocardio)",
-  "Insuficiencia cardíaca",
-  "Enfermedad renal crónica",
-  "Asma",
-  "Obesidad",
-  "Fumador/a",
-  "Otros"
-];
 
 export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: ManualPatientFormProps) {
   const [loading, setLoading] = useState(false);
@@ -89,7 +75,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
     referralResearchSiteId: '',
   });
 
-  // Patologías prevalentes en Chile
+  // Patologías prevalentes en Chile (sincronizado con formulario web)
   const patologiasPrevalentes = [
     'Hipertensión',
     'Diabetes',
@@ -100,6 +86,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
     'Enfermedad renal crónica',
     'Asma',
     'Obesidad',
+    'Síndrome de Sjögren',
     'Fumador/a'
   ];
 
@@ -113,19 +100,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
     });
   };
 
-  // Formatear RUT chileno: 12.345.678-9
-  const formatRut = (value: string) => {
-    const cleaned = value.replace(/[^0-9kK]/g, '');
-    if (cleaned.length === 0) return '';
-    
-    if (cleaned.length <= 1) return cleaned;
-
-    const body = cleaned.slice(0, -1);
-    const dv = cleaned.slice(-1);
-    
-    const formatted = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return `${formatted}-${dv}`;
-  };
+  // formatRut importado desde utils/rut-utils.ts
 
   // Formatear número de teléfono chileno (+56 fijo y 9 dígitos exactos)
   const formatPhoneNumber = (value: string) => {
@@ -146,46 +121,17 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
   };
 
   const handleRutChange = (value: string) => {
-    const formatted = formatRut(value);
-    handleInputChange('rut', formatted);
+    handleInputChange('rut', formatRut(value));
   };
 
-  // Validar RUT en tiempo real (onBlur)
-  const validateRut = (): boolean => {
+  // Validar RUT en tiempo real (onBlur) usando utilidad compartida
+  const validateRutField = (): boolean => {
     if (!formData.rut?.trim()) return true;
-    
-    const cleanRut = formData.rut.replace(/[^0-9kK]/g, '');
-    if (cleanRut.length < 8 || cleanRut.length > 9) {
-      setError('El RUT debe tener entre 8 y 9 caracteres');
+    const result = validateRutModulo11(formData.rut);
+    if (!result.valid && result.error) {
+      setError(result.error);
       return false;
     }
-    
-    // Validar dígito verificador (algoritmo chileno)
-    const rutBody = cleanRut.slice(0, -1);
-    const dv = cleanRut.slice(-1).toUpperCase();
-    
-    if (!/^\d+$/.test(rutBody)) {
-      setError('El RUT contiene caracteres inválidos');
-      return false;
-    }
-    
-    // Calcular dígito verificador esperado
-    let sum = 0;
-    let multiplier = 2;
-    
-    for (let i = rutBody.length - 1; i >= 0; i--) {
-      sum += parseInt(rutBody[i]) * multiplier;
-      multiplier = multiplier === 7 ? 2 : multiplier + 1;
-    }
-    
-    const expectedDv = 11 - (sum % 11);
-    const calculatedDv = expectedDv === 11 ? '0' : expectedDv === 10 ? 'K' : expectedDv.toString();
-    
-    if (calculatedDv !== dv) {
-      setError('El RUT es inválido');
-      return false;
-    }
-    
     return true;
   };
 
@@ -222,10 +168,10 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
       return false;
     }
     
-    // Validar longitud del RUT
-    const cleanRut = formData.rut.replace(/[^0-9kK]/g, '');
-    if (cleanRut.length < 8 || cleanRut.length > 9) {
-      setError('El RUT debe tener entre 8 y 9 caracteres');
+    // Validar RUT con algoritmo módulo 11
+    const rutResult = validateRutModulo11(formData.rut);
+    if (!rutResult.valid) {
+      setError(rutResult.error || 'El RUT no es válido');
       return false;
     }
 
@@ -375,7 +321,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
                   id="rut"
                   value={formData.rut}
                   onChange={(e) => handleRutChange(e.target.value)}
-                  onBlur={validateRut}
+                  onBlur={validateRutField}
                   placeholder="12.345.678-9"
                   disabled={loading}
                   className="mt-1"
@@ -407,8 +353,8 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
                     <SelectValue placeholder="Seleccionar" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Hombre">Hombre</SelectItem>
-                    <SelectItem value="Mujer">Mujer</SelectItem>
+                    <SelectItem value="masculino">Hombre</SelectItem>
+                    <SelectItem value="femenino">Mujer</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

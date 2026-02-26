@@ -63,52 +63,44 @@ export default function PrivacySecurity() {
 
             {/* Características de seguridad */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10 pt-10 border-t border-white/20">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Icons.Lock className="w-6 h-6 text-white" />
+              <div className="flex flex-col items-center text-center gap-3">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
+                  <Icons.Lock className="w-7 h-7 text-white" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-white mb-1">🔐 Datos encriptados</h3>
-                  <p className="text-sm text-white/80">
-                    Almacenamiento seguro con tecnología cifrada.
-                  </p>
-                </div>
+                <h3 className="font-bold text-white">Datos encriptados</h3>
+                <p className="text-sm text-white/80">
+                  Almacenamiento seguro con tecnología cifrada.
+                </p>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Icons.CheckCircle className="w-6 h-6 text-white" />
+              <div className="flex flex-col items-center text-center gap-3">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
+                  <Icons.CheckCircle className="w-7 h-7 text-white" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-white mb-1">🧾 Consentimiento informado</h3>
-                  <p className="text-sm text-white/80">
-                    Siempre solicitamos tu autorización antes de cualquier contacto.
-                  </p>
-                </div>
+                <h3 className="font-bold text-white">Consentimiento informado</h3>
+                <p className="text-sm text-white/80">
+                  Siempre solicitamos tu autorización antes de cualquier contacto.
+                </p>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Icons.Shield className="w-6 h-6 text-white" />
+              <div className="flex flex-col items-center text-center gap-3">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
+                  <Icons.Shield className="w-7 h-7 text-white" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-white mb-1">🏛 Cumplimiento normativo</h3>
-                  <p className="text-sm text-white/80">
-                    Seguimos regulación chilena y estándares éticos de investigación clínica.
-                  </p>
-                </div>
+                <h3 className="font-bold text-white">Cumplimiento normativo</h3>
+                <p className="text-sm text-white/80">
+                  Seguimos regulación chilena y estándares éticos de investigación clínica.
+                </p>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Icons.Trash className="w-6 h-6 text-white" />
+              <div className="flex flex-col items-center text-center gap-3">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
+                  <Icons.Trash className="w-7 h-7 text-white" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-white mb-1">🗑 Derecho a eliminación</h3>
-                  <p className="text-sm text-white/80">
-                    Puedes solicitar la eliminación definitiva de tus datos.
-                  </p>
-                </div>
+                <h3 className="font-bold text-white">Derecho a eliminación</h3>
+                <p className="text-sm text-white/80">
+                  Puedes solicitar la eliminación definitiva de tus datos.
+                </p>
               </div>
             </div>
           </div>
