@@ -2,27 +2,12 @@ import { login as apiLogin, getToken, removeToken, saveToken, getTokenExpiration
 import type { LoginPayload, LoginResponse } from '../lib/api';
 
 const TOKEN_REFRESH_THRESHOLD = 5 * 60 * 1000; // 5 minutos antes de que expire
-const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutos de inactividad
+// La inactividad se controla exclusivamente desde useInactivityLogout (1 hora)
 
 class AuthService {
   private refreshTimeout: number | null = null;
-  private inactivityTimeout: number | null = null;
   private isRefreshing = false;
   private refreshPromise: Promise<LoginResponse | null> | null = null;
-
-  constructor() {
-    // Inicializar manejadores de eventos para detectar actividad del usuario
-    if (typeof window !== 'undefined') {
-      // Eventos que indican actividad del usuario
-      const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-      activityEvents.forEach(event => {
-        window.addEventListener(event, this.resetInactivityTimer, false);
-      });
-
-      // Iniciar el temporizador de inactividad
-      this.resetInactivityTimer();
-    }
-  }
 
   /**
    * Iniciar sesión
@@ -121,23 +106,18 @@ class AuthService {
     // Programar la renovación del token
     this.scheduleTokenRefresh();
     
-    // Reiniciar el temporizador de inactividad
-    this.resetInactivityTimer();
+    // Registrar actividad inicial
+    updateLastActivityTimestamp();
   }
 
   /**
    * Limpiar la sesión
    */
   private clearSession(): void {
-    // Limpiar timeouts
+    // Limpiar timeout de refresh
     if (this.refreshTimeout) {
       clearTimeout(this.refreshTimeout);
       this.refreshTimeout = null;
-    }
-    
-    if (this.inactivityTimeout) {
-      clearTimeout(this.inactivityTimeout);
-      this.inactivityTimeout = null;
     }
     
     // Eliminar el token
@@ -167,25 +147,6 @@ class AuthService {
     }
   }
 
-  /**
-   * Reiniciar el temporizador de inactividad
-   */
-  private resetInactivityTimer = (): void => {
-    // Limpiar el timeout anterior
-    if (this.inactivityTimeout) {
-      clearTimeout(this.inactivityTimeout);
-    }
-    
-    // Programar el cierre de sesión por inactividad
-    this.inactivityTimeout = window.setTimeout(() => {
-      if (this.isAuthenticated()) {
-        this.logout('/auth');
-      }
-    }, SESSION_TIMEOUT);
-    
-    // Actualizar la marca de tiempo de la última actividad
-    updateLastActivityTimestamp();
-  };
 }
 
 export const authService = new AuthService();

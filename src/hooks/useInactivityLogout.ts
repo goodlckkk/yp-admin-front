@@ -1,18 +1,19 @@
 /**
- * useInactivityLogout - Hook personalizado para manejar cierre de sesión por inactividad
+ * useInactivityLogout - Hook ÚNICO para manejar cierre de sesión por inactividad
  * 
- * Responsabilidad única: Detectar inactividad del usuario y cerrar sesión automáticamente
+ * Este es el ÚNICO sistema que controla la inactividad. No duplicar en otros servicios.
+ * El JWT tiene una expiración larga (8h). Este hook cierra sesión tras 1 hora sin actividad.
  * 
  * Uso:
  * ```tsx
- * // En el layout principal o componente raíz
- * useInactivityLogout(15); // 15 minutos de timeout
+ * // En el dashboard (componente raíz autenticado)
+ * useInactivityLogout(60); // 60 minutos
  * ```
  * 
  * @module useInactivityLogout
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { TokenService } from '../services/token.service';
 
 /**
@@ -22,93 +23,91 @@ import { TokenService } from '../services/token.service';
  * un temporizador. Si el usuario está inactivo por el tiempo especificado,
  * cierra la sesión automáticamente.
  * 
- * @param {number} timeoutMinutes - Tiempo de inactividad en minutos (default: 15)
+ * mousemove se procesa con throttle (1 evento cada 30s) para no sobrecargar
+ * el navegador con escrituras a localStorage en cada pixel que mueve el ratón.
  * 
- * @example
- * // Uso básico con timeout de 15 minutos
- * function App() {
- *   useInactivityLogout();
- *   return <div>...</div>;
- * }
- * 
- * @example
- * // Con timeout personalizado de 30 minutos
- * function App() {
- *   useInactivityLogout(30);
- *   return <div>...</div>;
- * }
+ * @param {number} timeoutMinutes - Tiempo de inactividad en minutos (default: 60)
  */
-export function useInactivityLogout(timeoutMinutes: number = 15): void {
+export function useInactivityLogout(timeoutMinutes: number = 60): void {
+  const inactivityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastMouseMoveProcess = useRef<number>(0);
+
+  const handleLogout = useCallback(() => {
+    if (TokenService.isValid()) {
+      console.log(`[Inactividad] Sesión cerrada tras ${timeoutMinutes} min sin actividad`);
+      TokenService.removeToken();
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('sessionExpired', 'true');
+        window.location.href = '/auth?expired=true';
+      }
+    }
+  }, [timeoutMinutes]);
+
+  const resetTimer = useCallback(() => {
+    // Limpiar temporizador anterior
+    if (inactivityTimer.current) {
+      clearTimeout(inactivityTimer.current);
+    }
+    
+    // Actualizar timestamp de última actividad
+    TokenService.updateActivity();
+    
+    // Crear nuevo temporizador
+    inactivityTimer.current = setTimeout(handleLogout, timeoutMinutes * 60 * 1000);
+  }, [timeoutMinutes, handleLogout]);
+
   useEffect(() => {
-    // Solo ejecutar en el cliente
     if (typeof window === 'undefined') return;
 
-    const timeoutMs = timeoutMinutes * 60 * 1000;
-    let inactivityTimer: NodeJS.Timeout;
-
     /**
-     * Reinicia el temporizador de inactividad
-     * Se llama cada vez que el usuario interactúa con la página
+     * Handler con throttle para mousemove (cada 30 segundos máximo)
+     * Esto evita miles de escrituras a localStorage por segundo
      */
-    const resetTimer = () => {
-      // Limpiar temporizador anterior
-      if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
+    const handleMouseMove = () => {
+      const now = Date.now();
+      if (now - lastMouseMoveProcess.current > 30_000) {
+        lastMouseMoveProcess.current = now;
+        resetTimer();
       }
-      
-      // Actualizar timestamp de última actividad
-      TokenService.updateActivity();
-      
-      // Crear nuevo temporizador
-      inactivityTimer = setTimeout(() => {
-        // Verificar si el token sigue siendo válido antes de cerrar sesión
-        if (TokenService.isValid()) {
-          console.log('Sesión cerrada por inactividad');
-          
-          // Remover token
-          TokenService.removeToken();
-          
-          // Redirigir al login con mensaje de sesión expirada
-          if (typeof window !== 'undefined') {
-            window.location.href = '/auth?expired=true';
-          }
-        }
-      }, timeoutMs);
     };
 
     /**
-     * Eventos que indican actividad del usuario
-     * Cualquiera de estos eventos reinicia el temporizador
+     * Handler directo para eventos de interacción clara
+     * (click, tecla, scroll, touch) — siempre resetean el timer
      */
-    const events = [
-      'mousedown',    // Click del mouse
-      'mousemove',    // Movimiento del mouse
-      'keydown',      // Tecla presionada
-      'scroll',       // Scroll de página
-      'touchstart',   // Touch en dispositivos móviles
-      'click'         // Click en cualquier elemento
+    const handleDirectActivity = () => {
+      resetTimer();
+    };
+
+    // Eventos que siempre resetean el timer inmediatamente
+    const directEvents = [
+      'mousedown',
+      'keydown',
+      'scroll',
+      'touchstart',
+      'click',
     ];
 
-    // Registrar listeners para todos los eventos
-    events.forEach(event => {
-      window.addEventListener(event, resetTimer, { passive: true });
+    // mousemove con throttle separado
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    // Eventos directos
+    directEvents.forEach(event => {
+      window.addEventListener(event, handleDirectActivity, { passive: true });
     });
 
-    // Iniciar el temporizador al montar el componente
+    // Iniciar el temporizador al montar
     resetTimer();
 
-    /**
-     * Limpieza al desmontar el componente
-     * Remueve todos los listeners y limpia el temporizador
-     */
+    // Limpieza al desmontar
     return () => {
-      if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
+      if (inactivityTimer.current) {
+        clearTimeout(inactivityTimer.current);
       }
-      
-      events.forEach(event => {
-        window.removeEventListener(event, resetTimer);
+      window.removeEventListener('mousemove', handleMouseMove);
+      directEvents.forEach(event => {
+        window.removeEventListener(event, handleDirectActivity);
       });
     };
-  }, [timeoutMinutes]);
+  }, [resetTimer]);
 }

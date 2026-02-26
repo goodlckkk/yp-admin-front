@@ -4,10 +4,13 @@
  * Responsabilidad única: Verificar autenticación al montar el componente
  * y redirigir al login si el usuario no está autenticado.
  * 
+ * NOTA: La inactividad la controla exclusivamente useInactivityLogout.
+ * Este hook solo verifica que el token JWT sea válido (no expirado).
+ * 
  * Uso:
  * ```tsx
  * function ProtectedComponent() {
- *   useRequireAuth(); // Una sola línea
+ *   useRequireAuth();
  *   // ... resto del componente
  * }
  * ```
@@ -16,39 +19,38 @@
  */
 
 import { useEffect } from 'react';
-import { AuthGuardService } from '../services/auth-guard.service';
+import { TokenService } from '../services/token.service';
 
 /**
  * Hook que verifica autenticación al montar el componente
- * Redirige automáticamente al login si no hay sesión válida
+ * Redirige automáticamente al login si no hay sesión válida (token expirado o ausente)
  * 
- * @param {boolean} checkInactivity - Si debe verificar inactividad (default: true)
+ * Hace un chequeo periódico cada 5 minutos para detectar si el JWT expiró.
+ * NO controla inactividad — eso lo hace useInactivityLogout.
  */
-export function useRequireAuth(checkInactivity: boolean = true): void {
+export function useRequireAuth(): void {
   useEffect(() => {
-    try {
-      AuthGuardService.requireAuth();
-    } catch (error) {
-      // El AuthGuardService ya maneja la redirección
-      console.error('Authentication required:', error);
+    // Verificar al montar
+    if (!TokenService.isValid()) {
+      TokenService.clear();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth';
+      }
     }
   }, []);
 
-  // Verificar inactividad periódicamente si está habilitado
+  // Chequeo periódico de validez del token (cada 5 minutos)
   useEffect(() => {
-    if (!checkInactivity) {
-      return;
-    }
-
     const interval = setInterval(() => {
-      try {
-        AuthGuardService.requireAuth();
-      } catch (error) {
-        // El AuthGuardService ya maneja la redirección
-        console.error('Session expired:', error);
+      if (!TokenService.isValid()) {
+        TokenService.clear();
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('sessionExpired', 'true');
+          window.location.href = '/auth?expired=true';
+        }
       }
-    }, 60000); // Verificar cada minuto
+    }, 5 * 60 * 1000); // Cada 5 minutos
 
     return () => clearInterval(interval);
-  }, [checkInactivity]);
+  }, []);
 }
