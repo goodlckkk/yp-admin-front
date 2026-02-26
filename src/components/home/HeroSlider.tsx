@@ -40,13 +40,15 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
   const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
 
   // Frases por defecto cuando no hay imágenes - ACTUALIZADAS
-  const defaultSlides = [
+  const defaultSlides: HeroSlide[] = [
     {
       id: 'default-1',
       title: 'Tu salud es lo más importante',
       description: 'Participa en estudios clínicos con seguimiento médico y acompañamiento profesional.',
       imageUrl: '/Slider-1.png',
       ctaText: 'Quiero participar',
+      ctaUrl: null,
+      order: 1,
       align: 'left'
     },
     {
@@ -202,7 +204,7 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
   }
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-gray-900">
+    <div className="relative w-full h-[100svh] overflow-hidden bg-gray-900">
       {/* Slides */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => {
@@ -218,35 +220,36 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
               <img
                 src={slide.imageUrl}
                 alt={slide.title || ''}
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover object-center"
                 onLoad={() => setImageLoaded(prev => ({ ...prev, [slide.id]: true }))}
               />
-              <div className="absolute inset-0 bg-black/40" />
+              {/* Overlay con gradiente más fuerte abajo para legibilidad en mobile */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
 
               {/* Contenido del slide */}
               {(slide.title || slide.description || slide.ctaText) && (
                 <div className={`relative z-10 h-full flex flex-col 
-                  ${isLeft ? 'items-start justify-center pl-8 md:pl-16' : 'items-center justify-center'}
+                  ${isLeft ? 'items-start justify-end sm:justify-center pl-6 sm:pl-8 md:pl-16 pb-24 sm:pb-0' : 'items-center justify-end sm:justify-center pb-24 sm:pb-0'}
                   px-4 sm:px-6 md:px-8 lg:px-12`}
                 >
                   <div className="text-white max-w-4xl">
                     {slide.title && (
-                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
+                      <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 md:mb-6">
                         {slide.title}
                       </h1>
                     )}
                     {slide.description && (
-                      <p className="text-xl sm:text-2xl md:text-3xl opacity-90 mb-6 md:mb-8">
+                      <p className="text-base sm:text-xl md:text-2xl lg:text-3xl opacity-90 mb-5 sm:mb-6 md:mb-8 leading-relaxed">
                         {slide.description}
                       </p>
                     )}
                     {slide.ctaText && onPostularClick && (
                       <button
                         onClick={onPostularClick}
-                        className="inline-flex items-center gap-2 bg-white text-[#024959] hover:bg-gray-100 font-bold px-6 py-3 md:px-8 md:py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+                        className="inline-flex items-center gap-2 bg-white text-[#024959] hover:bg-gray-100 font-bold px-5 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base"
                       >
                         {slide.ctaText}
-                        <Icons.ArrowRight className="h-5 w-5" />
+                        <Icons.ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
                     )}
                   </div>

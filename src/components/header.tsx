@@ -54,10 +54,10 @@ export function HeaderPage({ activeTab, setActiveTab, onPostularClick }: any) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-6">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6">
+        <div className="flex items-center justify-between h-14 sm:h-16 md:h-20 gap-1 sm:gap-2">
           {/* Logo */}
-          <div className={logoContainerClasses}>
+          <div className={`${logoContainerClasses} shrink-0`}>
             <a href="/">
               <img 
                 src={logoSrc} 
@@ -67,14 +67,14 @@ export function HeaderPage({ activeTab, setActiveTab, onPostularClick }: any) {
             </a>
           </div>
 
-          {/* Navigation Tabs - Centrado en desktop, debajo del logo en mobile */}
-          <nav className={`absolute left-1/2 -translate-x-1/2 flex rounded-full p-0.5 sm:p-1 ${navTheme}`}>
+          {/* Navigation Tabs */}
+          <nav className={`flex rounded-full p-0.5 sm:p-1 ${navTheme} shrink-0`}>
             {["pacientes", "instituciones"].map((tab) => (
               <button 
                 key={tab} 
                 onClick={() => setActiveTab(tab)} 
                 className={navButton(tab)}
-                style={{ fontSize: 'clamp(0.7rem, 2vw, 0.875rem)' }}
+                style={{ fontSize: 'clamp(0.65rem, 1.8vw, 0.875rem)' }}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
@@ -85,10 +85,11 @@ export function HeaderPage({ activeTab, setActiveTab, onPostularClick }: any) {
           {activeTab === "pacientes" && onPostularClick && (
             <Button
               onClick={onPostularClick}
-              className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm whitespace-nowrap"
+              className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white px-2 sm:px-3 md:px-5 py-1 sm:py-1.5 md:py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-1 sm:gap-1.5 md:gap-2 text-[0.65rem] sm:text-xs md:text-sm whitespace-nowrap shrink-0"
             >
-              <img src="/logo-blanco.svg" alt="yoParticipo" className="h-4 sm:h-4 md:h-5 w-auto" />
-              <span>Quiero Participar</span>
+              <img src="/logo-blanco.svg" alt="yoParticipo" className="h-3.5 sm:h-4 md:h-5 w-auto" />
+              <span className="hidden sm:inline">Quiero Participar</span>
+              <span className="sm:hidden">Participar</span>
             </Button>
           )}
         </div>
