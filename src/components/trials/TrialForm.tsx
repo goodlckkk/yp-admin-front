@@ -42,13 +42,18 @@ import { Cie10SingleAutocompleteComplete } from '../ui/Cie10SingleAutocompleteCo
 import { Cie10MultipleAutocomplete } from '../ui/Cie10MultipleAutocomplete';
 import { MedicamentoSimpleAutocomplete } from '../ui/MedicamentoSimpleAutocomplete';
 import type { Trial, CreateTrialPayload, Sponsor, PatientIntake } from '../../lib/api';
-import { createTrial, updateTrial, getSponsors, fetchWithAuth } from '../../lib/api';
+import { createTrial, updateTrial, getSponsors, fetchWithAuth, requestTrialFull } from '../../lib/api';
+
+type TrialFormMode = 'create' | 'edit' | 'request' | 'manage-patients';
 
 interface TrialFormProps {
   trial?: Trial | null;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  mode?: TrialFormMode;
+  userInstitutionId?: string | null;
+  userInstitutionName?: string | null;
 }
 
 interface FormData {
@@ -56,7 +61,7 @@ interface FormData {
   public_description: string;
   research_site_id: string; // ID del sitio de investigación
   sponsor_id: string;
-  status: 'PREPARATION' | 'RECRUITING' | 'FOLLOW_UP' | 'CLOSED';
+  status: 'PENDING_APPROVAL' | 'PREPARATION' | 'RECRUITING' | 'FOLLOW_UP' | 'CLOSED';
   max_participants: number;
   current_participants: number;
   recruitment_deadline: string;
@@ -122,7 +127,11 @@ const INITIAL_FORM_DATA: FormData = {
   },
 };
 
-export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps) {
+export function TrialForm({ trial, isOpen, onClose, onSuccess, mode: propMode, userInstitutionId, userInstitutionName }: TrialFormProps) {
+  // Determinar el modo automáticamente si no se proporciona
+  const mode: TrialFormMode = propMode || (trial ? 'edit' : 'create');
+  const isRequestMode = mode === 'request';
+  const isManagePatientsMode = mode === 'manage-patients';
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [patients, setPatients] = useState<PatientIntake[]>([]);
@@ -320,10 +329,19 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
         inclusion_criteria: trial.inclusion_criteria as InclusionCriteria || INITIAL_FORM_DATA.inclusion_criteria,
       });
     } else if (!trial && isOpen) {
-      setFormData(INITIAL_FORM_DATA);
+      // En modo request, pre-llenar la institución del usuario logueado
+      if (isRequestMode && userInstitutionId) {
+        setFormData({
+          ...INITIAL_FORM_DATA,
+          research_site_id: userInstitutionId,
+          status: 'PENDING_APPROVAL', // Las solicitudes inician en revisión
+        });
+      } else {
+        setFormData(INITIAL_FORM_DATA);
+      }
       setCurrentStep(1);
     }
-  }, [trial, isOpen]);
+  }, [trial, isOpen, isRequestMode, userInstitutionId]);
 
   const loadSponsors = async () => {
     try {
@@ -421,8 +439,57 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
     setError(null);
   };
 
+  // Función para guardar solo cambios de pacientes (modo manage-patients)
+  const handleSavePatients = async () => {
+    if (!trial?.id) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      const originalPatientsResponse = await fetchWithAuth(`/patient-intakes/trial/${trial.id}`);
+      const originalPatients = Array.isArray(originalPatientsResponse) ? originalPatientsResponse : [];
+      
+      const currentPatientIds = new Set(patients.map(p => p.id));
+      const originalPatientIds = new Set(originalPatients.map(p => p.id));
+      
+      const newPatientIds = patients.filter(p => !originalPatientIds.has(p.id)).map(p => p.id);
+      const removedPatientIds = originalPatients.filter(p => !currentPatientIds.has(p.id)).map(p => p.id);
+      
+      if (newPatientIds.length > 0) {
+        await Promise.all(newPatientIds.map(patientId =>
+          fetchWithAuth(`/patient-intakes/${patientId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ trialId: trial.id })
+          })
+        ));
+      }
+      
+      if (removedPatientIds.length > 0) {
+        await Promise.all(removedPatientIds.map(patientId =>
+          fetchWithAuth(`/patient-intakes/${patientId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ trialId: null })
+          })
+        ));
+      }
+      
+      onSuccess();
+      handleClose();
+    } catch (err: any) {
+      console.error('Error al guardar pacientes:', err);
+      setError(err.message || 'Error al guardar cambios de pacientes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Función para crear/actualizar el ensayo (solo se ejecuta manualmente)
   const handleCreateTrial = async () => {
+    // En modo manage-patients, solo guardar pacientes
+    if (isManagePatientsMode) {
+      return handleSavePatients();
+    }
+
     // Limpiar errores previos
     setFieldErrors({});
     setError(null);
@@ -436,7 +503,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
     if (!formData.public_description.trim()) {
       errors.public_description = 'La descripción es obligatoria';
     }
-    if (!formData.research_site_id.trim()) {
+    if (!isRequestMode && !formData.research_site_id.trim()) {
       errors.research_site_id = 'Debes seleccionar un sitio de investigación. Si no existe, créalo primero.';
     }
 
@@ -456,12 +523,20 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
         public_description: formData.public_description,
         research_site_id: formData.research_site_id,
         sponsor_id: formData.sponsor_id || undefined,
-        status: formData.status,
+        status: isRequestMode ? 'PREPARATION' as any : formData.status,
         max_participants: formData.max_participants || undefined,
         current_participants: formData.current_participants || undefined,
         recruitment_deadline: formData.recruitment_deadline || undefined,
         inclusion_criteria: formData.inclusion_criteria,
       };
+
+      // Modo solicitud: enviar al admin para revisión
+      if (isRequestMode) {
+        await requestTrialFull(payload);
+        onSuccess();
+        handleClose();
+        return;
+      }
 
       if (trial) {
         await updateTrial(trial.id, payload);
@@ -540,10 +615,14 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-[#024959]">
-            {trial ? 'Editar Estudio Clínico' : 'Crear Nuevo Estudio Clínico'}
+            {isRequestMode ? 'Solicitar Nuevo Estudio Clínico' 
+              : isManagePatientsMode ? 'Gestionar Pacientes del Estudio' 
+              : trial ? 'Editar Estudio Clínico' : 'Crear Nuevo Estudio Clínico'}
           </h2>
           <p className="text-gray-600 mt-1">
-            {trial ? 'Modifica la información del estudio clínico y gestiona los pacientes asociados' : 'Completa la información para crear un nuevo estudio clínico'}
+            {isRequestMode ? 'Complete la información del estudio. La solicitud será enviada al administrador para su revisión y creación.'
+              : isManagePatientsMode ? 'Agrega o quita pacientes asociados a este estudio clínico'
+              : trial ? 'Modifica la información del estudio clínico y gestiona los pacientes asociados' : 'Completa la información para crear un nuevo estudio clínico'}
           </p>
         </div>
         <Button
@@ -557,6 +636,8 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
 
       {/* Formulario completo en una sola vista */}
       <div className="space-y-6">
+        {/* Secciones 1-3: Solo en modos create, edit y request (no en manage-patients) */}
+        {!isManagePatientsMode && (<>
         {/* Sección 1: Información Básica */}
         <Card>
           <CardHeader>
@@ -599,6 +680,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                 )}
               </div>
 
+              {!isRequestMode && (
               <div>
                 <Label htmlFor="status">Estado del Estudio Clínico</Label>
                 <Select
@@ -610,6 +692,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="PENDING_APPROVAL">Solicitud en Revisión</SelectItem>
                     <SelectItem value="PREPARATION">En Preparación</SelectItem>
                     <SelectItem value="RECRUITING">Reclutamiento Activo</SelectItem>
                     <SelectItem value="FOLLOW_UP">En Seguimiento</SelectItem>
@@ -617,6 +700,7 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
                   </SelectContent>
                 </Select>
               </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -629,24 +713,38 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
           <CardContent className="space-y-4">
             <div className="space-y-4">
               <div>
-                <ResearchSiteAutocomplete
-                  value={formData.research_site_id}
-                  initialName={trial?.researchSite?.nombre}
-                  onSelect={(siteId, siteName) => {
-                    handleInputChange('research_site_id', siteId);
-                  }}
-                  onAddNew={() => setIsInstitutionModalOpen(true)}
-                  disabled={loading}
-                  label="Sitio de Investigación"
-                  placeholder="Buscar institución..."
-                  required={true}
-                  error={fieldErrors.research_site_id}
-                  hasError={!!fieldErrors.research_site_id}
-                />
-                {!fieldErrors.research_site_id && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Centro médico donde se realizará el estudio clínico
-                  </p>
+                {isRequestMode && userInstitutionName ? (
+                  <>
+                    <Label>Sitio de Investigación *</Label>
+                    <div className="mt-1 p-2 bg-gray-100 border rounded-md text-sm text-[#024959] font-medium">
+                      {userInstitutionName}
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Tu institución será vinculada automáticamente al estudio solicitado
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <ResearchSiteAutocomplete
+                      value={formData.research_site_id}
+                      initialName={trial?.researchSite?.nombre}
+                      onSelect={(siteId, siteName) => {
+                        handleInputChange('research_site_id', siteId);
+                      }}
+                      onAddNew={() => setIsInstitutionModalOpen(true)}
+                      disabled={loading}
+                      label="Sitio de Investigación"
+                      placeholder="Buscar institución..."
+                      required={true}
+                      error={fieldErrors.research_site_id}
+                      hasError={!!fieldErrors.research_site_id}
+                    />
+                    {!fieldErrors.research_site_id && (
+                      <p className="text-sm text-gray-500 mt-1">
+                        Centro médico donde se realizará el estudio clínico
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -893,9 +991,10 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
             </div>
           </CardContent>
         </Card>
+        </>)}
 
-        {/* Sección 4: Pacientes (solo en modo edición) */}
-        {trial && (
+        {/* Sección 4: Pacientes (en modo edición o manage-patients) */}
+        {(trial || isManagePatientsMode) && !isRequestMode && (
             <div className="space-y-4">
               <Card>
                 <CardHeader>
@@ -993,6 +1092,29 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
             </div>
         )}
 
+        {/* Alerta de solicitud de cambio de fase (visible para ADMIN al editar) */}
+        {trial?.phaseChangeRequested && !isRequestMode && !isManagePatientsMode && (
+          <div className="p-4 bg-amber-50 border border-amber-300 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-amber-600 text-xl">⚡</span>
+              <div>
+                <h4 className="font-semibold text-amber-800">Cambio de Fase Solicitado</h4>
+                <p className="text-sm text-amber-700 mt-1">
+                  <strong>{trial.phaseChangeRequestedBy}</strong> ha solicitado avanzar este estudio a la siguiente fase.
+                </p>
+                {trial.phaseChangeRequestedAt && (
+                  <p className="text-xs text-amber-600 mt-1">
+                    Solicitado el {new Date(trial.phaseChangeRequestedAt).toLocaleDateString('es-CL', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                )}
+                <p className="text-xs text-amber-600 mt-2 italic">
+                  Cambie el estado del estudio arriba para aprobar la solicitud. El indicador se eliminará automáticamente al cambiar el estado.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Mensaje de error */}
         {error && (
           <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm flex items-center gap-2">
@@ -1017,7 +1139,11 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess }: TrialFormProps)
             disabled={loading}
             className="bg-[#04BFAD] hover:bg-[#024959] text-white"
           >
-            {loading ? 'Guardando...' : trial ? 'Actualizar Estudio Clínico' : 'Crear Estudio Clínico'}
+            {loading 
+              ? (isRequestMode ? 'Enviando...' : isManagePatientsMode ? 'Guardando...' : 'Guardando...') 
+              : isRequestMode ? 'Enviar Solicitud' 
+              : isManagePatientsMode ? 'Guardar Cambios de Pacientes'
+              : trial ? 'Actualizar Estudio Clínico' : 'Crear Estudio Clínico'}
           </Button>
         </div>
       </div>

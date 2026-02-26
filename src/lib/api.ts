@@ -273,7 +273,7 @@ export interface Sponsor {
   updated_at: string;
 }
 
-export type TrialStatus = 'PREPARATION' | 'RECRUITING' | 'FOLLOW_UP' | 'CLOSED';
+export type TrialStatus = 'PENDING_APPROVAL' | 'PREPARATION' | 'RECRUITING' | 'FOLLOW_UP' | 'CLOSED';
 
 export interface Trial {
   id: string;
@@ -287,6 +287,9 @@ export interface Trial {
   max_participants?: number;
   current_participants?: number;
   recruitment_deadline?: string; // Fecha límite de reclutamiento (ISO 8601)
+  phaseChangeRequested?: boolean;
+  phaseChangeRequestedAt?: string;
+  phaseChangeRequestedBy?: string;
   created_at: string;
   updated_at: string;
   start_date?: string;
@@ -408,11 +411,27 @@ export async function requestTrial(payload: TrialRequestPayload) {
   });
 }
 
+// Solicitud completa de estudio clínico (formulario completo, crea trial con status PENDING_APPROVAL)
+export async function requestTrialFull(payload: CreateTrialPayload) {
+  return fetchWithAuth<{ success: boolean; message: string; trial: Trial }>(`/trials/request-full`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+// Solicitar cambio de fase de un estudio (INSTITUTION)
+export async function requestPhaseChange(trialId: string) {
+  return fetchWithAuth<{ success: boolean; message: string; trial: Trial }>(`/trials/${trialId}/request-phase-change`, {
+    method: "POST",
+  });
+}
+
 // Users
 export enum UserRole {
   PATIENT = 'PATIENT',
   DOCTOR = 'DOCTOR',
   ADMIN = 'ADMIN',
+  MODERATOR = 'MODERATOR',
   INSTITUTION = 'INSTITUTION',
 }
 

@@ -4,7 +4,7 @@ import { getToken } from '../lib/api';
 export interface AuthUser {
   id: string;
   email: string;
-  role: 'ADMIN' | 'DOCTOR' | 'PATIENT';
+  role: 'ADMIN' | 'MODERATOR' | 'DOCTOR' | 'PATIENT' | 'INSTITUTION';
 }
 
 export function useAuth() {
