@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "./button"
 import { InputWithLabel } from "./input"
 import { TextareaWithLabel } from "./textarea"
@@ -9,9 +9,9 @@ import { Badge } from "./badge"
 import { Checkbox } from "./checkbox"
 import { SelectWithLabel } from "./select"
 import { Icons } from "./icons"
-import { Cie10Autocomplete } from "./Cie10Autocomplete"
 import { Cie10SingleAutocomplete } from "./Cie10SingleAutocomplete"
 import { useCommunes } from "../../hooks/useCommunes"
+import { formatRut, validateRutModulo11 } from "../../utils/rut-utils"
 
 interface PatientFormProps {
   condition: string
@@ -22,11 +22,10 @@ interface PatientFormProps {
 
 export default function PatientForm({ condition, onClose, onSubmit, isSubmitting = false }: PatientFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
-  const [condicionSeleccionada, setCondicionSeleccionada] = useState("")
-  const [condicionPersonalizada, setCondicionPersonalizada] = useState("")
-  const [mostrarOtrasEnfermedades, setMostrarOtrasEnfermedades] = useState(false)
   const [mostrarTerminos, setMostrarTerminos] = useState(false)
   const [mostrarPrivacidad, setMostrarPrivacidad] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [stepAttempted, setStepAttempted] = useState<Record<number, boolean>>({})
   const [formData, setFormData] = useState({
     nombres: "",
     apellidos: "",
@@ -44,25 +43,26 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
     patologias: [] as string[], // Checkboxes de patologías prevalentes
     tieneOtrasEnfermedades: false,
     otrasEnfermedades: "",
-    aceptaTerminos: false,
-    aceptaPrivacidad: false,
-    aceptaAlmacenamiento15Anos: false,
+    aceptaTerminos: true,
+    aceptaPrivacidad: true,
+    aceptaAlmacenamiento15Anos: true,
   })
 
   // Hook para obtener comunas desde la API
-  const { communes, loading: communesLoading, getCommunesByRegion, getAllRegions } = useCommunes();
+  const { getCommunesByRegion, getAllRegions } = useCommunes();
 
   // Patologías prevalentes en Chile (según feedback)
   const patologiasPrevalentes = [
     "Hipertensión",
     "Diabetes",
-    "Enfermedad pulmonar",
-    "EPOC (Enfermedad Pulmonar Obstructiva Crónica)",
     "Enfermedad coronaria (infarto agudo al miocardio)",
+    "EPOC (Enfermedad Pulmonar Obstructiva Crónica)",
+    "Enfermedad pulmonar",
     "Insuficiencia cardíaca",
     "Enfermedad renal crónica",
     "Asma",
     "Obesidad",
+    "Síndrome de Sjögren",
     "Fumador/a"
   ]
 
@@ -81,41 +81,6 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
     { codigo: "+56", pais: "CL" },
   ]
 
-  const condicionesMedicas = [
-    { value: "diabetes_tipo_1", label: "Diabetes Tipo 1" },
-    { value: "diabetes_tipo_2", label: "Diabetes Tipo 2" },
-    { value: "hipertension", label: "Hipertensión Arterial" },
-    { value: "asma", label: "Asma" },
-    { value: "epoc", label: "EPOC (Enfermedad Pulmonar Obstructiva Crónica)" },
-    { value: "artritis_reumatoide", label: "Artritis Reumatoide" },
-    { value: "osteoartritis", label: "Osteoartritis" },
-    { value: "cancer_mama", label: "Cáncer de Mama" },
-    { value: "cancer_pulmon", label: "Cáncer de Pulmón" },
-    { value: "cancer_colon", label: "Cáncer de Colon" },
-    { value: "cancer_prostata", label: "Cáncer de Próstata" },
-    { value: "leucemia", label: "Leucemia" },
-    { value: "linfoma", label: "Linfoma" },
-    { value: "alzheimer", label: "Enfermedad de Alzheimer" },
-    { value: "parkinson", label: "Enfermedad de Parkinson" },
-    { value: "esclerosis_multiple", label: "Esclerosis Múltiple" },
-    { value: "epilepsia", label: "Epilepsia" },
-    { value: "depresion", label: "Depresión" },
-    { value: "ansiedad", label: "Trastorno de Ansiedad" },
-    { value: "bipolar", label: "Trastorno Bipolar" },
-    { value: "esquizofrenia", label: "Esquizofrenia" },
-    { value: "hepatitis_b", label: "Hepatitis B" },
-    { value: "hepatitis_c", label: "Hepatitis C" },
-    { value: "vih", label: "VIH/SIDA" },
-    { value: "lupus", label: "Lupus Eritematoso Sistémico" },
-    { value: "psoriasis", label: "Psoriasis" },
-    { value: "enfermedad_crohn", label: "Enfermedad de Crohn" },
-    { value: "colitis_ulcerosa", label: "Colitis Ulcerosa" },
-    { value: "insuficiencia_renal", label: "Insuficiencia Renal Crónica" },
-    { value: "insuficiencia_cardiaca", label: "Insuficiencia Cardíaca" },
-    { value: "fibromialgia", label: "Fibromialgia" },
-    { value: "migraña", label: "Migraña Crónica" },
-    { value: "otra", label: "Otra condición (especificar)" },
-  ]
 
   const sexoOptions = [
     { value: "masculino", label: "Hombre" },
@@ -142,15 +107,21 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
         
         if (!hasPersonalData) return false
         
-        // Validar longitud del RUT
-        const cleanRut = formData.rut.replace(/[^0-9kK]/g, "")
-        if (cleanRut.length < 8 || cleanRut.length > 9) return false
+        // Validar RUT con algoritmo módulo 11
+        const rutResult = validateRutModulo11(formData.rut)
+        if (!rutResult.valid) return false
+        
+        // Validar que la fecha de nacimiento tenga un año razonable (1900 - año actual)
+        const birthYear = new Date(formData.fechaNacimiento).getFullYear()
+        const currentYear = new Date().getFullYear()
+        if (birthYear < 1900 || birthYear > currentYear) return false
         
         return true
       case 2:
-        // Validar que tenga teléfono, email válido, región y comuna
+        // Validar que tenga teléfono (exactamente 9 dígitos), email válido, región y comuna
         return !!(
-          formData.telefonoNumero && 
+          formData.telefonoNumero &&
+          formData.telefonoNumero.replace(/[^0-9]/g, '').length === 9 &&
           formData.email && 
           isValidEmail(formData.email) && 
           formData.region && 
@@ -160,20 +131,70 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
         // Validar que tenga condición principal
         return !!formData.condicionPrincipal
       case 4:
-        return !!(formData.aceptaTerminos && formData.aceptaPrivacidad && formData.aceptaAlmacenamiento15Anos)
+        return true
       default:
         return true
     }
   }
 
-  const formatRUT = (value: string) => {
-    const cleaned = value.replace(/[^0-9kK]/g, "")
-    if (cleaned.length <= 1) return cleaned
-    const number = cleaned.slice(0, -1)
-    const dv = cleaned.slice(-1)
-    const formattedNumber = number.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-    return `${formattedNumber}-${dv}`
+  // Validar campos del paso actual y generar errores inline
+  const getStepErrors = (step: number): Record<string, string> => {
+    const errors: Record<string, string> = {}
+    if (step === 1) {
+      if (!formData.nombres.trim()) errors.nombres = 'El nombre es obligatorio'
+      if (!formData.apellidos.trim()) errors.apellidos = 'Los apellidos son obligatorios'
+      if (!formData.rut.trim()) {
+        errors.rut = 'El RUT es obligatorio'
+      } else {
+        const rutResult = validateRutModulo11(formData.rut)
+        if (!rutResult.valid && rutResult.error) errors.rut = rutResult.error
+      }
+      if (!formData.fechaNacimiento) {
+        errors.fechaNacimiento = 'La fecha de nacimiento es obligatoria'
+      } else {
+        const birthYear = new Date(formData.fechaNacimiento).getFullYear()
+        const currentYear = new Date().getFullYear()
+        if (birthYear < 1900 || birthYear > currentYear) errors.fechaNacimiento = 'Año de nacimiento fuera de rango'
+      }
+      if (!formData.sexo) errors.sexo = 'Debes seleccionar el sexo'
+    }
+    if (step === 2) {
+      if (!formData.telefonoNumero || formData.telefonoNumero.replace(/[^0-9]/g, '').length !== 9) {
+        errors.telefonoNumero = 'Debes ingresar exactamente 9 dígitos'
+      }
+      if (!formData.email.trim()) {
+        errors.email = 'El email es obligatorio'
+      } else if (!isValidEmail(formData.email)) {
+        errors.email = 'El email debe tener un formato válido'
+      }
+      if (!formData.region) errors.region = 'La región es obligatoria'
+      if (!formData.comuna) errors.comuna = 'La comuna es obligatoria'
+    }
+    return errors
   }
+
+  // Intentar avanzar al siguiente paso; si hay errores, mostrarlos
+  const handleNextStep = () => {
+    const errors = getStepErrors(currentStep)
+    if (Object.keys(errors).length > 0) {
+      setStepAttempted(prev => ({ ...prev, [currentStep]: true }))
+      setFieldErrors(prev => ({ ...prev, ...errors }))
+      return
+    }
+    setStepAttempted(prev => ({ ...prev, [currentStep]: false }))
+    setCurrentStep(p => p + 1)
+  }
+
+  // Limpiar error de un campo al escribir
+  const handleFieldChange = (field: string, value: string | boolean | string[]) => {
+    handleInputChange(field, value)
+    setFieldErrors(prev => { const { [field]: _, ...rest } = prev; return rest })
+  }
+
+  // Errores visibles: solo mostrar si se intentó avanzar en ese paso
+  const visibleErrors = stepAttempted[currentStep] ? getStepErrors(currentStep) : {}
+
+  // formatRut importado desde utils/rut-utils.ts
 
   const formatPhoneNumber = (value: string) => {
     // Remover todo excepto números
@@ -245,43 +266,62 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
-              <InputWithLabel
-                label="Nombres *"
-                value={formData.nombres}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("nombres", e.target.value)}
-                placeholder="Ej: María José"
-              />
-              <InputWithLabel
-                label="Apellidos *"
-                value={formData.apellidos}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("apellidos", e.target.value)}
-                placeholder="Ej: González"
-              />
+              <div className="space-y-1">
+                <InputWithLabel
+                  label="Nombres *"
+                  value={formData.nombres}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFieldChange("nombres", e.target.value)}
+                  placeholder="Ej: María José"
+                  className={visibleErrors.nombres ? 'border-red-500' : ''}
+                />
+                {visibleErrors.nombres && <p className="text-xs text-red-600 font-medium">{visibleErrors.nombres}</p>}
+              </div>
+              <div className="space-y-1">
+                <InputWithLabel
+                  label="Apellidos *"
+                  value={formData.apellidos}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFieldChange("apellidos", e.target.value)}
+                  placeholder="Ej: González"
+                  className={visibleErrors.apellidos ? 'border-red-500' : ''}
+                />
+                {visibleErrors.apellidos && <p className="text-xs text-red-600 font-medium">{visibleErrors.apellidos}</p>}
+              </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
-              <InputWithLabel
-                label="RUT *"
-                value={formData.rut}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("rut", formatRUT(e.target.value))}
-                placeholder="12.345.678-9"
-                maxLength={12}
-              />
-              <InputWithLabel
-                label="Fecha de Nacimiento *"
-                type="date"
-                value={formData.fechaNacimiento}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("fechaNacimiento", e.target.value)}
-                max={new Date().toISOString().split('T')[0]}
-                min={new Date(new Date().setFullYear(new Date().getFullYear() - 150)).toISOString().split('T')[0]}
-              />
+              <div className="space-y-1">
+                <InputWithLabel
+                  label="RUT *"
+                  value={formData.rut}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFieldChange("rut", formatRut(e.target.value))}
+                  placeholder="12.345.678-9"
+                  maxLength={12}
+                  className={visibleErrors.rut ? 'border-red-500' : ''}
+                />
+                {visibleErrors.rut && <p className="text-xs text-red-600 font-medium">{visibleErrors.rut}</p>}
+              </div>
+              <div className="space-y-1">
+                <InputWithLabel
+                  label="Fecha de Nacimiento *"
+                  type="date"
+                  value={formData.fechaNacimiento}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFieldChange("fechaNacimiento", e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
+                  min="1900-01-01"
+                  className={visibleErrors.fechaNacimiento ? 'border-red-500' : ''}
+                />
+                {visibleErrors.fechaNacimiento && <p className="text-xs text-red-600 font-medium">{visibleErrors.fechaNacimiento}</p>}
+              </div>
             </div>
-            <SelectWithLabel
-              label="Sexo *"
-              options={sexoOptions}
-              value={formData.sexo}
-              onValueChange={(value: string) => handleInputChange("sexo", value)}
-              placeholder="Selecciona"
-            />
+            <div className="space-y-1">
+              <SelectWithLabel
+                label="Sexo *"
+                options={sexoOptions}
+                value={formData.sexo}
+                onValueChange={(value: string) => handleFieldChange("sexo", value)}
+                placeholder="Selecciona"
+              />
+              {visibleErrors.sexo && <p className="text-xs text-red-600 font-medium">{visibleErrors.sexo}</p>}
+            </div>
           </CardContent>
         </Card>
       )}
@@ -319,21 +359,31 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
                     onChange={(e) => {
                       const formatted = formatPhoneNumber(e.target.value)
                       handleInputChange("telefonoNumero", formatted)
+                      if (formatted.length > 0 && formatted.length !== 9) {
+                        setFieldErrors(prev => ({ ...prev, telefonoNumero: 'Debes ingresar exactamente 9 dígitos' }))
+                      } else {
+                        setFieldErrors(prev => { const { telefonoNumero, ...rest } = prev; return rest })
+                      }
                     }}
                     placeholder="912345678"
-                    className="text-gray-400 flex-1 px-3  border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#024959]"
+                    maxLength={9}
+                    className={`text-gray-700 flex-1 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#024959] ${
+                      fieldErrors.telefonoNumero ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
                 </div>
-                <p className="text-xs text-gray-500">
-                  Ejemplo: {formData.telefonoCodigoPais} 912345678
-                </p>
+                {fieldErrors.telefonoNumero ? (
+                  <p className="text-xs text-red-600 font-medium">{fieldErrors.telefonoNumero}</p>
+                ) : (
+                  <p className="text-xs text-gray-500">Ejemplo: {formData.telefonoCodigoPais} 912345678</p>
+                )}
               </div>
               <div className="space-y-2">
                 <InputWithLabel
                   label="Email *"
                   type="email"
                   value={formData.email}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("email", e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFieldChange("email", e.target.value)}
                   placeholder="maria@email.com"
                   className={formData.email && !isValidEmail(formData.email) ? "border-red-500" : ""}
                 />
@@ -346,24 +396,30 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
               </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
-              <SelectWithLabel
-                label="Región *"
-                options={getAllRegions().map(region => ({ value: region, label: region }))}
-                value={formData.region}
-                onValueChange={(value: string) => {
-                  handleInputChange("region", value)
-                  handleInputChange("comuna", "")
-                }}
-                placeholder="Selecciona región"
-              />
-              <SelectWithLabel
-                label="Comuna *"
-                options={formData.region ? getCommunesByRegion(formData.region) : []}
-                value={formData.comuna}
-                onValueChange={(value: string) => handleInputChange("comuna", value)}
-                placeholder="Selecciona comuna"
-                disabled={!formData.region}
-              />
+              <div className="space-y-1">
+                <SelectWithLabel
+                  label="Región *"
+                  options={getAllRegions().map(region => ({ value: region, label: region }))}
+                  value={formData.region}
+                  onValueChange={(value: string) => {
+                    handleFieldChange("region", value)
+                    handleFieldChange("comuna", "")
+                  }}
+                  placeholder="Selecciona región"
+                />
+                {visibleErrors.region && <p className="text-xs text-red-600 font-medium">{visibleErrors.region}</p>}
+              </div>
+              <div className="space-y-1">
+                <SelectWithLabel
+                  label="Comuna *"
+                  options={formData.region ? getCommunesByRegion(formData.region) : []}
+                  value={formData.comuna}
+                  onValueChange={(value: string) => handleFieldChange("comuna", value)}
+                  placeholder="Selecciona comuna"
+                  disabled={!formData.region}
+                />
+                {visibleErrors.comuna && <p className="text-xs text-red-600 font-medium">{visibleErrors.comuna}</p>}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -480,52 +536,47 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
                 </div>
               </div>
             </div>
+            {/* Aviso de privacidad y consentimiento informado */}
             <div className="space-y-4">
-              <Checkbox
-                checked={formData.aceptaTerminos}
-                onChange={(checked) => handleInputChange("aceptaTerminos", checked)}
-                label={
-                  <>
-                    Acepto los{" "}
+              <div className="bg-[#04BFAD]/10 border border-[#04BFAD]/30 rounded-xl p-4 flex items-start gap-3">
+                <Icons.Info className="w-5 h-5 text-[#04BFAD] flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-[#024959]">
+                  <p className="font-semibold mb-1">Aviso de Privacidad</p>
+                  <p className="text-gray-600 leading-relaxed">
+                    Al enviar este formulario, confirmas que la información proporcionada es verídica y
+                    autorizas a yoParticipo a procesar tus datos personales con el fin de evaluar tu
+                    elegibilidad para estudios clínicos y contactarte con oportunidades relevantes.
+                  </p>
+                  <div className="mt-2 flex gap-4">
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setMostrarTerminos(true)
-                      }}
-                      className="text-[#04BFAD] hover:text-[#024959] underline font-medium"
+                      onClick={(e) => { e.preventDefault(); setMostrarTerminos(true) }}
+                      className="text-[#04BFAD] hover:text-[#024959] underline font-medium text-xs"
                     >
-                      Términos y Condiciones
-                    </button>{" "}
-                    *
-                  </>
-                }
-              />
-              <Checkbox
-                checked={formData.aceptaPrivacidad}
-                onChange={(checked) => handleInputChange("aceptaPrivacidad", checked)}
-                label={
-                  <>
-                    Acepto la{" "}
+                      Ver Términos y Condiciones
+                    </button>
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setMostrarPrivacidad(true)
-                      }}
-                      className="text-[#04BFAD] hover:text-[#024959] underline font-medium"
+                      onClick={(e) => { e.preventDefault(); setMostrarPrivacidad(true) }}
+                      className="text-[#04BFAD] hover:text-[#024959] underline font-medium text-xs"
                     >
-                      Política de Privacidad
-                    </button>{" "}
-                    *
-                  </>
-                }
-              />
-              <Checkbox
-                checked={formData.aceptaAlmacenamiento15Anos}
-                onChange={(checked) => handleInputChange("aceptaAlmacenamiento15Anos", checked)}
-                label="Acepto que mis datos sean almacenados por un periodo de 15 años después del registro. *"
-              />
+                      Ver Política de Privacidad
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                <Icons.FileText className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-semibold text-[#024959] mb-1">Consentimiento Informado</p>
+                  <p className="text-gray-600 leading-relaxed">
+                    El consentimiento informado para participar en un estudio clínico se firma
+                    presencialmente en el centro de investigación. Un miembro de nuestro equipo
+                    te contactará para coordinar este proceso.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Modal de Términos y Condiciones */}
@@ -667,8 +718,7 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
         </Button>
         {currentStep < 4 ? (
           <Button
-            onClick={() => setCurrentStep((p) => p + 1)}
-            disabled={!validateStep(currentStep)}
+            onClick={handleNextStep}
             className="bg-gradient-to-r from-[#04BFAD] to-[#024959] hover:opacity-90 text-white"
           >
             Siguiente

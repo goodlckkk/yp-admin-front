@@ -14,6 +14,7 @@ import HeroSlider from "./home/HeroSlider"
 import PatientJourney from "./home/PatientJourney"
 import SuccessStories from "./home/SuccessStories"
 import PrivacySecurity from "./home/PrivacySecurity"
+import ClinicalStudyExplainer from "./home/ClinicalStudyExplainer"
 import FAQ from "./home/FAQ"
 import { ContactModal } from "./ContactModal"
 import { createPatientIntake, getTrials, getPublicStats } from "@/lib/api"
@@ -174,6 +175,9 @@ export default function HomePage() {
             autoPlayInterval={5000} 
             onPostularClick={() => setShowPatientForm(true)}
           />
+
+          {/* ¿Qué es un estudio clínico? */}
+          <ClinicalStudyExplainer />
 
           {/* Camino del Paciente */}
           <PatientJourney onPostularClick={() => setShowPatientForm(true)} />

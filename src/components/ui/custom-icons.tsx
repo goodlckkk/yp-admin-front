@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Iconos personalizados como componentes de React
 export const PlusIcon = ({ className = '' }: { className?: string }) => (
   <span className={`inline-block ${className}`}>+</span>

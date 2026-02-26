@@ -68,10 +68,13 @@ export function Cie10SingleAutocomplete({
     const timer = setTimeout(() => {
       setLoading(true)
       try {
-        const query = searchTerm.toLowerCase()
+        // Normalizar query: minúsculas y sin tildes/diacríticos
+        const normalize = (str: string) =>
+          str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+        const query = normalize(searchTerm)
         const filtered = cie10Data.filter((item) => {
           const codigoMatch = item.codigo.toLowerCase().includes(query)
-          const nombreMatch = item.nombre.toLowerCase().includes(query)
+          const nombreMatch = normalize(item.nombre).includes(query)
           return codigoMatch || nombreMatch
         }).slice(0, 10) // Limitar a 10 resultados
         
