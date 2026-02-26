@@ -5,13 +5,11 @@ import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
 import {
-  getLastActivityTimestamp,
   getPatientIntakes,
   getToken,
   getTokenExpiration,
   getTrials,
   removeToken,
-  updateLastActivityTimestamp,
   getStats,
   getTrends,
   updatePatientIntake,
@@ -35,6 +33,8 @@ import HeroSlidesManager from './dashboard/HeroSlidesManager';
 import SuccessStoriesManager from './dashboard/SuccessStoriesManager';
 import { Cie10SingleAutocomplete } from './ui/Cie10SingleAutocomplete';
 import * as XLSX from 'xlsx';
+import { useInactivityLogout } from '../hooks/useInactivityLogout';
+import { useRequireAuth } from '../hooks/useRequireAuth';
 
 // Función de navegación para Astro - siempre recarga la página
 const navigate = (path: string) => {
@@ -115,6 +115,10 @@ export default function DashboardPage() {
   // Estado para las instituciones disponibles
   const [researchSites, setResearchSites] = useState<ResearchSite[]>([]);
   
+  // Verificar autenticación y controlar inactividad (1 hora)
+  useRequireAuth();
+  useInactivityLogout(60);
+
   // Estado para el rol del usuario y datos de institución
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userInstitutionId, setUserInstitutionId] = useState<string | null>(null);
@@ -149,7 +153,7 @@ export default function DashboardPage() {
     limit: 10 // Límite de 10 pacientes por página con paginación
   })
 
-  const INACTIVITY_LIMIT_MS = 60 * 60 * 1000 // 60 minutos
+  // La inactividad se controla exclusivamente por useInactivityLogout(60)
 
   // Función para calcular la edad a partir de la fecha de nacimiento
   const calculateAge = (birthDate?: string): number => {
@@ -234,76 +238,24 @@ export default function DashboardPage() {
   };
 
 
+  // Verificación inicial de token al montar — useRequireAuth y useInactivityLogout
+  // manejan la lógica de expiración e inactividad respectivamente.
   useEffect(() => {
-    let redirecting = false
-
-    const handleUnauthorized = (reason: string) => {
-      if (redirecting) return
-      redirecting = true
-      console.log(`[Auth] Sesión cerrada: ${reason}`)
+    const token = getToken()
+    if (!token) {
       removeToken()
-      setIsAuthorized(false)
       window.location.href = "/auth"
+      return
     }
 
-    const ensureAuthenticated = () => {
-      const token = getToken()
-      if (!token) {
-        handleUnauthorized('Token no encontrado')
-        return false
-      }
-
-      const expiration = getTokenExpiration()
-      if (expiration && Date.now() >= expiration) {
-        handleUnauthorized('Token expirado')
-        return false
-      }
-
-      const lastActivity = getLastActivityTimestamp()
-      if (lastActivity && Date.now() - lastActivity >= INACTIVITY_LIMIT_MS) {
-        const inactiveMinutes = Math.floor((Date.now() - lastActivity) / 60000)
-        handleUnauthorized(`Inactividad detectada (${inactiveMinutes} minutos)`)
-        return false
-      }
-
-      return true
-    }
-
-    if (!ensureAuthenticated()) {
+    const expiration = getTokenExpiration()
+    if (expiration && Date.now() >= expiration) {
+      removeToken()
+      window.location.href = "/auth"
       return
     }
 
     setIsAuthorized(true)
-    updateLastActivityTimestamp()
-
-    const activityEvents: Array<keyof WindowEventMap> = [
-      "click",
-      "keydown",
-      "mousemove",
-      "scroll",
-      "touchstart",
-    ]
-
-    const registerActivity = () => {
-      updateLastActivityTimestamp()
-    }
-
-    // Registrar eventos de actividad
-    activityEvents.forEach((event) => window.addEventListener(event, registerActivity, { passive: true }))
-
-    // Verificar autenticación cada 30 segundos (reducido de 60)
-    const intervalId = window.setInterval(() => {
-      if (!ensureAuthenticated()) {
-        console.log('[Auth] Verificación de autenticación falló')
-      }
-    }, 30_000)
-
-    console.log('[Auth] Sistema de inactividad iniciado (60 minutos)')
-
-    return () => {
-      activityEvents.forEach((event) => window.removeEventListener(event, registerActivity))
-      window.clearInterval(intervalId)
-    }
   }, [])
 
   // Cargar TODO una vez al inicio (pacientes, estudios clínicos, stats)
