@@ -580,7 +580,7 @@ export default function DashboardPage() {
     const baseStats = [
       {
         label: isInstitution ? "Mis Pacientes" : "Total Postulaciones",
-        value: (stats?.totalPatients || patientIntakes.length).toString(),
+        value: isInstitution ? patientIntakes.length.toString() : (stats?.totalPatients || patientIntakes.length).toString(),
         change: `+${patientIntakes.filter((intake) => intake.status === "RECEIVED").length}`,
         icon: Icons.Users,
         color: "text-[#04bcbc]",
@@ -1404,6 +1404,8 @@ export default function DashboardPage() {
               initialTrials={trials}
               onTrialChange={handleTrialChange}
               userRole={userRole}
+              userInstitutionId={userInstitutionId}
+              userInstitutionName={userInstitutionName}
             />
           )}
 

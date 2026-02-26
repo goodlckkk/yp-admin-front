@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Badge } from '../ui/badge';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import type { Trial, TrialStatus, TrialsFilterParams } from '../../lib/api';
-import { getTrials, deleteTrial, requestTrial } from '../../lib/api';
+import { getTrials, deleteTrial, requestPhaseChange } from '../../lib/api';
 import { TrialFilters } from './TrialFilters';
 import { TrialForm } from './TrialForm';
 import { AddInstitutionModal } from './AddInstitutionModal';
@@ -83,6 +83,7 @@ const navigate = (path: string) => {
 // --- Mapeos de estado ---
 
 const statusVariant: Record<TrialStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  PENDING_APPROVAL: 'outline',
   PREPARATION: 'outline',
   RECRUITING: 'secondary',
   FOLLOW_UP: 'default',
@@ -90,6 +91,7 @@ const statusVariant: Record<TrialStatus, 'default' | 'secondary' | 'destructive'
 };
 
 const statusLabels: Record<TrialStatus, string> = {
+  PENDING_APPROVAL: 'Solicitud en Revisión',
   PREPARATION: 'Preparación',
   RECRUITING: 'Reclutando',
   FOLLOW_UP: 'Seguimiento',
@@ -102,9 +104,11 @@ interface TrialListContentProps {
   initialTrials?: Trial[];
   onTrialChange?: () => void;
   userRole?: string | null;
+  userInstitutionId?: string | null;
+  userInstitutionName?: string | null;
 }
 
-function TrialListContent({ initialTrials = [], onTrialChange, userRole }: TrialListContentProps) {
+function TrialListContent({ initialTrials = [], onTrialChange, userRole, userInstitutionId, userInstitutionName }: TrialListContentProps) {
   const { showToast } = useToast();
   const [trials, setTrials] = useState<Trial[]>(initialTrials);
   const [initialLoading, setInitialLoading] = useState(initialTrials.length === 0);
@@ -122,13 +126,9 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole }: Trial
   // Estados para el formulario de estudios clínicos
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTrial, setEditingTrial] = useState<Trial | null>(null);
+  const [formMode, setFormMode] = useState<'create' | 'edit' | 'request' | 'manage-patients'>('create');
   const [isInstitutionModalOpen, setIsInstitutionModalOpen] = useState(false);
   const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
-  const [isTrialRequestModalOpen, setIsTrialRequestModalOpen] = useState(false);
-  const [trialRequestTitle, setTrialRequestTitle] = useState('');
-  const [trialRequestDescription, setTrialRequestDescription] = useState('');
-  const [trialRequestNotes, setTrialRequestNotes] = useState('');
-  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
   
   // Estados para el modal de confirmación de eliminación
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -240,11 +240,39 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole }: Trial
 
   const handleCreateNew = () => {
     setEditingTrial(null);
+    setFormMode('create');
     setIsFormOpen(true);
   };
 
   const handleTrialRequest = () => {
-    setIsTrialRequestModalOpen(true);
+    setEditingTrial(null);
+    setFormMode('request');
+    setIsFormOpen(true);
+  };
+
+  // INSTITUTION: Gestionar pacientes de un estudio vinculado
+  const handleManagePatients = (trialId: string) => {
+    const trial = trials.find(t => t.id === trialId);
+    if (trial) {
+      setEditingTrial(trial);
+      setFormMode('manage-patients');
+      setIsFormOpen(true);
+    }
+  };
+
+  // INSTITUTION: Solicitar cambio de fase
+  const handleRequestPhaseChange = async (trialId: string) => {
+    try {
+      const result = await requestPhaseChange(trialId);
+      if (result.success) {
+        showToast('Solicitud de cambio de fase enviada exitosamente', 'success');
+        fetchTrials(false); // Refrescar lista para mostrar el indicador
+      } else {
+        showToast(result.message || 'Error al enviar la solicitud', 'error');
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Error al solicitar cambio de fase', 'error');
+    }
   };
 
   const handleEdit = (trialId: string) => {
@@ -252,6 +280,7 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole }: Trial
     const trial = trials.find(t => t.id === trialId);
     if (trial) {
       setEditingTrial(trial);
+      setFormMode('edit');
       setIsFormOpen(true);
     }
   };
@@ -341,6 +370,9 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole }: Trial
           isOpen={isFormOpen}
           onClose={handleFormClose}
           onSuccess={handleFormSuccess}
+          mode={formMode}
+          userInstitutionId={userInstitutionId}
+          userInstitutionName={userInstitutionName}
         />
       </div>
     );
@@ -461,12 +493,17 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole }: Trial
                             {trial.sponsor?.name || 'Sin patrocinador'}
                           </CardDescription>
                         </div>
-                        <Badge 
-                          variant={statusVariant[trial.status]}
-                          className="ml-2"
-                        >
-                          {statusLabels[trial.status]}
-                        </Badge>
+                        <div className="flex items-center gap-1 ml-2">
+                          {trial.phaseChangeRequested && (
+                            <span className="text-amber-500 text-base" title="Cambio de fase solicitado">⚡</span>
+                          )}
+                          <Badge 
+                            variant={statusVariant[trial.status]}
+                            className={trial.status === 'PENDING_APPROVAL' ? 'bg-amber-100 text-amber-800 border-amber-300' : ''}
+                          >
+                            {statusLabels[trial.status]}
+                          </Badge>
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -491,6 +528,7 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole }: Trial
                         </div>
                       </div>
 
+                      {/* Botones para ADMIN/DOCTOR: Editar + Eliminar */}
                       {userRole !== 'INSTITUTION' && (
                         <div className="flex gap-2 pt-3 border-t">
                           <Button 
@@ -514,6 +552,46 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole }: Trial
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                           </Button>
+                        </div>
+                      )}
+                      {/* Botones para INSTITUTION en estudios de su institución */}
+                      {userRole === 'INSTITUTION' && trial.researchSite?.id === userInstitutionId && (
+                        <div className="pt-3 border-t space-y-2">
+                          {/* Alerta de cambio de fase solicitado */}
+                          {trial.phaseChangeRequested && (
+                            <div className="flex items-center gap-2 p-2 bg-amber-50 border border-amber-200 rounded-md">
+                              <span className="text-amber-500 text-sm">⚡</span>
+                              <span className="text-xs text-amber-700 font-medium">Cambio de fase solicitado</span>
+                            </div>
+                          )}
+                          <div className="flex gap-2">
+                            {/* Gestionar Pacientes: solo en RECRUITING */}
+                            {trial.status === 'RECRUITING' && (
+                              <Button 
+                                variant="outline"
+                                size="sm" 
+                                onClick={() => handleManagePatients(trial.id)}
+                                className="flex-1 border-[#04BFAD] text-[#024959] hover:bg-[#04BFAD] hover:text-white transition-all"
+                              >
+                                <Users className="w-4 h-4 mr-1" />
+                                Gestionar Pacientes
+                              </Button>
+                            )}
+                            {/* Solicitar Cambio de Fase: en RECRUITING (→ Seguimiento) y FOLLOW_UP (→ Cerrado) */}
+                            {(trial.status === 'RECRUITING' || trial.status === 'FOLLOW_UP') && !trial.phaseChangeRequested && (
+                              <Button 
+                                variant="outline"
+                                size="sm" 
+                                onClick={() => handleRequestPhaseChange(trial.id)}
+                                className="flex-1 border-amber-400 text-amber-700 hover:bg-amber-500 hover:text-white transition-all"
+                              >
+                                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                </svg>
+                                {trial.status === 'RECRUITING' ? 'Solicitar Paso a Seguimiento' : 'Solicitar Cierre'}
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       )}
                     </CardContent>
@@ -568,92 +646,6 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole }: Trial
         }}
       />
 
-      {/* Modal de solicitud de estudio para instituciones */}
-      {isTrialRequestModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4 text-[#024959]">Solicitar Nuevo Estudio</h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Complete el formulario para solicitar un nuevo estudio clínico. El administrador será notificado y evaluará su solicitud.
-            </p>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Título del Estudio *</label>
-                <input 
-                  type="text" 
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-[#04BFAD] focus:border-[#04BFAD] outline-none"
-                  placeholder="Ingrese el título del estudio"
-                  value={trialRequestTitle}
-                  onChange={(e) => setTrialRequestTitle(e.target.value)}
-                  disabled={isSubmittingRequest}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Descripción *</label>
-                <textarea 
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-[#04BFAD] focus:border-[#04BFAD] outline-none"
-                  rows={4}
-                  placeholder="Describa el estudio que desea solicitar"
-                  value={trialRequestDescription}
-                  onChange={(e) => setTrialRequestDescription(e.target.value)}
-                  disabled={isSubmittingRequest}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Notas adicionales</label>
-                <textarea 
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-[#04BFAD] focus:border-[#04BFAD] outline-none"
-                  rows={2}
-                  placeholder="Información adicional que considere relevante"
-                  value={trialRequestNotes}
-                  onChange={(e) => setTrialRequestNotes(e.target.value)}
-                  disabled={isSubmittingRequest}
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <button 
-                onClick={() => {
-                  setIsTrialRequestModalOpen(false);
-                  setTrialRequestTitle('');
-                  setTrialRequestDescription('');
-                  setTrialRequestNotes('');
-                }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 rounded transition-colors"
-                disabled={isSubmittingRequest}
-              >
-                Cancelar
-              </button>
-              <button 
-                className="px-4 py-2 bg-[#04BFAD] text-white rounded hover:bg-[#024959] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isSubmittingRequest || !trialRequestTitle.trim() || !trialRequestDescription.trim()}
-                onClick={async () => {
-                  setIsSubmittingRequest(true);
-                  try {
-                    await requestTrial({
-                      title: trialRequestTitle.trim(),
-                      description: trialRequestDescription.trim(),
-                      additionalNotes: trialRequestNotes.trim() || undefined,
-                    });
-                    showToast('Solicitud de estudio enviada exitosamente. El administrador será notificado.', 'success');
-                    setIsTrialRequestModalOpen(false);
-                    setTrialRequestTitle('');
-                    setTrialRequestDescription('');
-                    setTrialRequestNotes('');
-                  } catch (err: any) {
-                    showToast(err.message || 'Error al enviar la solicitud', 'error');
-                  } finally {
-                    setIsSubmittingRequest(false);
-                  }
-                }}
-              >
-                {isSubmittingRequest ? 'Enviando...' : 'Enviar Solicitud'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Modal de confirmación para eliminar */}
       <ConfirmDialog
         isOpen={showDeleteDialog}
@@ -674,10 +666,10 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole }: Trial
   );
 }
 
-export function TrialList({ initialTrials, onTrialChange, userRole }: { initialTrials?: Trial[]; onTrialChange?: () => void; userRole?: string | null }) {
+export function TrialList({ initialTrials, onTrialChange, userRole, userInstitutionId, userInstitutionName }: { initialTrials?: Trial[]; onTrialChange?: () => void; userRole?: string | null; userInstitutionId?: string | null; userInstitutionName?: string | null }) {
   return (
     <AppProviders>
-      <TrialListContent initialTrials={initialTrials} onTrialChange={onTrialChange} userRole={userRole} />
+      <TrialListContent initialTrials={initialTrials} onTrialChange={onTrialChange} userRole={userRole} userInstitutionId={userInstitutionId} userInstitutionName={userInstitutionName} />
     </AppProviders>
   );
 }

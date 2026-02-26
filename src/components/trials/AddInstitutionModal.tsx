@@ -100,19 +100,31 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
     }
   }, [isOpen, siteId, initialName]);
 
+  // Limpiar campos vacíos del payload para evitar errores de validación (email, sitio_web, etc.)
+  const cleanPayload = (data: CreateResearchSitePayload): CreateResearchSitePayload => {
+    const cleaned: Record<string, any> = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== '' && value !== undefined && value !== null) {
+        cleaned[key] = value;
+      }
+    }
+    return cleaned as CreateResearchSitePayload;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
+      const payload = cleanPayload(formData);
       let result;
       if (siteId) {
         // Actualizar sitio existente
-        result = await updateResearchSite(siteId, formData);
+        result = await updateResearchSite(siteId, payload);
       } else {
         // Crear nuevo sitio
-        result = await createResearchSite(formData);
+        result = await createResearchSite(payload);
       }
 
       // Crear usuario asociado si se solicitó (al crear nueva institución O al editar una sin usuario)
