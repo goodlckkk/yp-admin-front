@@ -704,21 +704,19 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300 ${
+        className={`fixed top-0 left-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300 w-64 ${
           showMobileMenu ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 ${isSidebarCollapsed ? "w-16" : "w-64"}`}
+        } ${isSidebarCollapsed ? "lg:-translate-x-full" : "lg:translate-x-0"}`}
       >
         <div className="flex flex-col h-full">
           {/* Logo y Botón Hamburguer */}
           <div className="p-4 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src="/logo.svg" alt="yoParticipo" className="w-8 h-8 scale-150" />
-              {!isSidebarCollapsed && (
-                <div>
-                  <h1 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>YOParticipo</h1>
-                  <p className="text-xs text-gray-500">Dashboard Admin</p>
-                </div>
-              )}
+              <div>
+                <h1 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>YOParticipo</h1>
+                <p className="text-xs text-gray-500">Dashboard Admin</p>
+              </div>
             </div>
             <Button
               variant="ghost"
@@ -832,18 +830,29 @@ export default function DashboardPage() {
       </aside>
 
       {/* Main Content */}
-      <div className={`transition-all duration-300 ${isSidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <div className={`transition-all duration-300 ${isSidebarCollapsed ? 'lg:ml-0' : 'lg:ml-64'}`}>
         {/* Header */}
         <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
           <div className="px-3 py-3 sm:px-4 sm:py-4 lg:px-8">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                {/* Botón hamburguesa mobile */}
                 <button 
                   onClick={() => setShowMobileMenu(!showMobileMenu)} 
                   className="lg:hidden p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <Icons.Menu className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
+                {/* Botón toggle sidebar en desktop (visible solo cuando está colapsado) */}
+                {isSidebarCollapsed && (
+                  <button 
+                    onClick={toggleSidebar} 
+                    className="hidden lg:flex p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Expandir sidebar"
+                  >
+                    <Icons.Menu className="w-5 h-5" />
+                  </button>
+                )}
                 <div className="min-w-0 flex-1">
                   <h2 className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">
                     {getActiveSectionLabel(activeSection)}
