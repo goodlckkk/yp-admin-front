@@ -66,7 +66,6 @@ const PATOLOGIAS_PREVALENTES = [
   "Enfermedad renal crónica",
   "Asma",
   "Obesidad",
-  "Síndrome de Sjögren",
   "Fumador/a"
 ];
 

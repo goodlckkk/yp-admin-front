@@ -1,231 +1,2175 @@
 [
   {
-    "codigo": "E11",
-    "nombre": "Diabetes mellitus tipo 2"
+    "codigo": "A04",
+    "nombre": "Otras infecciones intestinales bacterianas"
   },
   {
-    "codigo": "E10",
-    "nombre": "Diabetes mellitus tipo 1"
+    "codigo": "A040",
+    "nombre": "Infección debida a Escherichia coli enteropatógena"
   },
   {
-    "codigo": "I10",
-    "nombre": "Hipertensión arterial esencial (primaria)"
+    "codigo": "A08",
+    "nombre": "Infecciones intestinales debidas a virus y otros organismos especificados"
   },
   {
-    "codigo": "I25",
-    "nombre": "Enfermedad isquémica crónica del corazón"
+    "codigo": "A080",
+    "nombre": "Enteritis debida a rotavirus"
   },
   {
-    "codigo": "I50",
-    "nombre": "Insuficiencia cardíaca"
+    "codigo": "A09",
+    "nombre": "Diarrea y gastroenteritis de presunto origen infeccioso"
   },
   {
-    "codigo": "I21",
-    "nombre": "Infarto agudo del miocardio"
+    "codigo": "A15",
+    "nombre": "Tuberculosis respiratoria"
   },
   {
-    "codigo": "I63",
-    "nombre": "Infarto cerebral"
+    "codigo": "A150",
+    "nombre": "Tuberculosis del pulmón"
   },
   {
-    "codigo": "I64",
-    "nombre": "Accidente vascular encefálico"
+    "codigo": "A16",
+    "nombre": "Tuberculosis respiratoria"
   },
   {
-    "codigo": "J45",
-    "nombre": "Asma"
+    "codigo": "A160",
+    "nombre": "Tuberculosis del pulmón"
   },
   {
-    "codigo": "J44",
-    "nombre": "Enfermedad pulmonar obstructiva crónica (EPOC)"
+    "codigo": "B15",
+    "nombre": "Hepatitis aguda tipo A"
   },
   {
-    "codigo": "J18",
-    "nombre": "Neumonía"
+    "codigo": "B150",
+    "nombre": "Hepatitis aguda tipo A"
   },
   {
-    "codigo": "J20",
-    "nombre": "Bronquitis aguda"
+    "codigo": "B16",
+    "nombre": "Hepatitis aguda tipo B"
   },
   {
-    "codigo": "J40",
-    "nombre": "Bronquitis crónica"
+    "codigo": "B160",
+    "nombre": "Hepatitis aguda tipo B"
   },
   {
-    "codigo": "N18",
-    "nombre": "Enfermedad renal crónica"
+    "codigo": "B17",
+    "nombre": "Otras hepatitis virales agudas"
   },
   {
-    "codigo": "N17",
-    "nombre": "Insuficiencia renal aguda"
+    "codigo": "B170",
+    "nombre": "Infección (superinfección) aguda por agente delta en el portador de hepatitis B"
   },
   {
-    "codigo": "N20",
-    "nombre": "Cálculo del riñón y del uréter"
+    "codigo": "B18",
+    "nombre": "Hepatitis viral crónica"
   },
   {
-    "codigo": "K21",
-    "nombre": "Enfermedad por reflujo gastroesofágico"
+    "codigo": "B180",
+    "nombre": "Hepatitis viral tipo B crónica"
   },
   {
-    "codigo": "K29",
-    "nombre": "Gastritis y duodenitis"
+    "codigo": "B20",
+    "nombre": "Enfermedad por virus de la inmunodeficiencia humana [VIH]"
   },
   {
-    "codigo": "K80",
-    "nombre": "Colelitiasis (cálculos biliares)"
+    "codigo": "B24",
+    "nombre": "VIH/SIDA"
   },
   {
-    "codigo": "K76",
-    "nombre": "Enfermedad hepática"
+    "codigo": "C00",
+    "nombre": "Tumor maligno del labio"
   },
   {
-    "codigo": "K74",
-    "nombre": "Cirrosis hepática"
+    "codigo": "C00",
+    "nombre": "Cáncer del labio"
   },
   {
-    "codigo": "M15",
-    "nombre": "Poliartrosis"
+    "codigo": "C000",
+    "nombre": "Tumor maligno del labio superior"
   },
   {
-    "codigo": "M17",
-    "nombre": "Gonartrosis (artrosis de rodilla)"
+    "codigo": "C000",
+    "nombre": "Cáncer del labio superior"
   },
   {
-    "codigo": "M19",
-    "nombre": "Otras artrosis"
+    "codigo": "C001",
+    "nombre": "Tumor maligno del labio inferior"
   },
   {
-    "codigo": "M05",
-    "nombre": "Artritis reumatoide seropositiva"
+    "codigo": "C001",
+    "nombre": "Cáncer del labio inferior"
   },
   {
-    "codigo": "M06",
-    "nombre": "Otras artritis reumatoides"
+    "codigo": "C002",
+    "nombre": "Tumor maligno del labio"
   },
   {
-    "codigo": "M54",
-    "nombre": "Dorsalgia (dolor de espalda)"
+    "codigo": "C002",
+    "nombre": "Cáncer del labio"
   },
   {
-    "codigo": "M79",
-    "nombre": "Fibromialgia"
+    "codigo": "C003",
+    "nombre": "Tumor maligno del labio superior"
   },
   {
-    "codigo": "E66",
-    "nombre": "Obesidad"
+    "codigo": "C003",
+    "nombre": "Cáncer del labio superior"
   },
   {
-    "codigo": "E78",
-    "nombre": "Trastornos del metabolismo de las lipoproteínas (colesterol alto)"
+    "codigo": "C004",
+    "nombre": "Tumor maligno del labio inferior"
   },
   {
-    "codigo": "E04",
-    "nombre": "Bocio no tóxico"
+    "codigo": "C004",
+    "nombre": "Cáncer del labio inferior"
   },
   {
-    "codigo": "E03",
-    "nombre": "Hipotiroidismo"
+    "codigo": "C005",
+    "nombre": "Tumor maligno del labio"
   },
   {
-    "codigo": "E05",
-    "nombre": "Tirotoxicosis (hipertiroidismo)"
+    "codigo": "C005",
+    "nombre": "Cáncer del labio"
   },
   {
-    "codigo": "F32",
-    "nombre": "Episodio depresivo"
+    "codigo": "C006",
+    "nombre": "Tumor maligno de la comisura labial"
   },
   {
-    "codigo": "F33",
-    "nombre": "Trastorno depresivo recurrente"
+    "codigo": "C006",
+    "nombre": "Cáncer de la comisura labial"
   },
   {
-    "codigo": "F41",
-    "nombre": "Otros trastornos de ansiedad"
+    "codigo": "C008",
+    "nombre": "Lesión de sitios contiguos del labio"
   },
   {
-    "codigo": "F31",
-    "nombre": "Trastorno afectivo bipolar"
+    "codigo": "C009",
+    "nombre": "Tumor maligno del labio"
   },
   {
-    "codigo": "F20",
-    "nombre": "Esquizofrenia"
+    "codigo": "C009",
+    "nombre": "Cáncer del labio"
   },
   {
-    "codigo": "F10",
-    "nombre": "Trastornos mentales y del comportamiento debidos al uso de alcohol"
+    "codigo": "C01",
+    "nombre": "Tumor maligno de la base de la lengua"
   },
   {
-    "codigo": "G40",
-    "nombre": "Epilepsia"
+    "codigo": "C01",
+    "nombre": "Cáncer de la base de la lengua"
   },
   {
-    "codigo": "G43",
-    "nombre": "Migraña"
+    "codigo": "C02",
+    "nombre": "Tumor maligno de otras partes y de las no especificadas de la lengua"
   },
   {
-    "codigo": "G44",
-    "nombre": "Otros síndromes de cefalea"
+    "codigo": "C02",
+    "nombre": "Cáncer de otras partes y de las no especificadas de la lengua"
   },
   {
-    "codigo": "G20",
-    "nombre": "Enfermedad de Parkinson"
+    "codigo": "C020",
+    "nombre": "Tumor maligno de la cara dorsal de la lengua"
   },
   {
-    "codigo": "G30",
-    "nombre": "Enfermedad de Alzheimer"
+    "codigo": "C020",
+    "nombre": "Cáncer de la cara dorsal de la lengua"
   },
   {
-    "codigo": "G35",
-    "nombre": "Esclerosis múltiple"
+    "codigo": "C021",
+    "nombre": "Tumor maligno del borde de la lengua"
   },
   {
-    "codigo": "C50",
-    "nombre": "Cáncer de mama"
+    "codigo": "C021",
+    "nombre": "Cáncer del borde de la lengua"
   },
   {
-    "codigo": "C34",
-    "nombre": "Cáncer de bronquios y pulmón"
+    "codigo": "C022",
+    "nombre": "Tumor maligno de la cara ventral de la lengua"
   },
   {
-    "codigo": "C18",
-    "nombre": "Cáncer de colon"
+    "codigo": "C022",
+    "nombre": "Cáncer de la cara ventral de la lengua"
   },
   {
-    "codigo": "C20",
-    "nombre": "Cáncer de recto"
+    "codigo": "C023",
+    "nombre": "Tumor maligno de los dos tercios anteriores de la lengua"
   },
   {
-    "codigo": "C61",
-    "nombre": "Cáncer de próstata"
+    "codigo": "C023",
+    "nombre": "Cáncer de los dos tercios anteriores de la lengua"
   },
   {
-    "codigo": "C53",
-    "nombre": "Cáncer de cuello uterino"
+    "codigo": "C024",
+    "nombre": "Tumor maligno de la amígdala lingual"
+  },
+  {
+    "codigo": "C024",
+    "nombre": "Cáncer de la amígdala lingual"
+  },
+  {
+    "codigo": "C028",
+    "nombre": "Lesión de sitios contiguos de la lengua"
+  },
+  {
+    "codigo": "C029",
+    "nombre": "Tumor maligno de la lengua"
+  },
+  {
+    "codigo": "C029",
+    "nombre": "Cáncer de la lengua"
+  },
+  {
+    "codigo": "C03",
+    "nombre": "Tumor maligno de la encía"
+  },
+  {
+    "codigo": "C03",
+    "nombre": "Cáncer de la encía"
+  },
+  {
+    "codigo": "C030",
+    "nombre": "Tumor maligno de la encía superior"
+  },
+  {
+    "codigo": "C030",
+    "nombre": "Cáncer de la encía superior"
+  },
+  {
+    "codigo": "C031",
+    "nombre": "Tumor maligno de la encía inferior"
+  },
+  {
+    "codigo": "C031",
+    "nombre": "Cáncer de la encía inferior"
+  },
+  {
+    "codigo": "C039",
+    "nombre": "Tumor maligno de la encía"
+  },
+  {
+    "codigo": "C039",
+    "nombre": "Cáncer de la encía"
+  },
+  {
+    "codigo": "C04",
+    "nombre": "Tumor maligno del piso de la boca"
+  },
+  {
+    "codigo": "C04",
+    "nombre": "Cáncer del piso de la boca"
+  },
+  {
+    "codigo": "C040",
+    "nombre": "Tumor maligno de la parte anterior del piso de la boca"
+  },
+  {
+    "codigo": "C040",
+    "nombre": "Cáncer de la parte anterior del piso de la boca"
+  },
+  {
+    "codigo": "C041",
+    "nombre": "Tumor maligno de la parte lateral del piso de la boca"
+  },
+  {
+    "codigo": "C041",
+    "nombre": "Cáncer de la parte lateral del piso de la boca"
+  },
+  {
+    "codigo": "C048",
+    "nombre": "Lesión de sitios contiguos del piso de la boca"
+  },
+  {
+    "codigo": "C049",
+    "nombre": "Tumor maligno del piso de la boca"
+  },
+  {
+    "codigo": "C049",
+    "nombre": "Cáncer del piso de la boca"
+  },
+  {
+    "codigo": "C05",
+    "nombre": "Tumor maligno del paladar"
+  },
+  {
+    "codigo": "C05",
+    "nombre": "Cáncer del paladar"
+  },
+  {
+    "codigo": "C050",
+    "nombre": "Tumor maligno del paladar duro"
+  },
+  {
+    "codigo": "C050",
+    "nombre": "Cáncer del paladar duro"
+  },
+  {
+    "codigo": "C051",
+    "nombre": "Tumor maligno del paladar blando"
+  },
+  {
+    "codigo": "C051",
+    "nombre": "Cáncer del paladar blando"
+  },
+  {
+    "codigo": "C052",
+    "nombre": "Tumor maligno de la úvula"
+  },
+  {
+    "codigo": "C052",
+    "nombre": "Cáncer de la úvula"
+  },
+  {
+    "codigo": "C058",
+    "nombre": "Lesión de sitios contiguos del paladar"
+  },
+  {
+    "codigo": "C059",
+    "nombre": "Tumor maligno del paladar"
+  },
+  {
+    "codigo": "C059",
+    "nombre": "Cáncer del paladar"
+  },
+  {
+    "codigo": "C06",
+    "nombre": "Tumor maligno de otras partes y de las no especificadas de la boca"
+  },
+  {
+    "codigo": "C06",
+    "nombre": "Cáncer de otras partes y de las no especificadas de la boca"
+  },
+  {
+    "codigo": "C060",
+    "nombre": "Tumor maligno de la mucosa de la mejilla"
+  },
+  {
+    "codigo": "C060",
+    "nombre": "Cáncer de la mucosa de la mejilla"
+  },
+  {
+    "codigo": "C061",
+    "nombre": "Tumor maligno del vestíbulo de la boca"
+  },
+  {
+    "codigo": "C061",
+    "nombre": "Cáncer del vestíbulo de la boca"
+  },
+  {
+    "codigo": "C062",
+    "nombre": "Tumor maligno del área retromolar"
+  },
+  {
+    "codigo": "C062",
+    "nombre": "Cáncer del área retromolar"
+  },
+  {
+    "codigo": "C068",
+    "nombre": "Lesión de sitios contiguos de otras partes y de las no especificadas de la boca"
+  },
+  {
+    "codigo": "C069",
+    "nombre": "Tumor maligno de la boca"
+  },
+  {
+    "codigo": "C069",
+    "nombre": "Cáncer de la boca"
+  },
+  {
+    "codigo": "C07",
+    "nombre": "Tumor maligno de la glándula parótida"
+  },
+  {
+    "codigo": "C07",
+    "nombre": "Cáncer de la glándula parótida"
+  },
+  {
+    "codigo": "C08",
+    "nombre": "Tumor maligno de otras glándulas salivales mayores y de las no especificadas"
+  },
+  {
+    "codigo": "C08",
+    "nombre": "Cáncer de otras glándulas salivales mayores y de las no especificadas"
+  },
+  {
+    "codigo": "C080",
+    "nombre": "Tumor maligno de la glándula submaxilar"
+  },
+  {
+    "codigo": "C080",
+    "nombre": "Cáncer de la glándula submaxilar"
+  },
+  {
+    "codigo": "C081",
+    "nombre": "Tumor maligno de la glándula sublingual"
+  },
+  {
+    "codigo": "C081",
+    "nombre": "Cáncer de la glándula sublingual"
+  },
+  {
+    "codigo": "C088",
+    "nombre": "Lesión de sitios contiguos de las glándulas salivales mayores"
+  },
+  {
+    "codigo": "C089",
+    "nombre": "Tumor maligno de glándula salival mayor"
+  },
+  {
+    "codigo": "C089",
+    "nombre": "Cáncer de glándula salival mayor"
+  },
+  {
+    "codigo": "C09",
+    "nombre": "Tumor maligno de la amígdala"
+  },
+  {
+    "codigo": "C09",
+    "nombre": "Cáncer de la amígdala"
+  },
+  {
+    "codigo": "C090",
+    "nombre": "Tumor maligno de la fosa amigdalina"
+  },
+  {
+    "codigo": "C090",
+    "nombre": "Cáncer de la fosa amigdalina"
+  },
+  {
+    "codigo": "C091",
+    "nombre": "Tumor maligno del pilar amigdalino (anterior) (posterior)"
+  },
+  {
+    "codigo": "C091",
+    "nombre": "Cáncer del pilar amigdalino (anterior) (posterior)"
+  },
+  {
+    "codigo": "C098",
+    "nombre": "Lesión de sitios contiguos de la amígdala"
+  },
+  {
+    "codigo": "C099",
+    "nombre": "Tumor maligno de la amígdala"
+  },
+  {
+    "codigo": "C099",
+    "nombre": "Cáncer de la amígdala"
+  },
+  {
+    "codigo": "C10",
+    "nombre": "Tumor maligno de la orofaringe"
+  },
+  {
+    "codigo": "C10",
+    "nombre": "Cáncer de la orofaringe"
+  },
+  {
+    "codigo": "C100",
+    "nombre": "Tumor maligno de la valécula"
+  },
+  {
+    "codigo": "C100",
+    "nombre": "Cáncer de la valécula"
+  },
+  {
+    "codigo": "C101",
+    "nombre": "Tumor maligno de la cara anterior de la epiglotis"
+  },
+  {
+    "codigo": "C101",
+    "nombre": "Cáncer de la cara anterior de la epiglotis"
+  },
+  {
+    "codigo": "C102",
+    "nombre": "Tumor maligno de la pared lateral de la orofaringe"
+  },
+  {
+    "codigo": "C102",
+    "nombre": "Cáncer de la pared lateral de la orofaringe"
+  },
+  {
+    "codigo": "C103",
+    "nombre": "Tumor maligno de la pared posterior de la orofaringe"
+  },
+  {
+    "codigo": "C103",
+    "nombre": "Cáncer de la pared posterior de la orofaringe"
+  },
+  {
+    "codigo": "C104",
+    "nombre": "Tumor maligno de la hendidura branquial"
+  },
+  {
+    "codigo": "C104",
+    "nombre": "Cáncer de la hendidura branquial"
+  },
+  {
+    "codigo": "C108",
+    "nombre": "Lesión de sitios contiguos de la orofaringe"
+  },
+  {
+    "codigo": "C109",
+    "nombre": "Tumor maligno de la orofaringe"
+  },
+  {
+    "codigo": "C109",
+    "nombre": "Cáncer de la orofaringe"
+  },
+  {
+    "codigo": "C11",
+    "nombre": "Tumor maligno de la nasofaringe"
+  },
+  {
+    "codigo": "C11",
+    "nombre": "Cáncer de la nasofaringe"
+  },
+  {
+    "codigo": "C110",
+    "nombre": "Tumor maligno de la pared superior de la nasofaringe"
+  },
+  {
+    "codigo": "C110",
+    "nombre": "Cáncer de la pared superior de la nasofaringe"
+  },
+  {
+    "codigo": "C111",
+    "nombre": "Tumor maligno de la pared posterior de la nasofaringe"
+  },
+  {
+    "codigo": "C111",
+    "nombre": "Cáncer de la pared posterior de la nasofaringe"
+  },
+  {
+    "codigo": "C112",
+    "nombre": "Tumor maligno de la pared lateral de la nasofaringe"
+  },
+  {
+    "codigo": "C112",
+    "nombre": "Cáncer de la pared lateral de la nasofaringe"
+  },
+  {
+    "codigo": "C113",
+    "nombre": "Tumor maligno de la pared anterior de la nasofaringe"
+  },
+  {
+    "codigo": "C113",
+    "nombre": "Cáncer de la pared anterior de la nasofaringe"
+  },
+  {
+    "codigo": "C118",
+    "nombre": "Lesión de sitios contiguos de la nasofaringe"
+  },
+  {
+    "codigo": "C119",
+    "nombre": "Tumor maligno de la nasofaringe"
+  },
+  {
+    "codigo": "C119",
+    "nombre": "Cáncer de la nasofaringe"
+  },
+  {
+    "codigo": "C12",
+    "nombre": "Tumor maligno del seno piriforme"
+  },
+  {
+    "codigo": "C12",
+    "nombre": "Cáncer del seno piriforme"
+  },
+  {
+    "codigo": "C13",
+    "nombre": "Tumor maligno de la hipofaringe"
+  },
+  {
+    "codigo": "C13",
+    "nombre": "Cáncer de la hipofaringe"
+  },
+  {
+    "codigo": "C130",
+    "nombre": "Tumor maligno de la región postcricoidea"
+  },
+  {
+    "codigo": "C130",
+    "nombre": "Cáncer de la región postcricoidea"
+  },
+  {
+    "codigo": "C131",
+    "nombre": "Tumor maligno del pliegue aritenoepiglótico"
+  },
+  {
+    "codigo": "C131",
+    "nombre": "Cáncer del pliegue aritenoepiglótico"
+  },
+  {
+    "codigo": "C132",
+    "nombre": "Tumor maligno de la pared posterior de la hipofaringe"
+  },
+  {
+    "codigo": "C132",
+    "nombre": "Cáncer de la pared posterior de la hipofaringe"
+  },
+  {
+    "codigo": "C138",
+    "nombre": "Lesión de sitios contiguos de la hipofaringe"
+  },
+  {
+    "codigo": "C139",
+    "nombre": "Tumor maligno de la hipofaringe"
+  },
+  {
+    "codigo": "C139",
+    "nombre": "Cáncer de la hipofaringe"
+  },
+  {
+    "codigo": "C14",
+    "nombre": "Tumor maligno de otros sitios y de los mal definidos del labio"
+  },
+  {
+    "codigo": "C14",
+    "nombre": "Cáncer de otros sitios y de los mal definidos del labio"
+  },
+  {
+    "codigo": "C140",
+    "nombre": "Tumor maligno de la faringe"
+  },
+  {
+    "codigo": "C140",
+    "nombre": "Cáncer de la faringe"
+  },
+  {
+    "codigo": "C142",
+    "nombre": "Tumor maligno del anillo de Waldeyer"
+  },
+  {
+    "codigo": "C142",
+    "nombre": "Cáncer del anillo de Waldeyer"
+  },
+  {
+    "codigo": "C148",
+    "nombre": "Lesión de sitios contiguos del labio"
+  },
+  {
+    "codigo": "C15",
+    "nombre": "Tumor maligno del esófago"
+  },
+  {
+    "codigo": "C15",
+    "nombre": "Cáncer del esófago"
+  },
+  {
+    "codigo": "C150",
+    "nombre": "Tumor maligno del esófago"
+  },
+  {
+    "codigo": "C150",
+    "nombre": "Cáncer del esófago"
+  },
+  {
+    "codigo": "C151",
+    "nombre": "Tumor maligno del esófago"
+  },
+  {
+    "codigo": "C151",
+    "nombre": "Cáncer del esófago"
+  },
+  {
+    "codigo": "C152",
+    "nombre": "Tumor maligno del esófago"
+  },
+  {
+    "codigo": "C152",
+    "nombre": "Cáncer del esófago"
+  },
+  {
+    "codigo": "C153",
+    "nombre": "Tumor maligno del tercio superior del esófago"
+  },
+  {
+    "codigo": "C153",
+    "nombre": "Cáncer del tercio superior del esófago"
+  },
+  {
+    "codigo": "C154",
+    "nombre": "Tumor maligno del tercio medio del esófago"
+  },
+  {
+    "codigo": "C154",
+    "nombre": "Cáncer del tercio medio del esófago"
+  },
+  {
+    "codigo": "C155",
+    "nombre": "Tumor maligno del tercio inferior del esófago"
+  },
+  {
+    "codigo": "C155",
+    "nombre": "Cáncer del tercio inferior del esófago"
+  },
+  {
+    "codigo": "C158",
+    "nombre": "Lesión de sitios contiguos del esófago"
+  },
+  {
+    "codigo": "C159",
+    "nombre": "Tumor maligno del esófago"
+  },
+  {
+    "codigo": "C159",
+    "nombre": "Cáncer del esófago"
   },
   {
     "codigo": "C16",
     "nombre": "Cáncer de estómago"
   },
   {
-    "codigo": "C25",
-    "nombre": "Cáncer de páncreas"
+    "codigo": "C160",
+    "nombre": "Tumor maligno del cardias"
+  },
+  {
+    "codigo": "C160",
+    "nombre": "Cáncer del cardias"
+  },
+  {
+    "codigo": "C161",
+    "nombre": "Tumor maligno del fundus gástrico"
+  },
+  {
+    "codigo": "C161",
+    "nombre": "Cáncer del fundus gástrico"
+  },
+  {
+    "codigo": "C162",
+    "nombre": "Tumor maligno del cuerpo del estómago"
+  },
+  {
+    "codigo": "C162",
+    "nombre": "Cáncer del cuerpo del estómago"
+  },
+  {
+    "codigo": "C163",
+    "nombre": "Tumor maligno del antro pilórico"
+  },
+  {
+    "codigo": "C163",
+    "nombre": "Cáncer del antro pilórico"
+  },
+  {
+    "codigo": "C164",
+    "nombre": "Tumor maligno del píloro"
+  },
+  {
+    "codigo": "C164",
+    "nombre": "Cáncer del píloro"
+  },
+  {
+    "codigo": "C165",
+    "nombre": "Tumor maligno de la curvatura menor del estómago"
+  },
+  {
+    "codigo": "C165",
+    "nombre": "Cáncer de la curvatura menor del estómago"
+  },
+  {
+    "codigo": "C166",
+    "nombre": "Tumor maligno de la curvatura mayor del estómago"
+  },
+  {
+    "codigo": "C166",
+    "nombre": "Cáncer de la curvatura mayor del estómago"
+  },
+  {
+    "codigo": "C168",
+    "nombre": "Lesión de sitios contiguos del estómago"
+  },
+  {
+    "codigo": "C169",
+    "nombre": "Tumor maligno del estómago"
+  },
+  {
+    "codigo": "C169",
+    "nombre": "Cáncer del estómago"
+  },
+  {
+    "codigo": "C17",
+    "nombre": "Tumor maligno del intestino delgado"
+  },
+  {
+    "codigo": "C17",
+    "nombre": "Cáncer del intestino delgado"
+  },
+  {
+    "codigo": "C170",
+    "nombre": "Tumor maligno del duodeno"
+  },
+  {
+    "codigo": "C170",
+    "nombre": "Cáncer del duodeno"
+  },
+  {
+    "codigo": "C171",
+    "nombre": "Tumor maligno del yeyuno"
+  },
+  {
+    "codigo": "C171",
+    "nombre": "Cáncer del yeyuno"
+  },
+  {
+    "codigo": "C172",
+    "nombre": "Tumor maligno del íleon"
+  },
+  {
+    "codigo": "C172",
+    "nombre": "Cáncer del íleon"
+  },
+  {
+    "codigo": "C173",
+    "nombre": "Tumor maligno del divertículo de Meckel"
+  },
+  {
+    "codigo": "C173",
+    "nombre": "Cáncer del divertículo de Meckel"
+  },
+  {
+    "codigo": "C178",
+    "nombre": "Lesión de sitios contiguos del intestino delgado"
+  },
+  {
+    "codigo": "C179",
+    "nombre": "Tumor maligno del intestino delgado"
+  },
+  {
+    "codigo": "C179",
+    "nombre": "Cáncer del intestino delgado"
+  },
+  {
+    "codigo": "C18",
+    "nombre": "Cáncer de colon"
+  },
+  {
+    "codigo": "C180",
+    "nombre": "Tumor maligno del ciego"
+  },
+  {
+    "codigo": "C180",
+    "nombre": "Cáncer del ciego"
+  },
+  {
+    "codigo": "C181",
+    "nombre": "Tumor maligno del apéndice"
+  },
+  {
+    "codigo": "C181",
+    "nombre": "Cáncer del apéndice"
+  },
+  {
+    "codigo": "C182",
+    "nombre": "Tumor maligno del colon ascendente"
+  },
+  {
+    "codigo": "C182",
+    "nombre": "Cáncer del colon ascendente"
+  },
+  {
+    "codigo": "C183",
+    "nombre": "Tumor maligno del ángulo hepático"
+  },
+  {
+    "codigo": "C183",
+    "nombre": "Cáncer del ángulo hepático"
+  },
+  {
+    "codigo": "C184",
+    "nombre": "Tumor maligno del colon transverso"
+  },
+  {
+    "codigo": "C184",
+    "nombre": "Cáncer del colon transverso"
+  },
+  {
+    "codigo": "C185",
+    "nombre": "Tumor maligno del ángulo esplénico"
+  },
+  {
+    "codigo": "C185",
+    "nombre": "Cáncer del ángulo esplénico"
+  },
+  {
+    "codigo": "C186",
+    "nombre": "Tumor maligno del colon descendente"
+  },
+  {
+    "codigo": "C186",
+    "nombre": "Cáncer del colon descendente"
+  },
+  {
+    "codigo": "C187",
+    "nombre": "Tumor maligno del colon sigmoide"
+  },
+  {
+    "codigo": "C187",
+    "nombre": "Cáncer del colon sigmoide"
+  },
+  {
+    "codigo": "C188",
+    "nombre": "Lesión de sitios contiguos del colon"
+  },
+  {
+    "codigo": "C189",
+    "nombre": "Tumor maligno del colon"
+  },
+  {
+    "codigo": "C189",
+    "nombre": "Cáncer del colon"
+  },
+  {
+    "codigo": "C19",
+    "nombre": "Tumor maligno de la unión rectosigmoidea"
+  },
+  {
+    "codigo": "C19",
+    "nombre": "Cáncer de la unión rectosigmoidea"
+  },
+  {
+    "codigo": "C20",
+    "nombre": "Cáncer de recto"
+  },
+  {
+    "codigo": "C21",
+    "nombre": "Tumor maligno del ano y del conducto anal"
+  },
+  {
+    "codigo": "C21",
+    "nombre": "Cáncer del ano y del conducto anal"
+  },
+  {
+    "codigo": "C210",
+    "nombre": "Tumor maligno del ano"
+  },
+  {
+    "codigo": "C210",
+    "nombre": "Cáncer del ano"
+  },
+  {
+    "codigo": "C211",
+    "nombre": "Tumor maligno del conducto anal"
+  },
+  {
+    "codigo": "C211",
+    "nombre": "Cáncer del conducto anal"
+  },
+  {
+    "codigo": "C212",
+    "nombre": "Tumor maligno de la zona cloacogénica"
+  },
+  {
+    "codigo": "C212",
+    "nombre": "Cáncer de la zona cloacogénica"
+  },
+  {
+    "codigo": "C218",
+    "nombre": "Lesión de sitios contiguos del ano"
   },
   {
     "codigo": "C22",
     "nombre": "Cáncer de hígado"
   },
   {
+    "codigo": "C220",
+    "nombre": "Carcinoma de células hepáticas"
+  },
+  {
+    "codigo": "C220",
+    "nombre": "Cáncer de células hepáticas"
+  },
+  {
+    "codigo": "C221",
+    "nombre": "Carcinoma de vías biliares intrahepáticas"
+  },
+  {
+    "codigo": "C221",
+    "nombre": "Cáncer de vías biliares intrahepáticas"
+  },
+  {
+    "codigo": "C222",
+    "nombre": "Hepatoblastoma"
+  },
+  {
+    "codigo": "C223",
+    "nombre": "Angiosarcoma del hígado"
+  },
+  {
+    "codigo": "C224",
+    "nombre": "Otros sarcomas del hígado"
+  },
+  {
+    "codigo": "C227",
+    "nombre": "Otros carcinomas especificados del hígado"
+  },
+  {
+    "codigo": "C229",
+    "nombre": "Tumor maligno del hígado"
+  },
+  {
+    "codigo": "C229",
+    "nombre": "Cáncer del hígado"
+  },
+  {
+    "codigo": "C23",
+    "nombre": "Tumor maligno de la vesícula biliar"
+  },
+  {
+    "codigo": "C23",
+    "nombre": "Cáncer de la vesícula biliar"
+  },
+  {
+    "codigo": "C24",
+    "nombre": "Tumor maligno de otras partes y de las no especificadas de las vías biliares"
+  },
+  {
+    "codigo": "C24",
+    "nombre": "Cáncer de otras partes y de las no especificadas de las vías biliares"
+  },
+  {
+    "codigo": "C240",
+    "nombre": "Tumor maligno de las vías biliares extrahepáticas"
+  },
+  {
+    "codigo": "C240",
+    "nombre": "Cáncer de las vías biliares extrahepáticas"
+  },
+  {
+    "codigo": "C241",
+    "nombre": "Tumor maligno de la ampolla de Vater"
+  },
+  {
+    "codigo": "C241",
+    "nombre": "Cáncer de la ampolla de Vater"
+  },
+  {
+    "codigo": "C248",
+    "nombre": "Lesión de sitios contiguos de las vías biliares"
+  },
+  {
+    "codigo": "C249",
+    "nombre": "Tumor maligno de las vías biliares"
+  },
+  {
+    "codigo": "C249",
+    "nombre": "Cáncer de las vías biliares"
+  },
+  {
+    "codigo": "C25",
+    "nombre": "Cáncer de páncreas"
+  },
+  {
+    "codigo": "C250",
+    "nombre": "Tumor maligno de la cabeza del páncreas"
+  },
+  {
+    "codigo": "C250",
+    "nombre": "Cáncer de la cabeza del páncreas"
+  },
+  {
+    "codigo": "C251",
+    "nombre": "Tumor maligno del cuerpo del páncreas"
+  },
+  {
+    "codigo": "C251",
+    "nombre": "Cáncer del cuerpo del páncreas"
+  },
+  {
+    "codigo": "C252",
+    "nombre": "Tumor maligno de la cola del páncreas"
+  },
+  {
+    "codigo": "C252",
+    "nombre": "Cáncer de la cola del páncreas"
+  },
+  {
+    "codigo": "C253",
+    "nombre": "Tumor maligno del conducto pancreático"
+  },
+  {
+    "codigo": "C253",
+    "nombre": "Cáncer del conducto pancreático"
+  },
+  {
+    "codigo": "C254",
+    "nombre": "Tumor maligno del páncreas endocrino"
+  },
+  {
+    "codigo": "C254",
+    "nombre": "Cáncer del páncreas endocrino"
+  },
+  {
+    "codigo": "C257",
+    "nombre": "Tumor maligno de otras partes especificadas del páncreas"
+  },
+  {
+    "codigo": "C257",
+    "nombre": "Cáncer de otras partes especificadas del páncreas"
+  },
+  {
+    "codigo": "C258",
+    "nombre": "Lesión de sitios contiguos del páncreas"
+  },
+  {
+    "codigo": "C259",
+    "nombre": "Tumor maligno del páncreas"
+  },
+  {
+    "codigo": "C259",
+    "nombre": "Cáncer del páncreas"
+  },
+  {
+    "codigo": "C26",
+    "nombre": "Tumor maligno de otros sitios y de los mal definidos de los órganos digestivos"
+  },
+  {
+    "codigo": "C26",
+    "nombre": "Cáncer de otros sitios y de los mal definidos de los órganos digestivos"
+  },
+  {
+    "codigo": "C260",
+    "nombre": "Tumor maligno del intestino"
+  },
+  {
+    "codigo": "C260",
+    "nombre": "Cáncer del intestino"
+  },
+  {
+    "codigo": "C261",
+    "nombre": "Tumor maligno del bazo"
+  },
+  {
+    "codigo": "C261",
+    "nombre": "Cáncer del bazo"
+  },
+  {
+    "codigo": "C268",
+    "nombre": "Lesión de sitios contiguos de los órganos digestivos"
+  },
+  {
+    "codigo": "C269",
+    "nombre": "Tumor maligno de sitios mal definidos de los órganos digestivos"
+  },
+  {
+    "codigo": "C269",
+    "nombre": "Cáncer de sitios mal definidos de los órganos digestivos"
+  },
+  {
+    "codigo": "C30",
+    "nombre": "Tumor maligno de las fosas nasales y del oído medio"
+  },
+  {
+    "codigo": "C30",
+    "nombre": "Cáncer de las fosas nasales y del oído medio"
+  },
+  {
+    "codigo": "C300",
+    "nombre": "Tumor maligno de la fosa nasal"
+  },
+  {
+    "codigo": "C300",
+    "nombre": "Cáncer de la fosa nasal"
+  },
+  {
+    "codigo": "C301",
+    "nombre": "Tumor maligno del oído medio"
+  },
+  {
+    "codigo": "C301",
+    "nombre": "Cáncer del oído medio"
+  },
+  {
+    "codigo": "C31",
+    "nombre": "Tumor maligno de los senos paranasales"
+  },
+  {
+    "codigo": "C31",
+    "nombre": "Cáncer de los senos paranasales"
+  },
+  {
+    "codigo": "C310",
+    "nombre": "Tumor maligno del seno maxilar"
+  },
+  {
+    "codigo": "C310",
+    "nombre": "Cáncer del seno maxilar"
+  },
+  {
+    "codigo": "C311",
+    "nombre": "Tumor maligno del seno etmoidal"
+  },
+  {
+    "codigo": "C311",
+    "nombre": "Cáncer del seno etmoidal"
+  },
+  {
+    "codigo": "C312",
+    "nombre": "Tumor maligno del seno frontal"
+  },
+  {
+    "codigo": "C312",
+    "nombre": "Cáncer del seno frontal"
+  },
+  {
+    "codigo": "C313",
+    "nombre": "Tumor maligno del seno esfenoidal"
+  },
+  {
+    "codigo": "C313",
+    "nombre": "Cáncer del seno esfenoidal"
+  },
+  {
+    "codigo": "C318",
+    "nombre": "Lesión de sitios contiguos de los senos paranasales"
+  },
+  {
+    "codigo": "C319",
+    "nombre": "Tumor maligno de seno paranasal no especificado"
+  },
+  {
+    "codigo": "C319",
+    "nombre": "Cáncer de seno paranasal no especificado"
+  },
+  {
+    "codigo": "C32",
+    "nombre": "Tumor maligno de la laringe"
+  },
+  {
+    "codigo": "C32",
+    "nombre": "Cáncer de la laringe"
+  },
+  {
+    "codigo": "C320",
+    "nombre": "Tumor maligno de la glotis"
+  },
+  {
+    "codigo": "C320",
+    "nombre": "Cáncer de la glotis"
+  },
+  {
+    "codigo": "C321",
+    "nombre": "Tumor maligno de la región supraglótica"
+  },
+  {
+    "codigo": "C321",
+    "nombre": "Cáncer de la región supraglótica"
+  },
+  {
+    "codigo": "C322",
+    "nombre": "Tumor maligno de la región subglótica"
+  },
+  {
+    "codigo": "C322",
+    "nombre": "Cáncer de la región subglótica"
+  },
+  {
+    "codigo": "C323",
+    "nombre": "Tumor maligno del cartílago laríngeo"
+  },
+  {
+    "codigo": "C323",
+    "nombre": "Cáncer del cartílago laríngeo"
+  },
+  {
+    "codigo": "C328",
+    "nombre": "Lesión de sitios contiguos de la laringe"
+  },
+  {
+    "codigo": "C329",
+    "nombre": "Tumor maligno de la laringe"
+  },
+  {
+    "codigo": "C329",
+    "nombre": "Cáncer de la laringe"
+  },
+  {
+    "codigo": "C33",
+    "nombre": "Tumor maligno de la tráquea"
+  },
+  {
+    "codigo": "C33",
+    "nombre": "Cáncer de la tráquea"
+  },
+  {
+    "codigo": "C34",
+    "nombre": "Cáncer de bronquios y pulmón"
+  },
+  {
+    "codigo": "C340",
+    "nombre": "Tumor maligno del bronquio principal"
+  },
+  {
+    "codigo": "C340",
+    "nombre": "Cáncer del bronquio principal"
+  },
+  {
+    "codigo": "C341",
+    "nombre": "Tumor maligno del lóbulo superior"
+  },
+  {
+    "codigo": "C341",
+    "nombre": "Cáncer del lóbulo superior"
+  },
+  {
+    "codigo": "C342",
+    "nombre": "Tumor maligno del lóbulo medio"
+  },
+  {
+    "codigo": "C342",
+    "nombre": "Cáncer del lóbulo medio"
+  },
+  {
+    "codigo": "C343",
+    "nombre": "Tumor maligno del lóbulo inferior"
+  },
+  {
+    "codigo": "C343",
+    "nombre": "Cáncer del lóbulo inferior"
+  },
+  {
+    "codigo": "C348",
+    "nombre": "Lesión de sitios contiguos de los bronquios y del pulmón"
+  },
+  {
+    "codigo": "C349",
+    "nombre": "Tumor maligno de los bronquios o del pulmón"
+  },
+  {
+    "codigo": "C349",
+    "nombre": "Cáncer de los bronquios o del pulmón"
+  },
+  {
+    "codigo": "C37",
+    "nombre": "Tumor maligno del timo"
+  },
+  {
+    "codigo": "C37",
+    "nombre": "Cáncer del timo"
+  },
+  {
+    "codigo": "C38",
+    "nombre": "Tumor maligno del corazón"
+  },
+  {
+    "codigo": "C38",
+    "nombre": "Cáncer del corazón"
+  },
+  {
+    "codigo": "C380",
+    "nombre": "Tumor maligno del corazón"
+  },
+  {
+    "codigo": "C380",
+    "nombre": "Cáncer del corazón"
+  },
+  {
+    "codigo": "C381",
+    "nombre": "Tumor maligno del mediastino anterior"
+  },
+  {
+    "codigo": "C381",
+    "nombre": "Cáncer del mediastino anterior"
+  },
+  {
+    "codigo": "C382",
+    "nombre": "Tumor maligno del mediastino posterior"
+  },
+  {
+    "codigo": "C382",
+    "nombre": "Cáncer del mediastino posterior"
+  },
+  {
+    "codigo": "C383",
+    "nombre": "Tumor maligno del mediastino"
+  },
+  {
+    "codigo": "C383",
+    "nombre": "Cáncer del mediastino"
+  },
+  {
+    "codigo": "C384",
+    "nombre": "Tumor maligno de la pleura"
+  },
+  {
+    "codigo": "C384",
+    "nombre": "Cáncer de la pleura"
+  },
+  {
+    "codigo": "C388",
+    "nombre": "Lesión de sitios contiguos del corazón"
+  },
+  {
+    "codigo": "C39",
+    "nombre": "Tumor maligno de otros sitios y de los mal definidos del sistema respiratorio y de los órganos intratorácicos"
+  },
+  {
+    "codigo": "C39",
+    "nombre": "Cáncer de otros sitios y de los mal definidos del sistema respiratorio y de los órganos intratorácicos"
+  },
+  {
+    "codigo": "C390",
+    "nombre": "Tumor maligno de las vías respiratorias superiores"
+  },
+  {
+    "codigo": "C390",
+    "nombre": "Cáncer de las vías respiratorias superiores"
+  },
+  {
+    "codigo": "C398",
+    "nombre": "Lesión de sitios contiguos de los órganos respiratorios e intratorácicos"
+  },
+  {
+    "codigo": "C399",
+    "nombre": "Tumor maligno de sitios mal definidos del sistema respiratorio"
+  },
+  {
+    "codigo": "C399",
+    "nombre": "Cáncer de sitios mal definidos del sistema respiratorio"
+  },
+  {
+    "codigo": "C40",
+    "nombre": "Tumor maligno de los huesos y de los cartílagos articulares de los miembros"
+  },
+  {
+    "codigo": "C40",
+    "nombre": "Cáncer de los huesos y de los cartílagos articulares de los miembros"
+  },
+  {
+    "codigo": "C400",
+    "nombre": "Tumor maligno del omóplato y de los huesos largos del miembro superior"
+  },
+  {
+    "codigo": "C400",
+    "nombre": "Cáncer del omóplato y de los huesos largos del miembro superior"
+  },
+  {
+    "codigo": "C401",
+    "nombre": "Tumor maligno de los huesos cortos del miembro superior"
+  },
+  {
+    "codigo": "C401",
+    "nombre": "Cáncer de los huesos cortos del miembro superior"
+  },
+  {
+    "codigo": "C402",
+    "nombre": "Tumor maligno de los huesos largos del miembro inferior"
+  },
+  {
+    "codigo": "C402",
+    "nombre": "Cáncer de los huesos largos del miembro inferior"
+  },
+  {
+    "codigo": "C403",
+    "nombre": "Tumor maligno de los huesos cortos del miembro inferior"
+  },
+  {
+    "codigo": "C403",
+    "nombre": "Cáncer de los huesos cortos del miembro inferior"
+  },
+  {
+    "codigo": "C408",
+    "nombre": "Lesión de sitios contiguos de los huesos y de los cartílagos articulares de los miembros"
+  },
+  {
+    "codigo": "C409",
+    "nombre": "Tumor maligno de los huesos y de los cartílagos articulares de los miembros"
+  },
+  {
+    "codigo": "C409",
+    "nombre": "Cáncer de los huesos y de los cartílagos articulares de los miembros"
+  },
+  {
+    "codigo": "C41",
+    "nombre": "Tumor maligno de los huesos y de los cartílagos articulares"
+  },
+  {
+    "codigo": "C41",
+    "nombre": "Cáncer de los huesos y de los cartílagos articulares"
+  },
+  {
+    "codigo": "C410",
+    "nombre": "Tumor maligno de los huesos del cráneo y de la cara"
+  },
+  {
+    "codigo": "C410",
+    "nombre": "Cáncer de los huesos del cráneo y de la cara"
+  },
+  {
+    "codigo": "C411",
+    "nombre": "Tumor maligno del hueso del maxilar inferior"
+  },
+  {
+    "codigo": "C411",
+    "nombre": "Cáncer del hueso del maxilar inferior"
+  },
+  {
+    "codigo": "C412",
+    "nombre": "Tumor maligno de la columna vertebral"
+  },
+  {
+    "codigo": "C412",
+    "nombre": "Cáncer de la columna vertebral"
+  },
+  {
+    "codigo": "C413",
+    "nombre": "Tumor maligno de la costilla"
+  },
+  {
+    "codigo": "C413",
+    "nombre": "Cáncer de la costilla"
+  },
+  {
+    "codigo": "C414",
+    "nombre": "Tumor maligno de los huesos de la pelvis"
+  },
+  {
+    "codigo": "C414",
+    "nombre": "Cáncer de los huesos de la pelvis"
+  },
+  {
+    "codigo": "C418",
+    "nombre": "Lesión de sitios contiguos del hueso y del cartílago articular"
+  },
+  {
+    "codigo": "C419",
+    "nombre": "Tumor maligno del hueso y del cartílago articular"
+  },
+  {
+    "codigo": "C419",
+    "nombre": "Cáncer del hueso y del cartílago articular"
+  },
+  {
+    "codigo": "C43",
+    "nombre": "Melanoma maligno de la piel"
+  },
+  {
+    "codigo": "C430",
+    "nombre": "Melanoma maligno del labio"
+  },
+  {
+    "codigo": "C431",
+    "nombre": "Melanoma maligno del párpado"
+  },
+  {
+    "codigo": "C432",
+    "nombre": "Melanoma maligno de la oreja y del conducto auditivo externo"
+  },
+  {
+    "codigo": "C433",
+    "nombre": "Melanoma maligno de las otras partes y las no especificadas de la cara"
+  },
+  {
+    "codigo": "C434",
+    "nombre": "Melanoma maligno del cuero cabelludo y del cuello"
+  },
+  {
+    "codigo": "C435",
+    "nombre": "Melanoma maligno del tronco"
+  },
+  {
+    "codigo": "C436",
+    "nombre": "Melanoma maligno del miembro superior"
+  },
+  {
+    "codigo": "C437",
+    "nombre": "Melanoma maligno del miembro inferior"
+  },
+  {
+    "codigo": "C438",
+    "nombre": "Melanoma maligno de sitios contiguos de la piel"
+  },
+  {
+    "codigo": "C439",
+    "nombre": "Melanoma maligno de piel"
+  },
+  {
+    "codigo": "C44",
+    "nombre": "Otros tumores malignos de la piel"
+  },
+  {
+    "codigo": "C440",
+    "nombre": "Tumor maligno de la piel del labio"
+  },
+  {
+    "codigo": "C440",
+    "nombre": "Cáncer de la piel del labio"
+  },
+  {
+    "codigo": "C441",
+    "nombre": "Tumor maligno de la piel del párpado"
+  },
+  {
+    "codigo": "C441",
+    "nombre": "Cáncer de la piel del párpado"
+  },
+  {
+    "codigo": "C442",
+    "nombre": "Tumor maligno de la piel de la oreja y del conducto auditivo externo"
+  },
+  {
+    "codigo": "C442",
+    "nombre": "Cáncer de la piel de la oreja y del conducto auditivo externo"
+  },
+  {
+    "codigo": "C443",
+    "nombre": "Tumor maligno de la piel de otras partes y de las no especificadas de la cara"
+  },
+  {
+    "codigo": "C443",
+    "nombre": "Cáncer de la piel de otras partes y de las no especificadas de la cara"
+  },
+  {
+    "codigo": "C444",
+    "nombre": "Tumor maligno de la piel del cuero cabelludo y del cuello"
+  },
+  {
+    "codigo": "C444",
+    "nombre": "Cáncer de la piel del cuero cabelludo y del cuello"
+  },
+  {
+    "codigo": "C445",
+    "nombre": "Tumor maligno de la piel del tronco"
+  },
+  {
+    "codigo": "C445",
+    "nombre": "Cáncer de la piel del tronco"
+  },
+  {
+    "codigo": "C446",
+    "nombre": "Tumor maligno de la piel del miembro superior"
+  },
+  {
+    "codigo": "C446",
+    "nombre": "Cáncer de la piel del miembro superior"
+  },
+  {
+    "codigo": "C447",
+    "nombre": "Tumor maligno de la piel del miembro inferior"
+  },
+  {
+    "codigo": "C447",
+    "nombre": "Cáncer de la piel del miembro inferior"
+  },
+  {
+    "codigo": "C448",
+    "nombre": "Lesión de sitios contiguos de la piel"
+  },
+  {
+    "codigo": "C449",
+    "nombre": "Tumor maligno de la piel"
+  },
+  {
+    "codigo": "C449",
+    "nombre": "Cáncer de la piel"
+  },
+  {
+    "codigo": "C45",
+    "nombre": "Mesotelioma"
+  },
+  {
+    "codigo": "C450",
+    "nombre": "Mesotelioma de la pleura"
+  },
+  {
+    "codigo": "C451",
+    "nombre": "Mesotelioma del peritoneo"
+  },
+  {
+    "codigo": "C452",
+    "nombre": "Mesotelioma del pericardio"
+  },
+  {
+    "codigo": "C457",
+    "nombre": "Mesotelioma de otros sitios especificados"
+  },
+  {
+    "codigo": "C459",
+    "nombre": "Mesotelioma"
+  },
+  {
+    "codigo": "C46",
+    "nombre": "Sarcoma de Kaposi"
+  },
+  {
+    "codigo": "C460",
+    "nombre": "Sarcoma de Kaposi de la piel"
+  },
+  {
+    "codigo": "C461",
+    "nombre": "Sarcoma de Kaposi del tejido blando"
+  },
+  {
+    "codigo": "C462",
+    "nombre": "Sarcoma de Kaposi del paladar"
+  },
+  {
+    "codigo": "C463",
+    "nombre": "Sarcoma de Kaposi de los ganglios linfáticos"
+  },
+  {
+    "codigo": "C467",
+    "nombre": "Sarcoma de Kaposi de otros sitios especificados"
+  },
+  {
+    "codigo": "C468",
+    "nombre": "Sarcoma de Kaposi de múltiples órganos"
+  },
+  {
+    "codigo": "C469",
+    "nombre": "Sarcoma de Kaposi"
+  },
+  {
+    "codigo": "C47",
+    "nombre": "Tumor maligno de los nervios periféricos y del sistema"
+  },
+  {
+    "codigo": "C47",
+    "nombre": "Cáncer de los nervios periféricos y del sistema"
+  },
+  {
+    "codigo": "C470",
+    "nombre": "Tumor maligno de los nervios periféricos de la cabeza"
+  },
+  {
+    "codigo": "C470",
+    "nombre": "Cáncer de los nervios periféricos de la cabeza"
+  },
+  {
+    "codigo": "C471",
+    "nombre": "Tumor maligno de los nervios periféricos del miembro superior"
+  },
+  {
+    "codigo": "C471",
+    "nombre": "Cáncer de los nervios periféricos del miembro superior"
+  },
+  {
+    "codigo": "C472",
+    "nombre": "Tumor maligno de los nervios periféricos del miembro inferior"
+  },
+  {
+    "codigo": "C472",
+    "nombre": "Cáncer de los nervios periféricos del miembro inferior"
+  },
+  {
+    "codigo": "C473",
+    "nombre": "Tumor maligno de los nervios periféricos del tórax"
+  },
+  {
+    "codigo": "C473",
+    "nombre": "Cáncer de los nervios periféricos del tórax"
+  },
+  {
+    "codigo": "C474",
+    "nombre": "Tumor maligno de los nervios periféricos del abdomen"
+  },
+  {
+    "codigo": "C474",
+    "nombre": "Cáncer de los nervios periféricos del abdomen"
+  },
+  {
+    "codigo": "C475",
+    "nombre": "Tumor maligno de los nervios periféricos de la pelvis"
+  },
+  {
+    "codigo": "C475",
+    "nombre": "Cáncer de los nervios periféricos de la pelvis"
+  },
+  {
+    "codigo": "C476",
+    "nombre": "Tumor maligno de los nervios periféricos del tronco"
+  },
+  {
+    "codigo": "C476",
+    "nombre": "Cáncer de los nervios periféricos del tronco"
+  },
+  {
+    "codigo": "C478",
+    "nombre": "Lesión de sitios contiguos de los nervios periféricos y del sistema nervioso autónomo"
+  },
+  {
+    "codigo": "C479",
+    "nombre": "Tumor maligno de los nervios periféricos y del sistema nervioso autónomo"
+  },
+  {
+    "codigo": "C479",
+    "nombre": "Cáncer de los nervios periféricos y del sistema nervioso autónomo"
+  },
+  {
+    "codigo": "C48",
+    "nombre": "Tumor maligno del peritoneo y del retroperitoneo"
+  },
+  {
+    "codigo": "C48",
+    "nombre": "Cáncer del peritoneo y del retroperitoneo"
+  },
+  {
+    "codigo": "C480",
+    "nombre": "Tumor maligno del retroperitoneo"
+  },
+  {
+    "codigo": "C480",
+    "nombre": "Cáncer del retroperitoneo"
+  },
+  {
+    "codigo": "C481",
+    "nombre": "Tumor maligno de parte especificada del peritoneo"
+  },
+  {
+    "codigo": "C481",
+    "nombre": "Cáncer de parte especificada del peritoneo"
+  },
+  {
+    "codigo": "C482",
+    "nombre": "Tumor maligno del peritoneo"
+  },
+  {
+    "codigo": "C482",
+    "nombre": "Cáncer del peritoneo"
+  },
+  {
+    "codigo": "C488",
+    "nombre": "Lesión de sitios contiguos del peritoneo y del retroperitoneo"
+  },
+  {
+    "codigo": "C49",
+    "nombre": "Tumor maligno de otros tejidos conjuntivos y de tejidos blandos"
+  },
+  {
+    "codigo": "C49",
+    "nombre": "Cáncer de otros tejidos conjuntivos y de tejidos blandos"
+  },
+  {
+    "codigo": "C490",
+    "nombre": "Tumor maligno del tejido conjuntivo y tejido blando de la cabeza"
+  },
+  {
+    "codigo": "C490",
+    "nombre": "Cáncer del tejido conjuntivo y tejido blando de la cabeza"
+  },
+  {
+    "codigo": "C491",
+    "nombre": "Tumor maligno del tejido conjuntivo y tejido blando del miembro superior"
+  },
+  {
+    "codigo": "C491",
+    "nombre": "Cáncer del tejido conjuntivo y tejido blando del miembro superior"
+  },
+  {
+    "codigo": "C492",
+    "nombre": "Tumor maligno del tejido conjuntivo y tejido blando del miembro inferior"
+  },
+  {
+    "codigo": "C492",
+    "nombre": "Cáncer del tejido conjuntivo y tejido blando del miembro inferior"
+  },
+  {
+    "codigo": "C493",
+    "nombre": "Tumor maligno del tejido conjuntivo y tejido blando del tórax"
+  },
+  {
+    "codigo": "C493",
+    "nombre": "Cáncer del tejido conjuntivo y tejido blando del tórax"
+  },
+  {
+    "codigo": "C494",
+    "nombre": "Tumor maligno del tejido conjuntivo y tejido blando del abdomen"
+  },
+  {
+    "codigo": "C494",
+    "nombre": "Cáncer del tejido conjuntivo y tejido blando del abdomen"
+  },
+  {
+    "codigo": "C495",
+    "nombre": "Tumor maligno del tejido conjuntivo y tejido blando de la pelvis"
+  },
+  {
+    "codigo": "C495",
+    "nombre": "Cáncer del tejido conjuntivo y tejido blando de la pelvis"
+  },
+  {
+    "codigo": "C496",
+    "nombre": "Tumor maligno del tejido conjuntivo y tejido blando del tronco"
+  },
+  {
+    "codigo": "C496",
+    "nombre": "Cáncer del tejido conjuntivo y tejido blando del tronco"
+  },
+  {
+    "codigo": "C498",
+    "nombre": "Lesión de sitios contiguos del tejido conjuntivo y del tejido blando"
+  },
+  {
+    "codigo": "C499",
+    "nombre": "Tumor maligno del tejido conjuntivo y tejido blando"
+  },
+  {
+    "codigo": "C499",
+    "nombre": "Cáncer del tejido conjuntivo y tejido blando"
+  },
+  {
+    "codigo": "C50",
+    "nombre": "Cáncer de mama"
+  },
+  {
+    "codigo": "C500",
+    "nombre": "Tumor maligno del pezón y aréola mamaria"
+  },
+  {
+    "codigo": "C500",
+    "nombre": "Cáncer del pezón y aréola mamaria"
+  },
+  {
+    "codigo": "C501",
+    "nombre": "Tumor maligno de la porción central de la mama"
+  },
+  {
+    "codigo": "C501",
+    "nombre": "Cáncer de la porción central de la mama"
+  },
+  {
+    "codigo": "C502",
+    "nombre": "Tumor maligno del cuadrante superior interno de la mama"
+  },
+  {
+    "codigo": "C502",
+    "nombre": "Cáncer del cuadrante superior interno de la mama"
+  },
+  {
+    "codigo": "C503",
+    "nombre": "Tumor maligno del cuadrante inferior interno de la mama"
+  },
+  {
+    "codigo": "C503",
+    "nombre": "Cáncer del cuadrante inferior interno de la mama"
+  },
+  {
+    "codigo": "C504",
+    "nombre": "Tumor maligno del cuadrante superior externo de la mama"
+  },
+  {
+    "codigo": "C504",
+    "nombre": "Cáncer del cuadrante superior externo de la mama"
+  },
+  {
+    "codigo": "C505",
+    "nombre": "Tumor maligno del cuadrante inferior externo de la mama"
+  },
+  {
+    "codigo": "C505",
+    "nombre": "Cáncer del cuadrante inferior externo de la mama"
+  },
+  {
+    "codigo": "C506",
+    "nombre": "Tumor maligno de la prolongación axilar de la mama"
+  },
+  {
+    "codigo": "C506",
+    "nombre": "Cáncer de la prolongación axilar de la mama"
+  },
+  {
+    "codigo": "C508",
+    "nombre": "Lesión de sitios contiguos de la mama"
+  },
+  {
+    "codigo": "C509",
+    "nombre": "Tumor maligno de la mama"
+  },
+  {
+    "codigo": "C509",
+    "nombre": "Cáncer de la mama"
+  },
+  {
+    "codigo": "C51",
+    "nombre": "Tumor maligno de la vulva"
+  },
+  {
+    "codigo": "C51",
+    "nombre": "Cáncer de la vulva"
+  },
+  {
+    "codigo": "C510",
+    "nombre": "Tumor maligno del labio mayor"
+  },
+  {
+    "codigo": "C510",
+    "nombre": "Cáncer del labio mayor"
+  },
+  {
+    "codigo": "C511",
+    "nombre": "Tumor maligno del labio menor"
+  },
+  {
+    "codigo": "C511",
+    "nombre": "Cáncer del labio menor"
+  },
+  {
+    "codigo": "C512",
+    "nombre": "Tumor maligno del clítoris"
+  },
+  {
+    "codigo": "C512",
+    "nombre": "Cáncer del clítoris"
+  },
+  {
+    "codigo": "C518",
+    "nombre": "Lesión de sitios contiguos de la vulva"
+  },
+  {
+    "codigo": "C519",
+    "nombre": "Tumor maligno de la vulva"
+  },
+  {
+    "codigo": "C519",
+    "nombre": "Cáncer de la vulva"
+  },
+  {
+    "codigo": "C52",
+    "nombre": "Tumor maligno de la vagina"
+  },
+  {
+    "codigo": "C52",
+    "nombre": "Cáncer de la vagina"
+  },
+  {
+    "codigo": "C53",
+    "nombre": "Cáncer de cuello uterino"
+  },
+  {
+    "codigo": "C530",
+    "nombre": "Tumor maligno del endocérvix"
+  },
+  {
+    "codigo": "C530",
+    "nombre": "Cáncer del endocérvix"
+  },
+  {
+    "codigo": "C531",
+    "nombre": "Tumor maligno del exocérvix"
+  },
+  {
+    "codigo": "C531",
+    "nombre": "Cáncer del exocérvix"
+  },
+  {
+    "codigo": "C538",
+    "nombre": "Lesión de sitios contiguos del cuello del útero"
+  },
+  {
+    "codigo": "C539",
+    "nombre": "Tumor maligno del cuello del útero"
+  },
+  {
+    "codigo": "C539",
+    "nombre": "Cáncer del cuello del útero"
+  },
+  {
+    "codigo": "C54",
+    "nombre": "Cáncer del cuerpo del útero"
+  },
+  {
+    "codigo": "C540",
+    "nombre": "Tumor maligno del istmo uterino"
+  },
+  {
+    "codigo": "C540",
+    "nombre": "Cáncer del istmo uterino"
+  },
+  {
+    "codigo": "C541",
+    "nombre": "Tumor maligno del endometrio"
+  },
+  {
+    "codigo": "C541",
+    "nombre": "Cáncer del endometrio"
+  },
+  {
+    "codigo": "C542",
+    "nombre": "Tumor maligno del miometrio"
+  },
+  {
+    "codigo": "C542",
+    "nombre": "Cáncer del miometrio"
+  },
+  {
+    "codigo": "C543",
+    "nombre": "Tumor maligno del fondo del útero"
+  },
+  {
+    "codigo": "C543",
+    "nombre": "Cáncer del fondo del útero"
+  },
+  {
+    "codigo": "C548",
+    "nombre": "Lesión de sitios contiguos del cuerpo del útero"
+  },
+  {
+    "codigo": "C549",
+    "nombre": "Tumor maligno del cuerpo del útero"
+  },
+  {
+    "codigo": "C549",
+    "nombre": "Cáncer del cuerpo del útero"
+  },
+  {
+    "codigo": "C55",
+    "nombre": "Tumor maligno del útero"
+  },
+  {
+    "codigo": "C55",
+    "nombre": "Cáncer del útero"
+  },
+  {
+    "codigo": "C56",
+    "nombre": "Cáncer de ovario"
+  },
+  {
+    "codigo": "C61",
+    "nombre": "Cáncer de próstata"
+  },
+  {
+    "codigo": "C64",
+    "nombre": "Cáncer de riñón"
+  },
+  {
     "codigo": "C67",
     "nombre": "Cáncer de vejiga"
   },
   {
-    "codigo": "C91",
-    "nombre": "Leucemia linfoide"
+    "codigo": "C670",
+    "nombre": "Tumor maligno del trígono vesical"
   },
   {
-    "codigo": "C92",
-    "nombre": "Leucemia mieloide"
+    "codigo": "C71",
+    "nombre": "Tumor maligno del encéfalo"
+  },
+  {
+    "codigo": "C710",
+    "nombre": "Tumor maligno del cerebro"
+  },
+  {
+    "codigo": "C73",
+    "nombre": "Cáncer de tiroides"
+  },
+  {
+    "codigo": "C78",
+    "nombre": "Tumor maligno secundario de los órganos respiratorios"
+  },
+  {
+    "codigo": "C780",
+    "nombre": "Tumor maligno secundario del pulmón"
+  },
+  {
+    "codigo": "C79",
+    "nombre": "Tumor maligno secundario de otros sitios"
+  },
+  {
+    "codigo": "C790",
+    "nombre": "Tumor maligno secundario del riñón y de la pelvis renal"
+  },
+  {
+    "codigo": "C80",
+    "nombre": "Tumor maligno de sitio no especificado"
   },
   {
     "codigo": "C81",
@@ -240,564 +2184,20 @@
     "nombre": "Linfoma no Hodgkin"
   },
   {
-    "codigo": "B18",
-    "nombre": "Hepatitis viral crónica"
+    "codigo": "C91",
+    "nombre": "Leucemia linfoide"
   },
   {
-    "codigo": "B16",
-    "nombre": "Hepatitis aguda tipo B"
+    "codigo": "C910",
+    "nombre": "Leucemia linfoblástica aguda"
   },
   {
-    "codigo": "B17",
-    "nombre": "Otras hepatitis virales agudas"
+    "codigo": "C92",
+    "nombre": "Leucemia mieloide"
   },
   {
-    "codigo": "B24",
-    "nombre": "VIH/SIDA"
-  },
-  {
-    "codigo": "A09",
-    "nombre": "Diarrea y gastroenteritis de presunto origen infeccioso"
-  },
-  {
-    "codigo": "L40",
-    "nombre": "Psoriasis"
-  },
-  {
-    "codigo": "L20",
-    "nombre": "Dermatitis atópica"
-  },
-  {
-    "codigo": "L50",
-    "nombre": "Urticaria"
-  },
-  {
-    "codigo": "M32",
-    "nombre": "Lupus eritematoso sistémico"
-  },
-  {
-    "codigo": "K50",
-    "nombre": "Enfermedad de Crohn"
-  },
-  {
-    "codigo": "K51",
-    "nombre": "Colitis ulcerosa"
-  },
-  {
-    "codigo": "H25",
-    "nombre": "Catarata senil"
-  },
-  {
-    "codigo": "H40",
-    "nombre": "Glaucoma"
-  },
-  {
-    "codigo": "H35",
-    "nombre": "Retinopatía"
-  },
-  {
-    "codigo": "H90",
-    "nombre": "Hipoacusia (pérdida auditiva)"
-  },
-  {
-    "codigo": "N40",
-    "nombre": "Hiperplasia de la próstata"
-  },
-  {
-    "codigo": "N39",
-    "nombre": "Infección de vías urinarias"
-  },
-  {
-    "codigo": "N80",
-    "nombre": "Endometriosis"
-  },
-  {
-    "codigo": "N92",
-    "nombre": "Menstruación excesiva, frecuente e irregular"
-  },
-  {
-    "codigo": "O80",
-    "nombre": "Parto único espontáneo"
-  },
-  {
-    "codigo": "E27",
-    "nombre": "Insuficiencia suprarrenal"
-  },
-  {
-    "codigo": "D50",
-    "nombre": "Anemia por deficiencia de hierro"
-  },
-  {
-    "codigo": "D64",
-    "nombre": "Otras anemias"
-  },
-  {
-    "codigo": "I80",
-    "nombre": "Flebitis y tromboflebitis"
-  },
-  {
-    "codigo": "I83",
-    "nombre": "Várices de los miembros inferiores"
-  },
-  {
-    "codigo": "R10",
-    "nombre": "Dolor abdominal y pélvico"
-  },
-  {
-    "codigo": "R51",
-    "nombre": "Cefalea"
-  },
-  {
-    "codigo": "R50",
-    "nombre": "Fiebre de origen desconocido"
-  },
-  {
-    "codigo": "Z51",
-    "nombre": "Atención médica por otras terapias"
-  },
-  {
-    "codigo": "E14",
-    "nombre": "Diabetes mellitus no especificada"
-  },
-  {
-    "codigo": "I11",
-    "nombre": "Enfermedad cardíaca hipertensiva"
-  },
-  {
-    "codigo": "I20",
-    "nombre": "Angina de pecho"
-  },
-  {
-    "codigo": "I48",
-    "nombre": "Fibrilación y aleteo auricular"
-  },
-  {
-    "codigo": "I49",
-    "nombre": "Otras arritmias cardíacas"
-  },
-  {
-    "codigo": "I70",
-    "nombre": "Aterosclerosis"
-  },
-  {
-    "codigo": "J00",
-    "nombre": "Rinofaringitis aguda (resfriado común)"
-  },
-  {
-    "codigo": "J06",
-    "nombre": "Infecciones agudas de las vías respiratorias superiores"
-  },
-  {
-    "codigo": "J30",
-    "nombre": "Rinitis alérgica"
-  },
-  {
-    "codigo": "J32",
-    "nombre": "Sinusitis crónica"
-  },
-  {
-    "codigo": "J42",
-    "nombre": "Bronquitis crónica no especificada"
-  },
-  {
-    "codigo": "J47",
-    "nombre": "Bronquiectasia"
-  },
-  {
-    "codigo": "K25",
-    "nombre": "Úlcera gástrica"
-  },
-  {
-    "codigo": "K26",
-    "nombre": "Úlcera duodenal"
-  },
-  {
-    "codigo": "K35",
-    "nombre": "Apendicitis aguda"
-  },
-  {
-    "codigo": "K40",
-    "nombre": "Hernia inguinal"
-  },
-  {
-    "codigo": "K44",
-    "nombre": "Hernia diafragmática"
-  },
-  {
-    "codigo": "K58",
-    "nombre": "Síndrome del intestino irritable"
-  },
-  {
-    "codigo": "K59",
-    "nombre": "Estreñimiento"
-  },
-  {
-    "codigo": "K70",
-    "nombre": "Enfermedad alcohólica del hígado"
-  },
-  {
-    "codigo": "K85",
-    "nombre": "Pancreatitis aguda"
-  },
-  {
-    "codigo": "K86",
-    "nombre": "Pancreatitis crónica"
-  },
-  {
-    "codigo": "M10",
-    "nombre": "Gota"
-  },
-  {
-    "codigo": "M16",
-    "nombre": "Coxartrosis (artrosis de cadera)"
-  },
-  {
-    "codigo": "M23",
-    "nombre": "Trastorno interno de la rodilla"
-  },
-  {
-    "codigo": "M25",
-    "nombre": "Otros trastornos articulares"
-  },
-  {
-    "codigo": "M41",
-    "nombre": "Escoliosis"
-  },
-  {
-    "codigo": "M42",
-    "nombre": "Osteocondrosis de la columna vertebral"
-  },
-  {
-    "codigo": "M47",
-    "nombre": "Espondilosis"
-  },
-  {
-    "codigo": "M48",
-    "nombre": "Otras espondilopatías"
-  },
-  {
-    "codigo": "M50",
-    "nombre": "Trastornos de disco cervical"
-  },
-  {
-    "codigo": "M51",
-    "nombre": "Otros trastornos de los discos intervertebrales"
-  },
-  {
-    "codigo": "M75",
-    "nombre": "Lesiones del hombro"
-  },
-  {
-    "codigo": "M77",
-    "nombre": "Otras entesopatías"
-  },
-  {
-    "codigo": "M80",
-    "nombre": "Osteoporosis con fractura patológica"
-  },
-  {
-    "codigo": "M81",
-    "nombre": "Osteoporosis sin fractura patológica"
-  },
-  {
-    "codigo": "N00",
-    "nombre": "Síndrome nefrítico agudo"
-  },
-  {
-    "codigo": "N03",
-    "nombre": "Síndrome nefrítico crónico"
-  },
-  {
-    "codigo": "N04",
-    "nombre": "Síndrome nefrótico"
-  },
-  {
-    "codigo": "N10",
-    "nombre": "Nefritis tubulointersticial aguda"
-  },
-  {
-    "codigo": "N11",
-    "nombre": "Nefritis tubulointersticial crónica"
-  },
-  {
-    "codigo": "N13",
-    "nombre": "Uropatía obstructiva y por reflujo"
-  },
-  {
-    "codigo": "N19",
-    "nombre": "Insuficiencia renal no especificada"
-  },
-  {
-    "codigo": "N30",
-    "nombre": "Cistitis"
-  },
-  {
-    "codigo": "N41",
-    "nombre": "Enfermedades inflamatorias de la próstata"
-  },
-  {
-    "codigo": "N70",
-    "nombre": "Salpingitis y ooforitis"
-  },
-  {
-    "codigo": "N73",
-    "nombre": "Otras enfermedades pélvicas inflamatorias femeninas"
-  },
-  {
-    "codigo": "N81",
-    "nombre": "Prolapso genital femenino"
-  },
-  {
-    "codigo": "N83",
-    "nombre": "Trastornos no inflamatorios del ovario"
-  },
-  {
-    "codigo": "N95",
-    "nombre": "Trastornos menopáusicos y perimenopáusicos"
-  },
-  {
-    "codigo": "O00",
-    "nombre": "Embarazo ectópico"
-  },
-  {
-    "codigo": "O03",
-    "nombre": "Aborto espontáneo"
-  },
-  {
-    "codigo": "O10",
-    "nombre": "Hipertensión preexistente que complica el embarazo"
-  },
-  {
-    "codigo": "O13",
-    "nombre": "Hipertensión gestacional"
-  },
-  {
-    "codigo": "O14",
-    "nombre": "Preeclampsia"
-  },
-  {
-    "codigo": "O15",
-    "nombre": "Eclampsia"
-  },
-  {
-    "codigo": "O24",
-    "nombre": "Diabetes mellitus en el embarazo"
-  },
-  {
-    "codigo": "P07",
-    "nombre": "Trastornos relacionados con duración corta de la gestación"
-  },
-  {
-    "codigo": "Q21",
-    "nombre": "Malformaciones congénitas de los tabiques cardíacos"
-  },
-  {
-    "codigo": "Q90",
-    "nombre": "Síndrome de Down"
-  },
-  {
-    "codigo": "R05",
-    "nombre": "Tos"
-  },
-  {
-    "codigo": "R06",
-    "nombre": "Anormalidades de la respiración"
-  },
-  {
-    "codigo": "R07",
-    "nombre": "Dolor de garganta y en el pecho"
-  },
-  {
-    "codigo": "R11",
-    "nombre": "Náusea y vómito"
-  },
-  {
-    "codigo": "R19",
-    "nombre": "Otros síntomas y signos que involucran el sistema digestivo"
-  },
-  {
-    "codigo": "R42",
-    "nombre": "Mareo y desvanecimiento"
-  },
-  {
-    "codigo": "R52",
-    "nombre": "Dolor no clasificado en otra parte"
-  },
-  {
-    "codigo": "R53",
-    "nombre": "Malestar y fatiga"
-  },
-  {
-    "codigo": "R55",
-    "nombre": "Síncope y colapso"
-  },
-  {
-    "codigo": "S06",
-    "nombre": "Traumatismo intracraneal"
-  },
-  {
-    "codigo": "S52",
-    "nombre": "Fractura del antebrazo"
-  },
-  {
-    "codigo": "S72",
-    "nombre": "Fractura del fémur"
-  },
-  {
-    "codigo": "S82",
-    "nombre": "Fractura de la pierna"
-  },
-  {
-    "codigo": "T14",
-    "nombre": "Traumatismo de región no especificada del cuerpo"
-  },
-  {
-    "codigo": "T78",
-    "nombre": "Efectos adversos no clasificados en otra parte"
-  },
-  {
-    "codigo": "Z00",
-    "nombre": "Examen general e investigación de personas sin quejas"
-  },
-  {
-    "codigo": "Z01",
-    "nombre": "Otros exámenes especiales e investigaciones"
-  },
-  {
-    "codigo": "Z11",
-    "nombre": "Examen de pesquisa especial para enfermedades infecciosas"
-  },
-  {
-    "codigo": "Z12",
-    "nombre": "Examen de pesquisa especial para tumores"
-  },
-  {
-    "codigo": "Z13",
-    "nombre": "Examen de pesquisa especial para otros trastornos"
-  },
-  {
-    "codigo": "Z23",
-    "nombre": "Necesidad de inmunización contra enfermedad bacteriana única"
-  },
-  {
-    "codigo": "Z30",
-    "nombre": "Atención para la anticoncepción"
-  },
-  {
-    "codigo": "Z34",
-    "nombre": "Supervisión de embarazo normal"
-  },
-  {
-    "codigo": "Z35",
-    "nombre": "Supervisión de embarazo de alto riesgo"
-  },
-  {
-    "codigo": "Z38",
-    "nombre": "Nacidos vivos según lugar de nacimiento"
-  },
-  {
-    "codigo": "Z48",
-    "nombre": "Otra atención de seguimiento quirúrgico"
-  },
-  {
-    "codigo": "Z50",
-    "nombre": "Atención por el uso de procedimientos de rehabilitación"
-  },
-  {
-    "codigo": "Z71",
-    "nombre": "Personas en contacto con los servicios de salud por consejo"
-  },
-  {
-    "codigo": "Z72",
-    "nombre": "Problemas relacionados con el estilo de vida"
-  },
-  {
-    "codigo": "Z80",
-    "nombre": "Historia familiar de tumor maligno"
-  },
-  {
-    "codigo": "Z82",
-    "nombre": "Historia familiar de enfermedades crónicas"
-  },
-  {
-    "codigo": "Z85",
-    "nombre": "Historia personal de tumor maligno"
-  },
-  {
-    "codigo": "Z86",
-    "nombre": "Historia personal de otras enfermedades"
-  },
-  {
-    "codigo": "Z87",
-    "nombre": "Historia personal de otras enfermedades y afecciones"
-  },
-  {
-    "codigo": "Z90",
-    "nombre": "Ausencia adquirida de órganos"
-  },
-  {
-    "codigo": "Z92",
-    "nombre": "Historia personal de tratamiento médico"
-  },
-  {
-    "codigo": "Z94",
-    "nombre": "Órgano o tejido transplantado"
-  },
-  {
-    "codigo": "Z95",
-    "nombre": "Presencia de implantes e injertos cardiovasculares"
-  },
-  {
-    "codigo": "Z96",
-    "nombre": "Presencia de otros implantes funcionales"
-  },
-  {
-    "codigo": "Z98",
-    "nombre": "Otros estados postquirúrgicos"
-  },
-  {
-    "codigo": "Z99",
-    "nombre": "Dependencia de máquinas y dispositivos capacitantes"
-  },
-  {
-    "codigo": "C43",
-    "nombre": "Melanoma maligno de la piel"
-  },
-  {
-    "codigo": "C44",
-    "nombre": "Otros tumores malignos de la piel"
-  },
-  {
-    "codigo": "C54",
-    "nombre": "Cáncer del cuerpo del útero"
-  },
-  {
-    "codigo": "C56",
-    "nombre": "Cáncer de ovario"
-  },
-  {
-    "codigo": "C64",
-    "nombre": "Cáncer de riñón"
-  },
-  {
-    "codigo": "C71",
-    "nombre": "Tumor maligno del encéfalo"
-  },
-  {
-    "codigo": "C73",
-    "nombre": "Cáncer de tiroides"
-  },
-  {
-    "codigo": "C78",
-    "nombre": "Tumor maligno secundario de los órganos respiratorios"
-  },
-  {
-    "codigo": "C79",
-    "nombre": "Tumor maligno secundario de otros sitios"
-  },
-  {
-    "codigo": "C80",
-    "nombre": "Tumor maligno de sitio no especificado"
+    "codigo": "C920",
+    "nombre": "Leucemia mieloide aguda"
   },
   {
     "codigo": "D05",
@@ -828,12 +2228,32 @@
     "nombre": "Tumor benigno de otras glándulas endocrinas"
   },
   {
+    "codigo": "D46",
+    "nombre": "Síndromes mielodisplásicos"
+  },
+  {
+    "codigo": "D47",
+    "nombre": "Otros tumores de comportamiento incierto o desconocido del tejido linfático"
+  },
+  {
     "codigo": "D48",
     "nombre": "Tumor de comportamiento incierto"
   },
   {
+    "codigo": "D50",
+    "nombre": "Anemia por deficiencia de hierro"
+  },
+  {
+    "codigo": "D500",
+    "nombre": "Anemia por deficiencia de hierro secundaria a pérdida de sangre (crónica)"
+  },
+  {
     "codigo": "D51",
     "nombre": "Anemia por deficiencia de vitamina B12"
+  },
+  {
+    "codigo": "D510",
+    "nombre": "Anemia por deficiencia de vitamina B12 debida a deficiencia del factor intrínseco"
   },
   {
     "codigo": "D52",
@@ -848,6 +2268,18 @@
     "nombre": "Talasemia"
   },
   {
+    "codigo": "D560",
+    "nombre": "Alfa talasemia"
+  },
+  {
+    "codigo": "D57",
+    "nombre": "Trastornos falciformes"
+  },
+  {
+    "codigo": "D570",
+    "nombre": "Anemia falciforme con crisis"
+  },
+  {
     "codigo": "D58",
     "nombre": "Otras anemias hemolíticas hereditarias"
   },
@@ -858,6 +2290,14 @@
   {
     "codigo": "D61",
     "nombre": "Otras anemias aplásticas"
+  },
+  {
+    "codigo": "D64",
+    "nombre": "Otras anemias"
+  },
+  {
+    "codigo": "D640",
+    "nombre": "Anemia sideroblástica hereditaria"
   },
   {
     "codigo": "D68",
@@ -888,12 +2328,48 @@
     "nombre": "Trastornos tiroideos relacionados con deficiencia de yodo"
   },
   {
+    "codigo": "E03",
+    "nombre": "Hipotiroidismo"
+  },
+  {
+    "codigo": "E030",
+    "nombre": "Hipotiroidismo congénito con bocio difuso"
+  },
+  {
+    "codigo": "E04",
+    "nombre": "Bocio no tóxico"
+  },
+  {
+    "codigo": "E05",
+    "nombre": "Tirotoxicosis (hipertiroidismo)"
+  },
+  {
+    "codigo": "E050",
+    "nombre": "Tirotoxicosis con bocio difuso"
+  },
+  {
     "codigo": "E06",
     "nombre": "Tiroiditis"
   },
   {
+    "codigo": "E060",
+    "nombre": "Tiroiditis aguda"
+  },
+  {
     "codigo": "E07",
     "nombre": "Otros trastornos de la tiroides"
+  },
+  {
+    "codigo": "E10",
+    "nombre": "Diabetes mellitus tipo 1"
+  },
+  {
+    "codigo": "E11",
+    "nombre": "Diabetes mellitus tipo 2"
+  },
+  {
+    "codigo": "E14",
+    "nombre": "Diabetes mellitus no especificada"
   },
   {
     "codigo": "E16",
@@ -908,28 +2384,60 @@
     "nombre": "Hiperparatiroidismo"
   },
   {
+    "codigo": "E210",
+    "nombre": "Hiperparatiroidismo primario"
+  },
+  {
     "codigo": "E22",
     "nombre": "Hiperfunción de la glándula pituitaria"
+  },
+  {
+    "codigo": "E220",
+    "nombre": "Acromegalia y gigantismo hipofisario"
   },
   {
     "codigo": "E23",
     "nombre": "Hipofunción de la glándula pituitaria"
   },
   {
+    "codigo": "E230",
+    "nombre": "Hipopituitarismo"
+  },
+  {
     "codigo": "E24",
     "nombre": "Síndrome de Cushing"
+  },
+  {
+    "codigo": "E240",
+    "nombre": "Enfermedad de Cushing dependiente de la hipófisis"
   },
   {
     "codigo": "E25",
     "nombre": "Trastornos adrenogenitales"
   },
   {
+    "codigo": "E27",
+    "nombre": "Insuficiencia suprarrenal"
+  },
+  {
+    "codigo": "E270",
+    "nombre": "Otra hiperactividad corticosuprarrenal"
+  },
+  {
     "codigo": "E28",
     "nombre": "Disfunción ovárica"
   },
   {
+    "codigo": "E280",
+    "nombre": "Exceso de estrógenos"
+  },
+  {
     "codigo": "E29",
     "nombre": "Disfunción testicular"
+  },
+  {
+    "codigo": "E290",
+    "nombre": "Hiperfunción testicular"
   },
   {
     "codigo": "E34",
@@ -948,16 +2456,44 @@
     "nombre": "Otras deficiencias nutricionales"
   },
   {
+    "codigo": "E66",
+    "nombre": "Obesidad"
+  },
+  {
+    "codigo": "E660",
+    "nombre": "Obesidad debida a exceso de calorías"
+  },
+  {
+    "codigo": "E78",
+    "nombre": "Trastornos del metabolismo de las lipoproteínas (colesterol alto)"
+  },
+  {
+    "codigo": "E780",
+    "nombre": "Hipercolesterolemia pura"
+  },
+  {
     "codigo": "E83",
     "nombre": "Trastornos del metabolismo de los minerales"
+  },
+  {
+    "codigo": "E830",
+    "nombre": "Trastornos del metabolismo del cobre"
   },
   {
     "codigo": "E84",
     "nombre": "Fibrosis quística"
   },
   {
+    "codigo": "E840",
+    "nombre": "Fibrosis quística con manifestaciones pulmonares"
+  },
+  {
     "codigo": "E85",
     "nombre": "Amiloidosis"
+  },
+  {
+    "codigo": "E850",
+    "nombre": "Amiloidosis heredofamiliar no neuropática"
   },
   {
     "codigo": "E86",
@@ -1004,28 +2540,144 @@
     "nombre": "Trastornos de la personalidad y del comportamiento debidos a enfermedad cerebral"
   },
   {
+    "codigo": "F07",
+    "nombre": "Trastornos de la personalidad y del comportamiento"
+  },
+  {
     "codigo": "F09",
     "nombre": "Trastorno mental orgánico no especificado"
+  },
+  {
+    "codigo": "F10",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de alcohol"
+  },
+  {
+    "codigo": "F100",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso del alcohol: intoxicacion aguda"
+  },
+  {
+    "codigo": "F11",
+    "nombre": "Trastornos mentales por uso de opioides"
+  },
+  {
+    "codigo": "F110",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de opiaceos: intoxicacion aguda"
+  },
+  {
+    "codigo": "F12",
+    "nombre": "Trastornos mentales por uso de cannabinoides"
+  },
+  {
+    "codigo": "F120",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de cannabinoides: intoxicacion aguda"
   },
   {
     "codigo": "F13",
     "nombre": "Trastornos mentales y del comportamiento debidos al uso de sedantes"
   },
   {
+    "codigo": "F13",
+    "nombre": "Trastornos mentales por uso de sedantes"
+  },
+  {
+    "codigo": "F130",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de sedantes o hipnoticos: intoxicacion aguda"
+  },
+  {
     "codigo": "F14",
     "nombre": "Trastornos mentales y del comportamiento debidos al uso de cocaína"
+  },
+  {
+    "codigo": "F14",
+    "nombre": "Trastornos mentales por uso de cocaína"
+  },
+  {
+    "codigo": "F140",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de cocaina: intoxicacion aguda"
   },
   {
     "codigo": "F15",
     "nombre": "Trastornos mentales y del comportamiento debidos al uso de otros estimulantes"
   },
   {
+    "codigo": "F15",
+    "nombre": "Trastornos mentales por uso de otros estimulantes"
+  },
+  {
     "codigo": "F17",
     "nombre": "Trastornos mentales y del comportamiento debidos al uso de tabaco"
   },
   {
+    "codigo": "F17",
+    "nombre": "Trastornos mentales por uso de tabaco"
+  },
+  {
+    "codigo": "F170",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de tabaco: intoxicacion aguda"
+  },
+  {
     "codigo": "F19",
     "nombre": "Trastornos mentales y del comportamiento debidos al uso de múltiples drogas"
+  },
+  {
+    "codigo": "F19",
+    "nombre": "Trastornos mentales por uso de múltiples drogas"
+  },
+  {
+    "codigo": "F190",
+    "nombre": "Trastornos mentales y del comportamiento debidos al uso de multiples drogas y al uso de otras sustancias psicoactivas: intoxicacion aguda"
+  },
+  {
+    "codigo": "F20",
+    "nombre": "Esquizofrenia"
+  },
+  {
+    "codigo": "F25",
+    "nombre": "Trastornos esquizoafectivos"
+  },
+  {
+    "codigo": "F29",
+    "nombre": "Psicosis no orgánica no especificada"
+  },
+  {
+    "codigo": "F31",
+    "nombre": "Trastorno afectivo bipolar"
+  },
+  {
+    "codigo": "F32",
+    "nombre": "Episodio depresivo"
+  },
+  {
+    "codigo": "F33",
+    "nombre": "Trastorno depresivo recurrente"
+  },
+  {
+    "codigo": "F34",
+    "nombre": "Trastornos del humor persistentes"
+  },
+  {
+    "codigo": "F40",
+    "nombre": "Trastornos fóbicos de ansiedad"
+  },
+  {
+    "codigo": "F41",
+    "nombre": "Otros trastornos de ansiedad"
+  },
+  {
+    "codigo": "F42",
+    "nombre": "Trastorno obsesivo-compulsivo"
+  },
+  {
+    "codigo": "F43",
+    "nombre": "Reacción al estrés grave y trastornos de adaptación"
+  },
+  {
+    "codigo": "F44",
+    "nombre": "Trastornos disociativos"
+  },
+  {
+    "codigo": "F45",
+    "nombre": "Trastornos somatomorfos"
   },
   {
     "codigo": "F45",
@@ -1036,6 +2688,14 @@
     "nombre": "Otros trastornos neuróticos"
   },
   {
+    "codigo": "F48",
+    "nombre": "Otros trastornos neuróticos"
+  },
+  {
+    "codigo": "F50",
+    "nombre": "Trastornos de la conducta alimentaria"
+  },
+  {
     "codigo": "F50",
     "nombre": "Trastornos de la conducta alimentaria"
   },
@@ -1044,8 +2704,20 @@
     "nombre": "Trastornos no orgánicos del sueño"
   },
   {
+    "codigo": "F51",
+    "nombre": "Trastornos del sueño no orgánicos"
+  },
+  {
     "codigo": "F52",
     "nombre": "Disfunción sexual no debida a trastorno orgánico"
+  },
+  {
+    "codigo": "F52",
+    "nombre": "Disfunción sexual no orgánica"
+  },
+  {
+    "codigo": "F60",
+    "nombre": "Trastornos específicos de la personalidad"
   },
   {
     "codigo": "F60",
@@ -1058,6 +2730,10 @@
   {
     "codigo": "F64",
     "nombre": "Trastornos de la identidad de género"
+  },
+  {
+    "codigo": "F70",
+    "nombre": "Retraso mental leve"
   },
   {
     "codigo": "F70",
@@ -1084,12 +2760,20 @@
     "nombre": "Trastornos específicos del desarrollo del habla y del lenguaje"
   },
   {
+    "codigo": "F80",
+    "nombre": "Trastornos específicos del desarrollo del habla"
+  },
+  {
     "codigo": "F81",
     "nombre": "Trastornos específicos del desarrollo de las habilidades escolares"
   },
   {
     "codigo": "F82",
     "nombre": "Trastorno específico del desarrollo motor"
+  },
+  {
+    "codigo": "F84",
+    "nombre": "Trastornos generalizados del desarrollo"
   },
   {
     "codigo": "F84",
@@ -1106,6 +2790,14 @@
   {
     "codigo": "F90",
     "nombre": "Trastornos hipercinéticos"
+  },
+  {
+    "codigo": "F90",
+    "nombre": "Trastornos hipercinéticos (TDAH)"
+  },
+  {
+    "codigo": "F91",
+    "nombre": "Trastornos de la conducta"
   },
   {
     "codigo": "F91",
@@ -1132,8 +2824,36 @@
     "nombre": "Otros trastornos emocionales y del comportamiento"
   },
   {
+    "codigo": "F98",
+    "nombre": "Otros trastornos emocionales y del comportamiento"
+  },
+  {
+    "codigo": "G00",
+    "nombre": "Meningitis bacteriana"
+  },
+  {
+    "codigo": "G03",
+    "nombre": "Meningitis debida a otras causas"
+  },
+  {
+    "codigo": "G04",
+    "nombre": "Encefalitis, mielitis y encefalomielitis"
+  },
+  {
+    "codigo": "G06",
+    "nombre": "Absceso y granuloma intracraneales"
+  },
+  {
     "codigo": "G10",
     "nombre": "Corea de Huntington"
+  },
+  {
+    "codigo": "G10",
+    "nombre": "Enfermedad de Huntington"
+  },
+  {
+    "codigo": "G11",
+    "nombre": "Ataxia hereditaria"
   },
   {
     "codigo": "G11",
@@ -1144,8 +2864,20 @@
     "nombre": "Atrofia muscular espinal"
   },
   {
+    "codigo": "G12",
+    "nombre": "Atrofia muscular espinal"
+  },
+  {
+    "codigo": "G20",
+    "nombre": "Enfermedad de Parkinson"
+  },
+  {
     "codigo": "G21",
     "nombre": "Parkinsonismo secundario"
+  },
+  {
+    "codigo": "G23",
+    "nombre": "Otras enfermedades degenerativas de los ganglios basales"
   },
   {
     "codigo": "G23",
@@ -1156,12 +2888,28 @@
     "nombre": "Distonía"
   },
   {
+    "codigo": "G24",
+    "nombre": "Distonía"
+  },
+  {
+    "codigo": "G25",
+    "nombre": "Otros trastornos extrapiramidales y del movimiento"
+  },
+  {
     "codigo": "G25",
     "nombre": "Otros trastornos extrapiramidales y del movimiento"
   },
   {
     "codigo": "G26",
     "nombre": "Trastornos extrapiramidales y del movimiento en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G30",
+    "nombre": "Enfermedad de Alzheimer"
+  },
+  {
+    "codigo": "G31",
+    "nombre": "Otras enfermedades degenerativas del sistema nervioso"
   },
   {
     "codigo": "G31",
@@ -1172,12 +2920,28 @@
     "nombre": "Otros trastornos degenerativos del sistema nervioso en enfermedades clasificadas en otra parte"
   },
   {
+    "codigo": "G35",
+    "nombre": "Esclerosis múltiple"
+  },
+  {
     "codigo": "G36",
     "nombre": "Neuromielitis óptica"
   },
   {
+    "codigo": "G36",
+    "nombre": "Otras desmielinizaciones diseminadas agudas"
+  },
+  {
     "codigo": "G37",
     "nombre": "Otras enfermedades desmielinizantes del sistema nervioso central"
+  },
+  {
+    "codigo": "G37",
+    "nombre": "Otras enfermedades desmielinizantes del sistema nervioso"
+  },
+  {
+    "codigo": "G40",
+    "nombre": "Epilepsia"
   },
   {
     "codigo": "G40",
@@ -1192,12 +2956,24 @@
     "nombre": "Migraña"
   },
   {
+    "codigo": "G43",
+    "nombre": "Migraña"
+  },
+  {
+    "codigo": "G44",
+    "nombre": "Otros síndromes de cefalea"
+  },
+  {
     "codigo": "G44",
     "nombre": "Otros síndromes de cefalea"
   },
   {
     "codigo": "G45",
     "nombre": "Ataques isquémicos transitorios"
+  },
+  {
+    "codigo": "G45",
+    "nombre": "Accidentes isquémicos cerebrales transitorios"
   },
   {
     "codigo": "G46",
@@ -1208,8 +2984,24 @@
     "nombre": "Trastornos del sueño"
   },
   {
+    "codigo": "G47",
+    "nombre": "Trastornos del sueño"
+  },
+  {
+    "codigo": "G470",
+    "nombre": "Trastornos del inicio y del mantenimiento del sueño [insomnios]"
+  },
+  {
     "codigo": "G50",
     "nombre": "Trastornos del nervio trigémino"
+  },
+  {
+    "codigo": "G50",
+    "nombre": "Trastornos del nervio trigémino"
+  },
+  {
+    "codigo": "G51",
+    "nombre": "Trastornos del nervio facial"
   },
   {
     "codigo": "G51",
@@ -1228,6 +3020,10 @@
     "nombre": "Trastornos de las raíces y plexos nerviosos"
   },
   {
+    "codigo": "G54",
+    "nombre": "Trastornos de las raíces y de los plexos nerviosos"
+  },
+  {
     "codigo": "G55",
     "nombre": "Compresiones de las raíces y plexos nerviosos en enfermedades clasificadas en otra parte"
   },
@@ -1236,8 +3032,20 @@
     "nombre": "Trastornos del nervio mediano"
   },
   {
+    "codigo": "G56",
+    "nombre": "Mononeuropatías del miembro superior"
+  },
+  {
     "codigo": "G57",
     "nombre": "Trastornos del nervio ciático"
+  },
+  {
+    "codigo": "G57",
+    "nombre": "Mononeuropatías del miembro inferior"
+  },
+  {
+    "codigo": "G58",
+    "nombre": "Otras mononeuropatías"
   },
   {
     "codigo": "G58",
@@ -1252,8 +3060,20 @@
     "nombre": "Neuropatía hereditaria"
   },
   {
+    "codigo": "G60",
+    "nombre": "Neuropatía hereditaria e idiopática"
+  },
+  {
     "codigo": "G61",
     "nombre": "Polineuropatía inflamatoria"
+  },
+  {
+    "codigo": "G61",
+    "nombre": "Polineuropatía inflamatoria"
+  },
+  {
+    "codigo": "G62",
+    "nombre": "Otras polineuropatías"
   },
   {
     "codigo": "G62",
@@ -1272,8 +3092,20 @@
     "nombre": "Miastenia gravis"
   },
   {
+    "codigo": "G70",
+    "nombre": "Miastenia gravis y otros trastornos neuromusculares"
+  },
+  {
     "codigo": "G71",
     "nombre": "Trastornos musculares primarios"
+  },
+  {
+    "codigo": "G71",
+    "nombre": "Trastornos musculares primarios"
+  },
+  {
+    "codigo": "G72",
+    "nombre": "Otras miopatías"
   },
   {
     "codigo": "G72",
@@ -1288,12 +3120,28 @@
     "nombre": "Parálisis cerebral"
   },
   {
+    "codigo": "G80",
+    "nombre": "Parálisis cerebral"
+  },
+  {
+    "codigo": "G81",
+    "nombre": "Hemiplejía"
+  },
+  {
     "codigo": "G81",
     "nombre": "Hemiplejía"
   },
   {
     "codigo": "G82",
     "nombre": "Paraplejía y tetraplejía"
+  },
+  {
+    "codigo": "G82",
+    "nombre": "Paraplejía y cuadriplejía"
+  },
+  {
+    "codigo": "G83",
+    "nombre": "Otros síndromes paralíticos"
   },
   {
     "codigo": "G83",
@@ -1304,8 +3152,16 @@
     "nombre": "Trastornos del sistema nervioso autónomo"
   },
   {
+    "codigo": "G90",
+    "nombre": "Trastornos del sistema nervioso autónomo"
+  },
+  {
     "codigo": "G91",
     "nombre": "Hidrocefalia"
+  },
+  {
+    "codigo": "G91",
+    "nombre": "Hidrocéfalo"
   },
   {
     "codigo": "G92",
@@ -1316,8 +3172,16 @@
     "nombre": "Otros trastornos del encéfalo"
   },
   {
+    "codigo": "G93",
+    "nombre": "Otros trastornos del encéfalo"
+  },
+  {
     "codigo": "G94",
     "nombre": "Otros trastornos del encéfalo en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "G95",
+    "nombre": "Otras enfermedades de la médula espinal"
   },
   {
     "codigo": "G95",
@@ -1416,6 +3280,10 @@
     "nombre": "Catarata senil"
   },
   {
+    "codigo": "H25",
+    "nombre": "Catarata senil"
+  },
+  {
     "codigo": "H26",
     "nombre": "Otras cataratas"
   },
@@ -1452,8 +3320,16 @@
     "nombre": "Retinopatía"
   },
   {
+    "codigo": "H35",
+    "nombre": "Retinopatía"
+  },
+  {
     "codigo": "H36",
     "nombre": "Trastornos retinianos en enfermedades clasificadas en otra parte"
+  },
+  {
+    "codigo": "H40",
+    "nombre": "Glaucoma"
   },
   {
     "codigo": "H40",
@@ -1601,6 +3477,10 @@
   },
   {
     "codigo": "H90",
+    "nombre": "Hipoacusia (pérdida auditiva)"
+  },
+  {
+    "codigo": "H90",
     "nombre": "Hipoacusia conductiva y neurosensorial"
   },
   {
@@ -1624,520 +3504,24 @@
     "nombre": "Trastornos del oído y de la apófisis mastoides consecutivos a procedimientos"
   },
   {
-    "codigo": "F07",
-    "nombre": "Trastornos de la personalidad y del comportamiento"
+    "codigo": "I10",
+    "nombre": "Hipertensión arterial esencial (primaria)"
   },
   {
-    "codigo": "F11",
-    "nombre": "Trastornos mentales por uso de opioides"
+    "codigo": "I11",
+    "nombre": "Enfermedad cardíaca hipertensiva"
   },
   {
-    "codigo": "F12",
-    "nombre": "Trastornos mentales por uso de cannabinoides"
+    "codigo": "I20",
+    "nombre": "Angina de pecho"
   },
   {
-    "codigo": "F13",
-    "nombre": "Trastornos mentales por uso de sedantes"
+    "codigo": "I21",
+    "nombre": "Infarto agudo del miocardio"
   },
   {
-    "codigo": "F14",
-    "nombre": "Trastornos mentales por uso de cocaína"
-  },
-  {
-    "codigo": "F15",
-    "nombre": "Trastornos mentales por uso de otros estimulantes"
-  },
-  {
-    "codigo": "F17",
-    "nombre": "Trastornos mentales por uso de tabaco"
-  },
-  {
-    "codigo": "F19",
-    "nombre": "Trastornos mentales por uso de múltiples drogas"
-  },
-  {
-    "codigo": "F25",
-    "nombre": "Trastornos esquizoafectivos"
-  },
-  {
-    "codigo": "F29",
-    "nombre": "Psicosis no orgánica no especificada"
-  },
-  {
-    "codigo": "F34",
-    "nombre": "Trastornos del humor persistentes"
-  },
-  {
-    "codigo": "F40",
-    "nombre": "Trastornos fóbicos de ansiedad"
-  },
-  {
-    "codigo": "F42",
-    "nombre": "Trastorno obsesivo-compulsivo"
-  },
-  {
-    "codigo": "F43",
-    "nombre": "Reacción al estrés grave y trastornos de adaptación"
-  },
-  {
-    "codigo": "F44",
-    "nombre": "Trastornos disociativos"
-  },
-  {
-    "codigo": "F45",
-    "nombre": "Trastornos somatomorfos"
-  },
-  {
-    "codigo": "F48",
-    "nombre": "Otros trastornos neuróticos"
-  },
-  {
-    "codigo": "F50",
-    "nombre": "Trastornos de la conducta alimentaria"
-  },
-  {
-    "codigo": "F51",
-    "nombre": "Trastornos del sueño no orgánicos"
-  },
-  {
-    "codigo": "F52",
-    "nombre": "Disfunción sexual no orgánica"
-  },
-  {
-    "codigo": "F60",
-    "nombre": "Trastornos específicos de la personalidad"
-  },
-  {
-    "codigo": "F70",
-    "nombre": "Retraso mental leve"
-  },
-  {
-    "codigo": "F80",
-    "nombre": "Trastornos específicos del desarrollo del habla"
-  },
-  {
-    "codigo": "F84",
-    "nombre": "Trastornos generalizados del desarrollo"
-  },
-  {
-    "codigo": "F90",
-    "nombre": "Trastornos hipercinéticos (TDAH)"
-  },
-  {
-    "codigo": "F91",
-    "nombre": "Trastornos de la conducta"
-  },
-  {
-    "codigo": "F98",
-    "nombre": "Otros trastornos emocionales y del comportamiento"
-  },
-  {
-    "codigo": "G00",
-    "nombre": "Meningitis bacteriana"
-  },
-  {
-    "codigo": "G03",
-    "nombre": "Meningitis debida a otras causas"
-  },
-  {
-    "codigo": "G04",
-    "nombre": "Encefalitis, mielitis y encefalomielitis"
-  },
-  {
-    "codigo": "G06",
-    "nombre": "Absceso y granuloma intracraneales"
-  },
-  {
-    "codigo": "G10",
-    "nombre": "Enfermedad de Huntington"
-  },
-  {
-    "codigo": "G11",
-    "nombre": "Ataxia hereditaria"
-  },
-  {
-    "codigo": "G12",
-    "nombre": "Atrofia muscular espinal"
-  },
-  {
-    "codigo": "G23",
-    "nombre": "Otras enfermedades degenerativas de los ganglios basales"
-  },
-  {
-    "codigo": "G24",
-    "nombre": "Distonía"
-  },
-  {
-    "codigo": "G25",
-    "nombre": "Otros trastornos extrapiramidales y del movimiento"
-  },
-  {
-    "codigo": "G31",
-    "nombre": "Otras enfermedades degenerativas del sistema nervioso"
-  },
-  {
-    "codigo": "G36",
-    "nombre": "Otras desmielinizaciones diseminadas agudas"
-  },
-  {
-    "codigo": "G37",
-    "nombre": "Otras enfermedades desmielinizantes del sistema nervioso"
-  },
-  {
-    "codigo": "G45",
-    "nombre": "Accidentes isquémicos cerebrales transitorios"
-  },
-  {
-    "codigo": "G47",
-    "nombre": "Trastornos del sueño"
-  },
-  {
-    "codigo": "G50",
-    "nombre": "Trastornos del nervio trigémino"
-  },
-  {
-    "codigo": "G51",
-    "nombre": "Trastornos del nervio facial"
-  },
-  {
-    "codigo": "G54",
-    "nombre": "Trastornos de las raíces y de los plexos nerviosos"
-  },
-  {
-    "codigo": "G56",
-    "nombre": "Mononeuropatías del miembro superior"
-  },
-  {
-    "codigo": "G57",
-    "nombre": "Mononeuropatías del miembro inferior"
-  },
-  {
-    "codigo": "G58",
-    "nombre": "Otras mononeuropatías"
-  },
-  {
-    "codigo": "G60",
-    "nombre": "Neuropatía hereditaria e idiopática"
-  },
-  {
-    "codigo": "G61",
-    "nombre": "Polineuropatía inflamatoria"
-  },
-  {
-    "codigo": "G62",
-    "nombre": "Otras polineuropatías"
-  },
-  {
-    "codigo": "G70",
-    "nombre": "Miastenia gravis y otros trastornos neuromusculares"
-  },
-  {
-    "codigo": "G71",
-    "nombre": "Trastornos musculares primarios"
-  },
-  {
-    "codigo": "G72",
-    "nombre": "Otras miopatías"
-  },
-  {
-    "codigo": "G80",
-    "nombre": "Parálisis cerebral"
-  },
-  {
-    "codigo": "G81",
-    "nombre": "Hemiplejía"
-  },
-  {
-    "codigo": "G82",
-    "nombre": "Paraplejía y cuadriplejía"
-  },
-  {
-    "codigo": "G83",
-    "nombre": "Otros síndromes paralíticos"
-  },
-  {
-    "codigo": "G90",
-    "nombre": "Trastornos del sistema nervioso autónomo"
-  },
-  {
-    "codigo": "G91",
-    "nombre": "Hidrocéfalo"
-  },
-  {
-    "codigo": "G93",
-    "nombre": "Otros trastornos del encéfalo"
-  },
-  {
-    "codigo": "G95",
-    "nombre": "Otras enfermedades de la médula espinal"
-  },
-  {
-    "codigo": "M350",
-    "nombre": "Síndrome seco [Sjögren]"
-  },
-  {
-    "codigo": "L400",
-    "nombre": "Psoriasis vulgar"
-  },
-  {
-    "codigo": "M321",
-    "nombre": "Lupus eritematoso sistémico con compromiso de órganos o sistemas"
-  },
-  {
-    "codigo": "M060",
-    "nombre": "Artritis reumatoide seronegativa"
-  },
-  {
-    "codigo": "M050",
-    "nombre": "Síndrome de Felty"
-  },
-  {
-    "codigo": "L209",
-    "nombre": "Dermatitis atópica"
-  },
-  {
-    "codigo": "L500",
-    "nombre": "Urticaria alérgica"
-  },
-  {
-    "codigo": "K500",
-    "nombre": "Enfermedad de Crohn del intestino delgado"
-  },
-  {
-    "codigo": "K510",
-    "nombre": "Enterocolitis (crónica) ulcerativa"
-  },
-  {
-    "codigo": "K580",
-    "nombre": "Síndrome del colon irritable con diarrea"
-  },
-  {
-    "codigo": "K800",
-    "nombre": "Cálculo de la vesícula biliar con colecistitis aguda"
-  },
-  {
-    "codigo": "K810",
-    "nombre": "Colecistitis aguda"
-  },
-  {
-    "codigo": "K81",
-    "nombre": "Colecistitis"
-  },
-  {
-    "codigo": "N410",
-    "nombre": "Prostatitis aguda"
-  },
-  {
-    "codigo": "N800",
-    "nombre": "Endometriosis del útero"
-  },
-  {
-    "codigo": "N810",
-    "nombre": "Uretrocele femenino"
-  },
-  {
-    "codigo": "D500",
-    "nombre": "Anemia por deficiencia de hierro secundaria a pérdida de sangre (crónica)"
-  },
-  {
-    "codigo": "D510",
-    "nombre": "Anemia por deficiencia de vitamina B12 debida a deficiencia del factor intrínseco"
-  },
-  {
-    "codigo": "D560",
-    "nombre": "Alfa talasemia"
-  },
-  {
-    "codigo": "D570",
-    "nombre": "Anemia falciforme con crisis"
-  },
-  {
-    "codigo": "D57",
-    "nombre": "Trastornos falciformes"
-  },
-  {
-    "codigo": "D640",
-    "nombre": "Anemia sideroblástica hereditaria"
-  },
-  {
-    "codigo": "B20",
-    "nombre": "Enfermedad por virus de la inmunodeficiencia humana [VIH]"
-  },
-  {
-    "codigo": "A150",
-    "nombre": "Tuberculosis del pulmón"
-  },
-  {
-    "codigo": "A15",
-    "nombre": "Tuberculosis respiratoria"
-  },
-  {
-    "codigo": "A160",
-    "nombre": "Tuberculosis del pulmón"
-  },
-  {
-    "codigo": "A16",
-    "nombre": "Tuberculosis respiratoria"
-  },
-  {
-    "codigo": "A040",
-    "nombre": "Infección debida a Escherichia coli enteropatógena"
-  },
-  {
-    "codigo": "A04",
-    "nombre": "Otras infecciones intestinales bacterianas"
-  },
-  {
-    "codigo": "A080",
-    "nombre": "Enteritis debida a rotavirus"
-  },
-  {
-    "codigo": "A08",
-    "nombre": "Infecciones intestinales debidas a virus y otros organismos especificados"
-  },
-  {
-    "codigo": "B150",
-    "nombre": "Hepatitis aguda tipo A"
-  },
-  {
-    "codigo": "B15",
-    "nombre": "Hepatitis aguda tipo A"
-  },
-  {
-    "codigo": "B160",
-    "nombre": "Hepatitis aguda tipo B"
-  },
-  {
-    "codigo": "B170",
-    "nombre": "Infección (superinfección) aguda por agente delta en el portador de hepatitis B"
-  },
-  {
-    "codigo": "B180",
-    "nombre": "Hepatitis viral tipo B crónica"
-  },
-  {
-    "codigo": "C670",
-    "nombre": "Tumor maligno del trígono vesical"
-  },
-  {
-    "codigo": "C710",
-    "nombre": "Tumor maligno del cerebro"
-  },
-  {
-    "codigo": "C780",
-    "nombre": "Tumor maligno secundario del pulmón"
-  },
-  {
-    "codigo": "C790",
-    "nombre": "Tumor maligno secundario del riñón y de la pelvis renal"
-  },
-  {
-    "codigo": "C920",
-    "nombre": "Leucemia mieloide aguda"
-  },
-  {
-    "codigo": "C910",
-    "nombre": "Leucemia linfoblástica aguda"
-  },
-  {
-    "codigo": "D46",
-    "nombre": "Síndromes mielodisplásicos"
-  },
-  {
-    "codigo": "D47",
-    "nombre": "Otros tumores de comportamiento incierto o desconocido del tejido linfático"
-  },
-  {
-    "codigo": "E030",
-    "nombre": "Hipotiroidismo congénito con bocio difuso"
-  },
-  {
-    "codigo": "E050",
-    "nombre": "Tirotoxicosis con bocio difuso"
-  },
-  {
-    "codigo": "E060",
-    "nombre": "Tiroiditis aguda"
-  },
-  {
-    "codigo": "E210",
-    "nombre": "Hiperparatiroidismo primario"
-  },
-  {
-    "codigo": "E220",
-    "nombre": "Acromegalia y gigantismo hipofisario"
-  },
-  {
-    "codigo": "E230",
-    "nombre": "Hipopituitarismo"
-  },
-  {
-    "codigo": "E240",
-    "nombre": "Enfermedad de Cushing dependiente de la hipófisis"
-  },
-  {
-    "codigo": "E270",
-    "nombre": "Otra hiperactividad corticosuprarrenal"
-  },
-  {
-    "codigo": "E280",
-    "nombre": "Exceso de estrógenos"
-  },
-  {
-    "codigo": "E290",
-    "nombre": "Hiperfunción testicular"
-  },
-  {
-    "codigo": "E660",
-    "nombre": "Obesidad debida a exceso de calorías"
-  },
-  {
-    "codigo": "E780",
-    "nombre": "Hipercolesterolemia pura"
-  },
-  {
-    "codigo": "E830",
-    "nombre": "Trastornos del metabolismo del cobre"
-  },
-  {
-    "codigo": "E840",
-    "nombre": "Fibrosis quística con manifestaciones pulmonares"
-  },
-  {
-    "codigo": "E850",
-    "nombre": "Amiloidosis heredofamiliar no neuropática"
-  },
-  {
-    "codigo": "F100",
-    "nombre": "Trastornos mentales y del comportamiento debidos al uso del alcohol: intoxicacion aguda"
-  },
-  {
-    "codigo": "F110",
-    "nombre": "Trastornos mentales y del comportamiento debidos al uso de opiaceos: intoxicacion aguda"
-  },
-  {
-    "codigo": "F120",
-    "nombre": "Trastornos mentales y del comportamiento debidos al uso de cannabinoides: intoxicacion aguda"
-  },
-  {
-    "codigo": "F130",
-    "nombre": "Trastornos mentales y del comportamiento debidos al uso de sedantes o hipnoticos: intoxicacion aguda"
-  },
-  {
-    "codigo": "F140",
-    "nombre": "Trastornos mentales y del comportamiento debidos al uso de cocaina: intoxicacion aguda"
-  },
-  {
-    "codigo": "F170",
-    "nombre": "Trastornos mentales y del comportamiento debidos al uso de tabaco: intoxicacion aguda"
-  },
-  {
-    "codigo": "F190",
-    "nombre": "Trastornos mentales y del comportamiento debidos al uso de multiples drogas y al uso de otras sustancias psicoactivas: intoxicacion aguda"
-  },
-  {
-    "codigo": "G470",
-    "nombre": "Trastornos del inicio y del mantenimiento del sueño [insomnios]"
+    "codigo": "I25",
+    "nombre": "Enfermedad isquémica crónica del corazón"
   },
   {
     "codigo": "I26",
@@ -2180,6 +3564,18 @@
     "nombre": "Taquicardia paroxística"
   },
   {
+    "codigo": "I48",
+    "nombre": "Fibrilación y aleteo auricular"
+  },
+  {
+    "codigo": "I49",
+    "nombre": "Otras arritmias cardíacas"
+  },
+  {
+    "codigo": "I50",
+    "nombre": "Insuficiencia cardíaca"
+  },
+  {
     "codigo": "I60",
     "nombre": "Hemorragia subaracnoidea"
   },
@@ -2192,8 +3588,20 @@
     "nombre": "Otras hemorragias intracraneales no traumáticas"
   },
   {
+    "codigo": "I63",
+    "nombre": "Infarto cerebral"
+  },
+  {
+    "codigo": "I64",
+    "nombre": "Accidente vascular encefálico"
+  },
+  {
     "codigo": "I67",
     "nombre": "Otras enfermedades cerebrovasculares"
+  },
+  {
+    "codigo": "I70",
+    "nombre": "Aterosclerosis"
   },
   {
     "codigo": "I71",
@@ -2212,6 +3620,14 @@
     "nombre": "Otros trastornos arteriales o arteriolares"
   },
   {
+    "codigo": "I80",
+    "nombre": "Flebitis y tromboflebitis"
+  },
+  {
+    "codigo": "I83",
+    "nombre": "Várices de los miembros inferiores"
+  },
+  {
     "codigo": "I84",
     "nombre": "Hemorroides"
   },
@@ -2222,6 +3638,10 @@
   {
     "codigo": "I86",
     "nombre": "Várices de otros sitios"
+  },
+  {
+    "codigo": "J00",
+    "nombre": "Rinofaringitis aguda (resfriado común)"
   },
   {
     "codigo": "J01",
@@ -2242,6 +3662,10 @@
   {
     "codigo": "J05",
     "nombre": "Laringitis obstructiva aguda [crup] y epiglotitis"
+  },
+  {
+    "codigo": "J06",
+    "nombre": "Infecciones agudas de las vías respiratorias superiores"
   },
   {
     "codigo": "J09",
@@ -2280,6 +3704,14 @@
     "nombre": "Neumonía en enfermedades clasificadas en otra parte"
   },
   {
+    "codigo": "J18",
+    "nombre": "Neumonía"
+  },
+  {
+    "codigo": "J20",
+    "nombre": "Bronquitis aguda"
+  },
+  {
     "codigo": "J21",
     "nombre": "Bronquiolitis aguda"
   },
@@ -2288,8 +3720,16 @@
     "nombre": "Infección aguda no especificada de las vías respiratorias inferiores"
   },
   {
+    "codigo": "J30",
+    "nombre": "Rinitis alérgica"
+  },
+  {
     "codigo": "J31",
     "nombre": "Rinitis"
+  },
+  {
+    "codigo": "J32",
+    "nombre": "Sinusitis crónica"
   },
   {
     "codigo": "J33",
@@ -2320,16 +3760,56 @@
     "nombre": "Otras enfermedades de las vías respiratorias superiores"
   },
   {
+    "codigo": "J40",
+    "nombre": "Bronquitis crónica"
+  },
+  {
+    "codigo": "J42",
+    "nombre": "Bronquitis crónica no especificada"
+  },
+  {
+    "codigo": "J44",
+    "nombre": "Enfermedad pulmonar obstructiva crónica (EPOC)"
+  },
+  {
+    "codigo": "J45",
+    "nombre": "Asma"
+  },
+  {
+    "codigo": "J47",
+    "nombre": "Bronquiectasia"
+  },
+  {
     "codigo": "K20",
     "nombre": "Esofagitis"
+  },
+  {
+    "codigo": "K21",
+    "nombre": "Enfermedad por reflujo gastroesofágico"
+  },
+  {
+    "codigo": "K25",
+    "nombre": "Úlcera gástrica"
+  },
+  {
+    "codigo": "K26",
+    "nombre": "Úlcera duodenal"
   },
   {
     "codigo": "K27",
     "nombre": "Úlcera péptica"
   },
   {
+    "codigo": "K29",
+    "nombre": "Gastritis y duodenitis"
+  },
+  {
     "codigo": "K30",
     "nombre": "Dispepsia"
+  },
+  {
+    "codigo": "K35",
+    "nombre": "Apendicitis aguda"
   },
   {
     "codigo": "K36",
@@ -2338,6 +3818,10 @@
   {
     "codigo": "K37",
     "nombre": "Apendicitis"
+  },
+  {
+    "codigo": "K40",
+    "nombre": "Hernia inguinal"
   },
   {
     "codigo": "K41",
@@ -2352,12 +3836,44 @@
     "nombre": "Hernia ventral"
   },
   {
+    "codigo": "K44",
+    "nombre": "Hernia diafragmática"
+  },
+  {
+    "codigo": "K50",
+    "nombre": "Enfermedad de Crohn"
+  },
+  {
+    "codigo": "K500",
+    "nombre": "Enfermedad de Crohn del intestino delgado"
+  },
+  {
+    "codigo": "K51",
+    "nombre": "Colitis ulcerosa"
+  },
+  {
+    "codigo": "K510",
+    "nombre": "Enterocolitis (crónica) ulcerativa"
+  },
+  {
     "codigo": "K56",
     "nombre": "Íleo paralítico y obstrucción intestinal sin hernia"
   },
   {
     "codigo": "K57",
     "nombre": "Enfermedad diverticular del intestino"
+  },
+  {
+    "codigo": "K58",
+    "nombre": "Síndrome del intestino irritable"
+  },
+  {
+    "codigo": "K580",
+    "nombre": "Síndrome del colon irritable con diarrea"
+  },
+  {
+    "codigo": "K59",
+    "nombre": "Estreñimiento"
   },
   {
     "codigo": "K60",
@@ -2384,6 +3900,10 @@
     "nombre": "Otros trastornos del peritoneo"
   },
   {
+    "codigo": "K70",
+    "nombre": "Enfermedad alcohólica del hígado"
+  },
+  {
     "codigo": "K71",
     "nombre": "Enfermedad tóxica del hígado"
   },
@@ -2396,8 +3916,40 @@
     "nombre": "Hepatitis crónica"
   },
   {
+    "codigo": "K74",
+    "nombre": "Cirrosis hepática"
+  },
+  {
     "codigo": "K75",
     "nombre": "Otras enfermedades inflamatorias del hígado"
+  },
+  {
+    "codigo": "K76",
+    "nombre": "Enfermedad hepática"
+  },
+  {
+    "codigo": "K80",
+    "nombre": "Colelitiasis (cálculos biliares)"
+  },
+  {
+    "codigo": "K800",
+    "nombre": "Cálculo de la vesícula biliar con colecistitis aguda"
+  },
+  {
+    "codigo": "K81",
+    "nombre": "Colecistitis"
+  },
+  {
+    "codigo": "K810",
+    "nombre": "Colecistitis aguda"
+  },
+  {
+    "codigo": "K85",
+    "nombre": "Pancreatitis aguda"
+  },
+  {
+    "codigo": "K86",
+    "nombre": "Pancreatitis crónica"
   },
   {
     "codigo": "K90",
@@ -2444,6 +3996,14 @@
     "nombre": "Otros trastornos flictenulares"
   },
   {
+    "codigo": "L20",
+    "nombre": "Dermatitis atópica"
+  },
+  {
+    "codigo": "L209",
+    "nombre": "Dermatitis atópica"
+  },
+  {
     "codigo": "L21",
     "nombre": "Dermatitis seborreica"
   },
@@ -2480,6 +4040,14 @@
     "nombre": "Otras dermatitis"
   },
   {
+    "codigo": "L40",
+    "nombre": "Psoriasis"
+  },
+  {
+    "codigo": "L400",
+    "nombre": "Psoriasis vulgar"
+  },
+  {
     "codigo": "L42",
     "nombre": "Pitiriasis rosada"
   },
@@ -2490,6 +4058,14 @@
   {
     "codigo": "L44",
     "nombre": "Otros trastornos papuloescamosos"
+  },
+  {
+    "codigo": "L50",
+    "nombre": "Urticaria"
+  },
+  {
+    "codigo": "L500",
+    "nombre": "Urticaria alérgica"
   },
   {
     "codigo": "L51",
@@ -2598,5 +4174,429 @@
   {
     "codigo": "L98",
     "nombre": "Otros trastornos de la piel y del tejido subcutáneo"
+  },
+  {
+    "codigo": "M05",
+    "nombre": "Artritis reumatoide seropositiva"
+  },
+  {
+    "codigo": "M050",
+    "nombre": "Síndrome de Felty"
+  },
+  {
+    "codigo": "M06",
+    "nombre": "Otras artritis reumatoides"
+  },
+  {
+    "codigo": "M060",
+    "nombre": "Artritis reumatoide seronegativa"
+  },
+  {
+    "codigo": "M10",
+    "nombre": "Gota"
+  },
+  {
+    "codigo": "M15",
+    "nombre": "Poliartrosis"
+  },
+  {
+    "codigo": "M16",
+    "nombre": "Coxartrosis (artrosis de cadera)"
+  },
+  {
+    "codigo": "M17",
+    "nombre": "Gonartrosis (artrosis de rodilla)"
+  },
+  {
+    "codigo": "M19",
+    "nombre": "Otras artrosis"
+  },
+  {
+    "codigo": "M23",
+    "nombre": "Trastorno interno de la rodilla"
+  },
+  {
+    "codigo": "M25",
+    "nombre": "Otros trastornos articulares"
+  },
+  {
+    "codigo": "M32",
+    "nombre": "Lupus eritematoso sistémico"
+  },
+  {
+    "codigo": "M321",
+    "nombre": "Lupus eritematoso sistémico con compromiso de órganos o sistemas"
+  },
+  {
+    "codigo": "M350",
+    "nombre": "Síndrome seco [Sjögren]"
+  },
+  {
+    "codigo": "M41",
+    "nombre": "Escoliosis"
+  },
+  {
+    "codigo": "M42",
+    "nombre": "Osteocondrosis de la columna vertebral"
+  },
+  {
+    "codigo": "M47",
+    "nombre": "Espondilosis"
+  },
+  {
+    "codigo": "M48",
+    "nombre": "Otras espondilopatías"
+  },
+  {
+    "codigo": "M50",
+    "nombre": "Trastornos de disco cervical"
+  },
+  {
+    "codigo": "M51",
+    "nombre": "Otros trastornos de los discos intervertebrales"
+  },
+  {
+    "codigo": "M54",
+    "nombre": "Dorsalgia (dolor de espalda)"
+  },
+  {
+    "codigo": "M75",
+    "nombre": "Lesiones del hombro"
+  },
+  {
+    "codigo": "M77",
+    "nombre": "Otras entesopatías"
+  },
+  {
+    "codigo": "M79",
+    "nombre": "Fibromialgia"
+  },
+  {
+    "codigo": "M80",
+    "nombre": "Osteoporosis con fractura patológica"
+  },
+  {
+    "codigo": "M81",
+    "nombre": "Osteoporosis sin fractura patológica"
+  },
+  {
+    "codigo": "N00",
+    "nombre": "Síndrome nefrítico agudo"
+  },
+  {
+    "codigo": "N03",
+    "nombre": "Síndrome nefrítico crónico"
+  },
+  {
+    "codigo": "N04",
+    "nombre": "Síndrome nefrótico"
+  },
+  {
+    "codigo": "N10",
+    "nombre": "Nefritis tubulointersticial aguda"
+  },
+  {
+    "codigo": "N11",
+    "nombre": "Nefritis tubulointersticial crónica"
+  },
+  {
+    "codigo": "N13",
+    "nombre": "Uropatía obstructiva y por reflujo"
+  },
+  {
+    "codigo": "N17",
+    "nombre": "Insuficiencia renal aguda"
+  },
+  {
+    "codigo": "N18",
+    "nombre": "Enfermedad renal crónica"
+  },
+  {
+    "codigo": "N19",
+    "nombre": "Insuficiencia renal no especificada"
+  },
+  {
+    "codigo": "N20",
+    "nombre": "Cálculo del riñón y del uréter"
+  },
+  {
+    "codigo": "N30",
+    "nombre": "Cistitis"
+  },
+  {
+    "codigo": "N39",
+    "nombre": "Infección de vías urinarias"
+  },
+  {
+    "codigo": "N40",
+    "nombre": "Hiperplasia de la próstata"
+  },
+  {
+    "codigo": "N41",
+    "nombre": "Enfermedades inflamatorias de la próstata"
+  },
+  {
+    "codigo": "N410",
+    "nombre": "Prostatitis aguda"
+  },
+  {
+    "codigo": "N70",
+    "nombre": "Salpingitis y ooforitis"
+  },
+  {
+    "codigo": "N73",
+    "nombre": "Otras enfermedades pélvicas inflamatorias femeninas"
+  },
+  {
+    "codigo": "N80",
+    "nombre": "Endometriosis"
+  },
+  {
+    "codigo": "N800",
+    "nombre": "Endometriosis del útero"
+  },
+  {
+    "codigo": "N81",
+    "nombre": "Prolapso genital femenino"
+  },
+  {
+    "codigo": "N810",
+    "nombre": "Uretrocele femenino"
+  },
+  {
+    "codigo": "N83",
+    "nombre": "Trastornos no inflamatorios del ovario"
+  },
+  {
+    "codigo": "N92",
+    "nombre": "Menstruación excesiva, frecuente e irregular"
+  },
+  {
+    "codigo": "N95",
+    "nombre": "Trastornos menopáusicos y perimenopáusicos"
+  },
+  {
+    "codigo": "O00",
+    "nombre": "Embarazo ectópico"
+  },
+  {
+    "codigo": "O03",
+    "nombre": "Aborto espontáneo"
+  },
+  {
+    "codigo": "O10",
+    "nombre": "Hipertensión preexistente que complica el embarazo"
+  },
+  {
+    "codigo": "O13",
+    "nombre": "Hipertensión gestacional"
+  },
+  {
+    "codigo": "O14",
+    "nombre": "Preeclampsia"
+  },
+  {
+    "codigo": "O15",
+    "nombre": "Eclampsia"
+  },
+  {
+    "codigo": "O24",
+    "nombre": "Diabetes mellitus en el embarazo"
+  },
+  {
+    "codigo": "O80",
+    "nombre": "Parto único espontáneo"
+  },
+  {
+    "codigo": "P07",
+    "nombre": "Trastornos relacionados con duración corta de la gestación"
+  },
+  {
+    "codigo": "Q21",
+    "nombre": "Malformaciones congénitas de los tabiques cardíacos"
+  },
+  {
+    "codigo": "Q90",
+    "nombre": "Síndrome de Down"
+  },
+  {
+    "codigo": "R05",
+    "nombre": "Tos"
+  },
+  {
+    "codigo": "R06",
+    "nombre": "Anormalidades de la respiración"
+  },
+  {
+    "codigo": "R07",
+    "nombre": "Dolor de garganta y en el pecho"
+  },
+  {
+    "codigo": "R10",
+    "nombre": "Dolor abdominal y pélvico"
+  },
+  {
+    "codigo": "R11",
+    "nombre": "Náusea y vómito"
+  },
+  {
+    "codigo": "R19",
+    "nombre": "Otros síntomas y signos que involucran el sistema digestivo"
+  },
+  {
+    "codigo": "R42",
+    "nombre": "Mareo y desvanecimiento"
+  },
+  {
+    "codigo": "R50",
+    "nombre": "Fiebre de origen desconocido"
+  },
+  {
+    "codigo": "R51",
+    "nombre": "Cefalea"
+  },
+  {
+    "codigo": "R52",
+    "nombre": "Dolor no clasificado en otra parte"
+  },
+  {
+    "codigo": "R53",
+    "nombre": "Malestar y fatiga"
+  },
+  {
+    "codigo": "R55",
+    "nombre": "Síncope y colapso"
+  },
+  {
+    "codigo": "S06",
+    "nombre": "Traumatismo intracraneal"
+  },
+  {
+    "codigo": "S52",
+    "nombre": "Fractura del antebrazo"
+  },
+  {
+    "codigo": "S72",
+    "nombre": "Fractura del fémur"
+  },
+  {
+    "codigo": "S82",
+    "nombre": "Fractura de la pierna"
+  },
+  {
+    "codigo": "T14",
+    "nombre": "Traumatismo de región no especificada del cuerpo"
+  },
+  {
+    "codigo": "T78",
+    "nombre": "Efectos adversos no clasificados en otra parte"
+  },
+  {
+    "codigo": "Z00",
+    "nombre": "Examen general e investigación de personas sin quejas"
+  },
+  {
+    "codigo": "Z01",
+    "nombre": "Otros exámenes especiales e investigaciones"
+  },
+  {
+    "codigo": "Z11",
+    "nombre": "Examen de pesquisa especial para enfermedades infecciosas"
+  },
+  {
+    "codigo": "Z12",
+    "nombre": "Examen de pesquisa especial para tumores"
+  },
+  {
+    "codigo": "Z13",
+    "nombre": "Examen de pesquisa especial para otros trastornos"
+  },
+  {
+    "codigo": "Z23",
+    "nombre": "Necesidad de inmunización contra enfermedad bacteriana única"
+  },
+  {
+    "codigo": "Z30",
+    "nombre": "Atención para la anticoncepción"
+  },
+  {
+    "codigo": "Z34",
+    "nombre": "Supervisión de embarazo normal"
+  },
+  {
+    "codigo": "Z35",
+    "nombre": "Supervisión de embarazo de alto riesgo"
+  },
+  {
+    "codigo": "Z38",
+    "nombre": "Nacidos vivos según lugar de nacimiento"
+  },
+  {
+    "codigo": "Z48",
+    "nombre": "Otra atención de seguimiento quirúrgico"
+  },
+  {
+    "codigo": "Z50",
+    "nombre": "Atención por el uso de procedimientos de rehabilitación"
+  },
+  {
+    "codigo": "Z51",
+    "nombre": "Atención médica por otras terapias"
+  },
+  {
+    "codigo": "Z71",
+    "nombre": "Personas en contacto con los servicios de salud por consejo"
+  },
+  {
+    "codigo": "Z72",
+    "nombre": "Problemas relacionados con el estilo de vida"
+  },
+  {
+    "codigo": "Z80",
+    "nombre": "Historia familiar de tumor maligno"
+  },
+  {
+    "codigo": "Z82",
+    "nombre": "Historia familiar de enfermedades crónicas"
+  },
+  {
+    "codigo": "Z85",
+    "nombre": "Historia personal de tumor maligno"
+  },
+  {
+    "codigo": "Z86",
+    "nombre": "Historia personal de otras enfermedades"
+  },
+  {
+    "codigo": "Z87",
+    "nombre": "Historia personal de otras enfermedades y afecciones"
+  },
+  {
+    "codigo": "Z90",
+    "nombre": "Ausencia adquirida de órganos"
+  },
+  {
+    "codigo": "Z92",
+    "nombre": "Historia personal de tratamiento médico"
+  },
+  {
+    "codigo": "Z94",
+    "nombre": "Órgano o tejido transplantado"
+  },
+  {
+    "codigo": "Z95",
+    "nombre": "Presencia de implantes e injertos cardiovasculares"
+  },
+  {
+    "codigo": "Z96",
+    "nombre": "Presencia de otros implantes funcionales"
+  },
+  {
+    "codigo": "Z98",
+    "nombre": "Otros estados postquirúrgicos"
+  },
+  {
+    "codigo": "Z99",
+    "nombre": "Dependencia de máquinas y dispositivos capacitantes"
   }
 ]

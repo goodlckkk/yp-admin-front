@@ -215,9 +215,17 @@ export async function fetchWithAuth<TResponse>(
 }
 
 export async function createPatientIntake(payload: CreatePatientIntakePayload) {
+  // Enviar token si existe (para que el backend identifique la institución que crea el paciente)
+  // pero no requerir autenticación (el formulario web público también usa este endpoint)
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
   return request(`/patient-intakes`, {
     method: "POST",
     body: JSON.stringify(payload),
+    headers,
   });
 }
 
