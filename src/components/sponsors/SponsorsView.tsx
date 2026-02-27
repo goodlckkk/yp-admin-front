@@ -17,9 +17,10 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Shield } from 'lucide-react';
 import { SponsorCard } from './SponsorCard';
 import { AddSponsorModal } from '../trials/AddSponsorModal';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { getSponsors, type Sponsor } from '../../lib/api';
+import { getSponsors, deleteSponsor, type Sponsor } from '../../lib/api';
 
 interface SponsorsViewProps {
   userRole?: string | null;
@@ -32,6 +33,9 @@ export function SponsorsView({ userRole }: SponsorsViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedSponsorId, setSelectedSponsorId] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [sponsorToDelete, setSponsorToDelete] = useState<Sponsor | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Cargar sponsors
   const loadSponsors = async () => {
@@ -76,6 +80,29 @@ export function SponsorsView({ userRole }: SponsorsViewProps) {
     loadSponsors();
     setIsAddModalOpen(false);
     setSelectedSponsorId(null);
+  };
+
+  const handleDelete = (id: string) => {
+    const sponsor = sponsors.find(s => s.id === id);
+    if (!sponsor) return;
+    setSponsorToDelete(sponsor);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!sponsorToDelete) return;
+    try {
+      setIsDeleting(true);
+      await deleteSponsor(sponsorToDelete.id);
+      loadSponsors();
+    } catch (error: any) {
+      console.error('Error al eliminar sponsor:', error);
+      alert(error.message || 'Error al eliminar el sponsor');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+      setSponsorToDelete(null);
+    }
   };
 
   // Calcular estadísticas
@@ -173,10 +200,28 @@ export function SponsorsView({ userRole }: SponsorsViewProps) {
               key={sponsor.id}
               sponsor={sponsor}
               onEdit={handleEdit}
+              onDelete={handleDelete}
+              userRole={userRole}
             />
           ))}
         </div>
       )}
+
+      {/* Modal de confirmación para eliminar */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => {
+          setShowDeleteDialog(false);
+          setSponsorToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Eliminar Sponsor"
+        description={`¿Estás seguro de eliminar "${sponsorToDelete?.name}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        isLoading={isDeleting}
+      />
 
       {/* Modal para agregar/editar sponsor */}
       <AddSponsorModal

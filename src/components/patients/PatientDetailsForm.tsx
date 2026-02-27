@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { TrialSuggestions } from './TrialSuggestions';
 import type { PatientIntake } from '../../lib/api';
-import { fetchWithAuth, updatePatientIntake } from '../../lib/api';
+import { fetchWithAuth, updatePatientIntake, deletePatientPermanent, discardPatient } from '../../lib/api';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,12 +33,15 @@ interface PatientDetailsFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  userRole?: string | null;
 }
 
-export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: PatientDetailsFormProps) {
+export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess, userRole }: PatientDetailsFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteType, setDeleteType] = useState<'permanent' | 'discard'>('discard');
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<PatientIntake>>({});
 
@@ -116,15 +119,18 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
     }
   };
 
-  // Eliminar paciente
+  // Eliminar o descartar paciente
   const handleDelete = async () => {
-    setLoading(true);
+    if (!patient) return;
+    setIsDeleting(true);
     setError(null);
 
     try {
-      await fetchWithAuth(`/patient-intakes/${patient.id}`, {
-        method: 'DELETE'
-      });
+      if (deleteType === 'permanent') {
+        await deletePatientPermanent(patient.id);
+      } else {
+        await discardPatient(patient.id);
+      }
       
       setShowDeleteDialog(false);
       onSuccess();
@@ -134,7 +140,7 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
       setError(err.message || 'No se pudo eliminar el paciente');
       setShowDeleteDialog(false);
     } finally {
-      setLoading(false);
+      setIsDeleting(false);
     }
   };
 
@@ -503,14 +509,29 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
 
           {/* Botones de acción */}
         <div className="flex justify-between pt-4 border-t border-gray-200">
-          <Button
-            type="button"
-            className="bg-red-600 hover:bg-red-700 text-white"
-            onClick={() => setShowDeleteDialog(true)}
-            disabled={loading}
-          >
-            🗑️ Eliminar Paciente
-          </Button>
+          <div className="flex gap-2">
+            {userRole === 'ADMIN' && (
+              <Button
+                type="button"
+                className="bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => { setDeleteType('permanent'); setShowDeleteDialog(true); }}
+                disabled={loading || isDeleting}
+              >
+                🗑️ Eliminar Permanentemente
+              </Button>
+            )}
+            {(userRole === 'ADMIN' || userRole === 'MODERATOR' || userRole === 'SUPPORT') && (
+              <Button
+                type="button"
+                variant="outline"
+                className="border-amber-500 text-amber-600 hover:bg-amber-50"
+                onClick={() => { setDeleteType('discard'); setShowDeleteDialog(true); }}
+                disabled={loading || isDeleting}
+              >
+                ⚠️ Descartar
+              </Button>
+            )}
+          </div>
           <Button
             type="button"
             style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)' }}
@@ -526,20 +547,31 @@ export function PatientDetailsForm({ patient, isOpen, onClose, onSuccess }: Pati
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {deleteType === 'permanent' ? '⚠️ Eliminar Permanentemente' : 'Descartar Paciente'}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el registro de{' '}
-              <strong>{patient.nombres} {patient.apellidos}</strong> del sistema.
+              {deleteType === 'permanent' ? (
+                <>
+                  Esta acción es <strong>IRREVERSIBLE</strong>. Se eliminará permanentemente el registro de{' '}
+                  <strong>{patient.nombres} {patient.apellidos}</strong> de la base de datos.
+                </>
+              ) : (
+                <>
+                  Se marcará a <strong>{patient.nombres} {patient.apellidos}</strong> como descartado.
+                  El registro se conservará pero no aparecerá en las listas activas.
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              disabled={loading}
-              className="bg-red-600 hover:bg-red-700"
+              disabled={isDeleting}
+              className={deleteType === 'permanent' ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-500 hover:bg-amber-600'}
             >
-              {loading ? 'Eliminando...' : 'Sí, eliminar'}
+              {isDeleting ? 'Procesando...' : deleteType === 'permanent' ? 'Sí, eliminar permanentemente' : 'Sí, descartar'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

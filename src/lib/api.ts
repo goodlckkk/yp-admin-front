@@ -610,6 +610,27 @@ export async function deleteResearchSite(id: string) {
   });
 }
 
+// ==================== ELIMINACIÓN DE PACIENTES ====================
+
+export async function discardPatient(id: string) {
+  return fetchWithAuth<{ message: string; status: string }>(`/patient-intakes/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function deletePatientPermanent(id: string) {
+  return fetchWithAuth<void>(`/patient-intakes/${id}/permanent`, {
+    method: 'DELETE',
+  });
+}
+
+// ==================== ELIMINACIÓN DE SPONSORS ====================
+
+export async function deleteSponsor(id: string) {
+  return fetchWithAuth<void>(`/sponsors/${id}`, {
+    method: 'DELETE',
+  });
+}
 
 // Sponsors ya están definidos arriba en el archivo
 

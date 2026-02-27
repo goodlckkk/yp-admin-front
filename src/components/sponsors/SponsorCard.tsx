@@ -8,7 +8,7 @@
  * Similar al diseño de ResearchSiteCard
  */
 
-import { Shield, ExternalLink, Edit } from 'lucide-react';
+import { Shield, ExternalLink, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -17,10 +17,12 @@ import type { Sponsor } from '../../lib/api';
 interface SponsorCardProps {
   sponsor: Sponsor;
   onEdit: (id: string) => void;
+  onDelete?: (id: string) => void;
   onClick?: (id: string) => void;
+  userRole?: string | null;
 }
 
-export function SponsorCard({ sponsor, onEdit, onClick }: SponsorCardProps) {
+export function SponsorCard({ sponsor, onEdit, onDelete, onClick, userRole }: SponsorCardProps) {
   const handleCardClick = () => {
     if (onClick) {
       onClick(sponsor.id);
@@ -30,6 +32,11 @@ export function SponsorCard({ sponsor, onEdit, onClick }: SponsorCardProps) {
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(sponsor.id);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) onDelete(sponsor.id);
   };
 
   const handleWebsiteClick = (e: React.MouseEvent) => {
@@ -72,15 +79,27 @@ export function SponsorCard({ sponsor, onEdit, onClick }: SponsorCardProps) {
             </div>
           </div>
 
-          {/* Botón de editar */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleEditClick}
-            className="shrink-0 hover:bg-[#04BFAD]/10"
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
+          {/* Botones de acción */}
+          <div className="flex gap-1 shrink-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleEditClick}
+              className="hover:bg-[#04BFAD]/10"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            {userRole === 'ADMIN' && onDelete && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDeleteClick}
+                className="hover:bg-rose-50 text-rose-500 hover:text-rose-700"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
 

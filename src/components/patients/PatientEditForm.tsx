@@ -19,7 +19,7 @@ import { Checkbox } from '../ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { TrialSuggestions } from './TrialSuggestions';
 import type { PatientIntake } from '../../lib/api';
-import { fetchWithAuth, uploadConsentDocument, getConsentDocumentUrl } from '../../lib/api';
+import { fetchWithAuth, uploadConsentDocument, getConsentDocumentUrl, deletePatientPermanent, discardPatient } from '../../lib/api';
 // Usar componentes con lista COMPLETA de CIE-10 (14,000+ enfermedades) para el dashboard
 import { Cie10SingleAutocompleteComplete } from '../ui/Cie10SingleAutocompleteComplete';
 import { Cie10MultipleAutocomplete } from '../ui/Cie10MultipleAutocomplete';
@@ -73,6 +73,8 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess, userRole 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteType, setDeleteType] = useState<'permanent' | 'discard'>('discard');
   const [isFullEditMode, setIsFullEditMode] = useState(false);
   
   // Estado para documento de consentimiento
@@ -915,14 +917,31 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess, userRole 
 
         {/* Botones de acción */}
         <div className="flex justify-between pt-4 border-t border-gray-200">
-          <Button
-            type="button"
-            className="bg-red-600 hover:bg-red-700 text-white"
-            onClick={() => setShowDeleteDialog(true)}
-            disabled={loading}
-          >
-            🗑️ Eliminar Paciente
-          </Button>
+          <div className="flex gap-2">
+            {/* Solo ADMIN puede eliminar permanentemente */}
+            {userRole === 'ADMIN' && (
+              <Button
+                type="button"
+                className="bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => { setDeleteType('permanent'); setShowDeleteDialog(true); }}
+                disabled={loading || isDeleting}
+              >
+                🗑️ Eliminar Permanentemente
+              </Button>
+            )}
+            {/* ADMIN, MODERATOR y SUPPORT pueden descartar */}
+            {(userRole === 'ADMIN' || userRole === 'MODERATOR' || userRole === 'SUPPORT') && (
+              <Button
+                type="button"
+                variant="outline"
+                className="border-amber-500 text-amber-600 hover:bg-amber-50"
+                onClick={() => { setDeleteType('discard'); setShowDeleteDialog(true); }}
+                disabled={loading || isDeleting}
+              >
+                ⚠️ Descartar
+              </Button>
+            )}
+          </div>
           <div className="flex gap-3">
             <Button
               type="button"
@@ -945,18 +964,55 @@ export function PatientEditForm({ patient, isOpen, onClose, onSuccess, userRole 
         </div>
       </div>
 
-      {/* Dialog informativo: no se puede eliminar directamente */}
+      {/* Dialog de confirmación de eliminación */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminación no disponible</AlertDialogTitle>
+            <AlertDialogTitle>
+              {deleteType === 'permanent' ? '⚠️ Eliminar Permanentemente' : 'Descartar Paciente'}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Por razones de seguridad y trazabilidad, los registros de pacientes no pueden ser eliminados directamente desde el panel.
-              Si necesitas eliminar este registro, por favor contacta al equipo de soporte técnico.
+              {deleteType === 'permanent' ? (
+                <>
+                  Esta acción es <strong>IRREVERSIBLE</strong>. Se eliminará permanentemente el registro de{' '}
+                  <strong>{patient?.nombres} {patient?.apellidos}</strong> de la base de datos.
+                  ¿Estás completamente seguro?
+                </>
+              ) : (
+                <>
+                  Se marcará a <strong>{patient?.nombres} {patient?.apellidos}</strong> como descartado.
+                  El registro se conservará pero no aparecerá en las listas activas.
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Entendido</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                if (!patient) return;
+                setIsDeleting(true);
+                try {
+                  if (deleteType === 'permanent') {
+                    await deletePatientPermanent(patient.id);
+                  } else {
+                    await discardPatient(patient.id);
+                  }
+                  setShowDeleteDialog(false);
+                  onSuccess();
+                  onClose();
+                } catch (err: any) {
+                  setError(err.message || 'Error al eliminar el paciente');
+                  setShowDeleteDialog(false);
+                } finally {
+                  setIsDeleting(false);
+                }
+              }}
+              disabled={isDeleting}
+              className={deleteType === 'permanent' ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-500 hover:bg-amber-600'}
+            >
+              {isDeleting ? 'Procesando...' : deleteType === 'permanent' ? 'Sí, eliminar permanentemente' : 'Sí, descartar'}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
