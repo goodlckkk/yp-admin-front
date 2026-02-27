@@ -372,6 +372,7 @@ export default function HomePage() {
               }}
               onSubmit={handlePatientFormSubmit}
               isSubmitting={isSubmittingIntake}
+              submissionError={submissionError}
             />
           </div>
         </div>

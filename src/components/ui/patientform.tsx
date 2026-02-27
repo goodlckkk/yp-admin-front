@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "./button"
 import { InputWithLabel } from "./input"
 import { TextareaWithLabel } from "./textarea"
@@ -18,14 +18,29 @@ interface PatientFormProps {
   onClose: () => void
   onSubmit: (data: any) => void
   isSubmitting?: boolean
+  submissionError?: string | null
 }
 
-export default function PatientForm({ condition, onClose, onSubmit, isSubmitting = false }: PatientFormProps) {
+export default function PatientForm({ condition, onClose, onSubmit, isSubmitting = false, submissionError }: PatientFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [mostrarTerminos, setMostrarTerminos] = useState(false)
   const [mostrarPrivacidad, setMostrarPrivacidad] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [stepAttempted, setStepAttempted] = useState<Record<number, boolean>>({})
+
+  // Detectar errores de duplicado del backend (409) y marcar campo correspondiente
+  useEffect(() => {
+    if (!submissionError) return
+    const msg = submissionError.toLowerCase()
+    if (msg.includes('email')) {
+      setFieldErrors(prev => ({ ...prev, email: 'Este email ya está registrado' }))
+      setCurrentStep(2) // Ir al paso donde está el email
+    }
+    if (msg.includes('rut')) {
+      setFieldErrors(prev => ({ ...prev, rut: 'Este RUT ya está registrado' }))
+      setCurrentStep(1) // Ir al paso donde está el RUT
+    }
+  }, [submissionError])
   const [formData, setFormData] = useState({
     nombres: "",
     apellidos: "",
@@ -62,7 +77,6 @@ export default function PatientForm({ condition, onClose, onSubmit, isSubmitting
     "Enfermedad renal crónica",
     "Asma",
     "Obesidad",
-    "Síndrome de Sjögren",
     "Fumador/a"
   ]
 

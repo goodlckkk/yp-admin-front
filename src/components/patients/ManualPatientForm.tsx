@@ -42,6 +42,7 @@ interface ManualPatientFormProps {
 export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: ManualPatientFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
   
   // Hook para obtener comunas desde la API
   const { communes, loading: communesLoading, getCommunesByRegion, getAllRegions } = useCommunes();
@@ -86,7 +87,6 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
     'Enfermedad renal crónica',
     'Asma',
     'Obesidad',
-    'Síndrome de Sjögren',
     'Fumador/a'
   ];
 
@@ -118,6 +118,7 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
     setError(null);
+    setFieldErrors(prev => ({ ...prev, [field]: false }));
   };
 
   const handleRutChange = (value: string) => {
@@ -263,7 +264,15 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
       onClose();
     } catch (err: any) {
       console.error('Error al crear paciente manual:', err);
-      setError(err.message || 'Error al crear el paciente. Por favor, intenta nuevamente.');
+      const msg = err.message || 'Error al crear el paciente. Por favor, intenta nuevamente.';
+      setError(msg);
+      // Detectar campo con error según mensaje del backend
+      if (msg.toLowerCase().includes('email')) {
+        setFieldErrors(prev => ({ ...prev, email: true }));
+      }
+      if (msg.toLowerCase().includes('rut')) {
+        setFieldErrors(prev => ({ ...prev, rut: true }));
+      }
     } finally {
       setLoading(false);
     }
@@ -329,8 +338,11 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
                   onBlur={validateRutField}
                   placeholder="12.345.678-9"
                   disabled={loading}
-                  className="mt-1"
+                  className={`mt-1 ${fieldErrors.rut ? 'border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                 />
+                {fieldErrors.rut && (
+                  <p className="text-xs text-red-500 mt-1">Este RUT ya está registrado</p>
+                )}
               </div>
               
               <div>
@@ -407,8 +419,11 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
                   onBlur={validateEmail}
                   placeholder="paciente@ejemplo.cl"
                   disabled={loading}
-                  className="mt-1"
+                  className={`mt-1 ${fieldErrors.email ? 'border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                 />
+                {fieldErrors.email && (
+                  <p className="text-xs text-red-500 mt-1">Este email ya está registrado</p>
+                )}
               </div>
             </div>
             </div>
