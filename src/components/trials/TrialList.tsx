@@ -373,6 +373,7 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole, userIns
           mode={formMode}
           userInstitutionId={userInstitutionId}
           userInstitutionName={userInstitutionName}
+          userRole={userRole}
         />
       </div>
     );
@@ -396,7 +397,6 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole, userIns
               size="sm"
               className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
             >
-              <Plus className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">
                 {userRole === 'INSTITUTION' ? 'Solicitar Estudio' : 'Nuevo Estudio'}
               </span>
@@ -414,7 +414,6 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole, userIns
                     size="sm"
                     className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
                   >
-                    <Plus className="h-4 w-4 sm:mr-2" />
                     <span className="hidden sm:inline">Agregar Institución</span>
                     <span className="sm:hidden">Institución</span>
                   </Button>
@@ -424,7 +423,6 @@ function TrialListContent({ initialTrials = [], onTrialChange, userRole, userIns
                     size="sm"
                     className="border-[#04BFAD] text-[#024959] hover:bg-[#A7F2EB]/20 flex-1 sm:flex-none"
                   >
-                    <Plus className="h-4 w-4 sm:mr-2" />
                     <span className="hidden sm:inline">Agregar Sponsor</span>
                     <span className="sm:hidden">Sponsor</span>
                   </Button>

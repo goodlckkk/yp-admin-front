@@ -72,6 +72,17 @@ export function ChangeHistory({ entityName, entityId }: ChangeHistoryProps) {
     inclusion_criteria: 'Criterios de Inclusión',
     consentDocumentUrl: 'Documento de Consentimiento',
     phaseChangeRequested: 'Cambio de Fase Solicitado',
+    // Campos de instituciones (ResearchSite)
+    direccion: 'Dirección',
+    ciudad: 'Ciudad',
+    sitio_web: 'Sitio Web',
+    descripcion: 'Descripción',
+    activo: 'Activo',
+    // Campos de sponsors
+    name: 'Nombre',
+    description: 'Descripción',
+    web_site: 'Sitio Web',
+    sponsor_type: 'Tipo',
   };
 
   // Mapa de valores de estado a español
@@ -93,6 +104,9 @@ export function ChangeHistory({ entityName, entityId }: ChangeHistoryProps) {
     if (value === null || value === undefined) return 'vacío';
     if (key === 'status' && typeof value === 'string' && statusLabels[value]) {
       return statusLabels[value];
+    }
+    if (key === 'sponsor_type' && typeof value === 'string') {
+      return value === 'CRO' ? 'CRO' : 'Patrocinador';
     }
     if (typeof value === 'boolean') return value ? 'Sí' : 'No';
     return String(value);

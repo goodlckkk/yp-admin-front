@@ -21,12 +21,17 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { getSponsors, type Sponsor } from '../../lib/api';
 
-export function SponsorsView() {
+interface SponsorsViewProps {
+  userRole?: string | null;
+}
+
+export function SponsorsView({ userRole }: SponsorsViewProps) {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [filteredSponsors, setFilteredSponsors] = useState<Sponsor[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedSponsorId, setSelectedSponsorId] = useState<string | null>(null);
 
   // Cargar sponsors
   const loadSponsors = async () => {
@@ -63,13 +68,14 @@ export function SponsorsView() {
   }, [searchTerm, sponsors]);
 
   const handleEdit = (id: string) => {
-    // TODO: Implementar edición de sponsors
-    console.log('Editar sponsor:', id);
+    setSelectedSponsorId(id);
+    setIsAddModalOpen(true);
   };
 
   const handleAddSuccess = (newSponsor: any) => {
     loadSponsors();
     setIsAddModalOpen(false);
+    setSelectedSponsorId(null);
   };
 
   // Calcular estadísticas
@@ -96,7 +102,6 @@ export function SponsorsView() {
           onClick={() => setIsAddModalOpen(true)}
           className="bg-[#04BFAD] hover:bg-[#024959] text-white"
         >
-          <Plus className="h-5 w-5 mr-2" />
           Agregar Sponsor
         </Button>
       </div>
@@ -157,7 +162,6 @@ export function SponsorsView() {
               onClick={() => setIsAddModalOpen(true)}
               className="bg-[#04BFAD] hover:bg-[#024959] text-white"
             >
-              <Plus className="h-5 w-5 mr-2" />
               Agregar Sponsor
             </Button>
           )}
@@ -174,14 +178,17 @@ export function SponsorsView() {
         </div>
       )}
 
-      {/* Modal para agregar sponsor */}
-      {isAddModalOpen && (
-        <AddSponsorModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          onSuccess={handleAddSuccess}
-        />
-      )}
+      {/* Modal para agregar/editar sponsor */}
+      <AddSponsorModal
+        isOpen={isAddModalOpen}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setSelectedSponsorId(null);
+        }}
+        onSuccess={handleAddSuccess}
+        sponsorId={selectedSponsorId}
+        userRole={userRole}
+      />
     </div>
   );
 }

@@ -7,7 +7,19 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   output: 'static',
   integrations: [react()],
+  compressHTML: true,
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    build: {
+      cssMinify: true,
+      minify: 'esbuild',
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom'],
+          }
+        }
+      }
+    }
   }
 });

@@ -1,28 +1,33 @@
 /**
- * Modal para agregar un nuevo patrocinador/sponsor
+ * Modal para agregar o editar un patrocinador/sponsor
  * 
  * Características:
  * - Formulario con nombre, tipo (SPONSOR/CRO)
  * - Validación de campos requeridos
+ * - Modo edición cuando se pasa sponsorId
+ * - Historial de cambios visible para ADMIN
  * - Callback onSuccess para actualizar la lista
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { createSponsor } from '../../lib/api';
+import { createSponsor, getSponsor, updateSponsor } from '../../lib/api';
+import { ChangeHistory } from '../ui/ChangeHistory';
 
 interface AddSponsorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (newSponsor: any) => void;
   initialName?: string;
+  sponsorId?: string | null;
+  userRole?: string | null;
 }
 
-export function AddSponsorModal({ isOpen, onClose, onSuccess, initialName = '' }: AddSponsorModalProps) {
+export function AddSponsorModal({ isOpen, onClose, onSuccess, initialName = '', sponsorId = null, userRole }: AddSponsorModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -31,6 +36,37 @@ export function AddSponsorModal({ isOpen, onClose, onSuccess, initialName = '' }
     web_site: '',
     sponsor_type: 'SPONSOR' as 'SPONSOR' | 'CRO',
   });
+
+  // Cargar datos del sponsor si estamos editando
+  useEffect(() => {
+    if (isOpen && sponsorId) {
+      setLoading(true);
+      setError(null);
+      getSponsor(sponsorId)
+        .then((sponsor) => {
+          setFormData({
+            name: sponsor.name,
+            description: sponsor.description || '',
+            web_site: sponsor.web_site || '',
+            sponsor_type: sponsor.sponsor_type || 'SPONSOR',
+          });
+        })
+        .catch((err) => {
+          setError('Error al cargar los datos del patrocinador');
+          console.error(err);
+        })
+        .finally(() => setLoading(false));
+    } else if (isOpen && !sponsorId) {
+      // Reset form para nuevo sponsor
+      setFormData({
+        name: initialName,
+        description: '',
+        web_site: '',
+        sponsor_type: 'SPONSOR',
+      });
+      setError(null);
+    }
+  }, [isOpen, sponsorId, initialName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,14 +81,21 @@ export function AddSponsorModal({ isOpen, onClose, onSuccess, initialName = '' }
         web_site: formData.web_site.trim() || undefined,
         sponsor_type: formData.sponsor_type,
       };
-      
-      const newSponsor = await createSponsor(payload);
+
+      let result;
+      if (sponsorId) {
+        // Actualizar sponsor existente
+        result = await updateSponsor(sponsorId, payload);
+      } else {
+        // Crear nuevo sponsor
+        result = await createSponsor(payload);
+      }
       // Reset form
       setFormData({ name: '', description: '', web_site: '', sponsor_type: 'SPONSOR' });
-      onSuccess(newSponsor);
+      onSuccess(result);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Error al crear el patrocinador');
+      setError(err.message || `Error al ${sponsorId ? 'actualizar' : 'crear'} el patrocinador`);
     } finally {
       setLoading(false);
     }
@@ -62,7 +105,9 @@ export function AddSponsorModal({ isOpen, onClose, onSuccess, initialName = '' }
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-[#04BFAD]">Agregar Nuevo Patrocinador</DialogTitle>
+          <DialogTitle className="text-2xl text-[#04BFAD]">
+            {sponsorId ? 'Editar Patrocinador' : 'Agregar Nuevo Patrocinador'}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -126,6 +171,11 @@ export function AddSponsorModal({ isOpen, onClose, onSuccess, initialName = '' }
             </div>
           )}
 
+          {/* Historial de Cambios - Solo visible para ADMIN en modo edición */}
+          {userRole === 'ADMIN' && sponsorId && (
+            <ChangeHistory entityName="Sponsor" entityId={sponsorId} />
+          )}
+
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"
@@ -140,7 +190,7 @@ export function AddSponsorModal({ isOpen, onClose, onSuccess, initialName = '' }
               disabled={loading}
               className="bg-[#04BFAD] hover:bg-[#024959] text-white"
             >
-              {loading ? 'Guardando...' : 'Guardar Patrocinador'}
+              {loading ? 'Guardando...' : (sponsorId ? 'Actualizar Patrocinador' : 'Guardar Patrocinador')}
             </Button>
           </div>
         </form>

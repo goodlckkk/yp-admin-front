@@ -251,6 +251,17 @@ export async function createSponsor(data: { name: string; description?: string; 
 	});
 }
 
+export async function getSponsor(id: string): Promise<Sponsor> {
+	return fetchWithAuth<Sponsor>(`/sponsors/${id}`);
+}
+
+export async function updateSponsor(id: string, data: Partial<{ name: string; description?: string; web_site?: string; sponsor_type?: SponsorType }>): Promise<Sponsor> {
+	return fetchWithAuth<Sponsor>(`/sponsors/${id}`, {
+		method: 'PATCH',
+		body: JSON.stringify(data),
+	});
+}
+
 export interface TrialSuggestion {
 	trial: Trial;
 	matchScore: number;

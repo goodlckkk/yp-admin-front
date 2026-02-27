@@ -43,6 +43,7 @@ import { Cie10MultipleAutocomplete } from '../ui/Cie10MultipleAutocomplete';
 import { MedicamentoSimpleAutocomplete } from '../ui/MedicamentoSimpleAutocomplete';
 import type { Trial, CreateTrialPayload, Sponsor, PatientIntake } from '../../lib/api';
 import { createTrial, updateTrial, getSponsors, fetchWithAuth, requestTrialFull } from '../../lib/api';
+import { ChangeHistory } from '../ui/ChangeHistory';
 
 type TrialFormMode = 'create' | 'edit' | 'request' | 'manage-patients';
 
@@ -54,6 +55,7 @@ interface TrialFormProps {
   mode?: TrialFormMode;
   userInstitutionId?: string | null;
   userInstitutionName?: string | null;
+  userRole?: string | null;
 }
 
 interface FormData {
@@ -127,7 +129,7 @@ const INITIAL_FORM_DATA: FormData = {
   },
 };
 
-export function TrialForm({ trial, isOpen, onClose, onSuccess, mode: propMode, userInstitutionId, userInstitutionName }: TrialFormProps) {
+export function TrialForm({ trial, isOpen, onClose, onSuccess, mode: propMode, userInstitutionId, userInstitutionName, userRole }: TrialFormProps) {
   // Determinar el modo automáticamente si no se proporciona
   const mode: TrialFormMode = propMode || (trial ? 'edit' : 'create');
   const isRequestMode = mode === 'request';
@@ -1339,6 +1341,11 @@ export function TrialForm({ trial, isOpen, onClose, onSuccess, mode: propMode, u
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Historial de Cambios - Solo visible para ADMIN en modo edición */}
+      {userRole === 'ADMIN' && mode === 'edit' && trial?.id && (
+        <ChangeHistory entityName="Trial" entityId={trial.id} />
+      )}
 
       {/* Modales para agregar institución y sponsor */}
       <AddInstitutionModal

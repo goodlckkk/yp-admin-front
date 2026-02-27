@@ -45,7 +45,7 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
       id: 'default-1',
       title: 'Tu salud es lo más importante',
       description: 'Participa en estudios clínicos con seguimiento médico y acompañamiento profesional.',
-      imageUrl: '/Slider-1.png',
+      imageUrl: '/slider-1.webp',
       ctaText: 'Quiero participar',
       ctaUrl: null,
       order: 1,
@@ -55,7 +55,7 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
       id: 'default-2',
       title: 'Decide con tranquilidad',
       description: 'Tu participación es voluntaria, segura y respaldada por equipos de salud especializados.',
-      imageUrl: '/slider-2.png',
+      imageUrl: '/slider-2.webp',
       ctaText: 'Quiero participar',
       ctaUrl: null,
       order: 2,
@@ -65,7 +65,7 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
       id: 'default-3',
       title: 'Sin costo y con un propósito real',
       description: 'Participar es gratuito y ayuda a mejorar los tratamientos del futuro.',
-      imageUrl: '/slider-3.png',
+      imageUrl: '/slider-3.webp',
       ctaText: 'Quiero participar',
       ctaUrl: null,
       order: 3,
@@ -221,6 +221,9 @@ export default function HeroSlider({ autoPlayInterval = 5000, onPostularClick }:
                 src={slide.imageUrl}
                 alt={slide.title || ''}
                 className="absolute inset-0 w-full h-full object-cover object-center"
+                loading={index === 0 ? 'eager' : 'lazy'}
+                fetchPriority={index === 0 ? 'high' : 'low'}
+                decoding="async"
                 onLoad={() => setImageLoaded(prev => ({ ...prev, [slide.id]: true }))}
               />
               {/* Overlay con gradiente más fuerte abajo para legibilidad en mobile */}

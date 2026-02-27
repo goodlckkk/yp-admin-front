@@ -328,7 +328,6 @@ export default function HeroSlidesManager() {
           onClick={handleOpenCreate}
           className="bg-[#04BFAD] hover:bg-[#024959] text-white"
         >
-          <Icons.Plus className="h-4 w-4 mr-2" />
           Nuevo Slide
         </Button>
       </div>
@@ -457,7 +456,6 @@ export default function HeroSlidesManager() {
               onClick={handleOpenCreate}
               className="bg-[#04BFAD] hover:bg-[#024959] text-white"
             >
-              <Icons.Plus className="h-4 w-4 mr-2" />
               Crear primer slide
             </Button>
           </CardContent>
