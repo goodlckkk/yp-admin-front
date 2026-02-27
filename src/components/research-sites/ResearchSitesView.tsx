@@ -263,6 +263,7 @@ export function ResearchSitesView({ userRole }: ResearchSitesViewProps) {
                 // TODO: Abrir modal de detalles
                 handleEdit(id);
               }}
+              userRole={userRole}
             />
           ))}
         </div>

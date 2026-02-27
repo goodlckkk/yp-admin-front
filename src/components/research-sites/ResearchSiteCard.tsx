@@ -32,9 +32,10 @@ interface ResearchSiteCardProps {
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onClick?: (id: string) => void;
+  userRole?: string | null;
 }
 
-export function ResearchSiteCard({ site, onEdit, onDelete, onClick }: ResearchSiteCardProps) {
+export function ResearchSiteCard({ site, onEdit, onDelete, onClick, userRole }: ResearchSiteCardProps) {
   const handleCardClick = () => {
     if (onClick) {
       onClick(site.id);
@@ -106,14 +107,16 @@ export function ResearchSiteCard({ site, onEdit, onDelete, onClick }: ResearchSi
             >
               Editar
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDeleteClick}
-              className="hover:bg-rose-500 hover:text-white border-rose-200 h-7 w-7 p-0"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            {userRole === 'ADMIN' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDeleteClick}
+                className="hover:bg-rose-500 hover:text-white border-rose-200 h-7 w-7 p-0"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>
