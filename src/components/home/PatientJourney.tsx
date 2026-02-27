@@ -87,7 +87,7 @@ export default function PatientJourney({ onPostularClick }: PatientJourneyProps)
                 <h3 className="text-2xl font-bold text-[#024959] mb-3 text-center">
                   {step.title}
                 </h3>
-                <p className="text-[#4D4D59] leading-relaxed text-justify flex-1">
+                <p className="text-[#4D4D59] leading-relaxed text-center flex-1">
                   {step.description}
                 </p>
 

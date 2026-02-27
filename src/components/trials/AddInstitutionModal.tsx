@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { createResearchSite, updateResearchSite, getResearchSite, createUser, getUserByInstitution, UserRole, type CreateResearchSitePayload, type User } from '../../lib/api';
 import { Eye, EyeOff } from 'lucide-react';
 import { regionesChile, getComunasByRegion } from '../../lib/regiones-comunas';
+import { ChangeHistory } from '../ui/ChangeHistory';
 
 // Las regiones y comunas ahora se importan desde el archivo compartido
 
@@ -25,9 +26,10 @@ interface AddInstitutionModalProps {
   onSuccess: (newSite: any) => void;
   initialName?: string;
   siteId?: string | null; // ID del sitio a editar
+  userRole?: string | null;
 }
 
-export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = '', siteId = null }: AddInstitutionModalProps) {
+export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = '', siteId = null, userRole }: AddInstitutionModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -321,6 +323,11 @@ export function AddInstitutionModal({ isOpen, onClose, onSuccess, initialName = 
             <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm">
               {error}
             </div>
+          )}
+
+          {/* Historial de Cambios - Solo visible para ADMIN en modo edición */}
+          {userRole === 'ADMIN' && siteId && (
+            <ChangeHistory entityName="ResearchSite" entityId={siteId} />
           )}
 
           <div className="flex justify-end gap-3 pt-4">

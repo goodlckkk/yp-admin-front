@@ -23,7 +23,11 @@ import { Badge } from '../ui/badge';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { getResearchSites, deleteResearchSite, type ResearchSite } from '../../lib/api';
 
-export function ResearchSitesView() {
+interface ResearchSitesViewProps {
+  userRole?: string | null;
+}
+
+export function ResearchSitesView({ userRole }: ResearchSitesViewProps) {
   const [sites, setSites] = useState<ResearchSite[]>([]);
   const [filteredSites, setFilteredSites] = useState<ResearchSite[]>([]);
   const [loading, setLoading] = useState(true);
@@ -137,7 +141,6 @@ export function ResearchSitesView() {
           onClick={() => setIsAddModalOpen(true)}
           className="bg-[#04BFAD] hover:bg-[#024959] text-white"
         >
-          <Plus className="h-5 w-5 mr-2" />
           Agregar Sitio
         </Button>
       </div>
@@ -240,7 +243,6 @@ export function ResearchSitesView() {
               onClick={() => setIsAddModalOpen(true)}
               className="bg-[#04BFAD] hover:bg-[#024959] text-white"
             >
-              <Plus className="h-5 w-5 mr-2" />
               Agregar Primer Sitio
             </Button>
           )}
@@ -275,6 +277,7 @@ export function ResearchSitesView() {
         }}
         onSuccess={handleAddSuccess}
         siteId={selectedSiteId}
+        userRole={userRole}
       />
 
       {/* Modal de confirmación para eliminar */}

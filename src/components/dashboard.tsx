@@ -21,20 +21,21 @@ import {
 } from "../lib/api"
 import { Icons } from "./ui/icons"
 import { Input } from "./ui/input"
-import { useEffect, useMemo, useState } from "react"
+import { lazy, Suspense, useEffect, useMemo, useState } from "react"
 import type { PatientIntake, Trial, DashboardStats, TrendData, ResearchSite } from "../lib/api"
-import { TrialForm } from './trials/TrialForm';
-import { PatientEditForm } from './patients/PatientEditForm';
-import { ManualPatientForm } from './patients/ManualPatientForm';
-import { TrialList } from "./trials/TrialList"
-import { ResearchSitesView } from "./research-sites/ResearchSitesView"
-import { SponsorsView } from "./sponsors/SponsorsView"
-import HeroSlidesManager from './dashboard/HeroSlidesManager';
-import SuccessStoriesManager from './dashboard/SuccessStoriesManager';
+const TrialForm = lazy(() => import('./trials/TrialForm').then(m => ({ default: m.TrialForm })));
+const PatientEditForm = lazy(() => import('./patients/PatientEditForm').then(m => ({ default: m.PatientEditForm })));
+const ManualPatientForm = lazy(() => import('./patients/ManualPatientForm').then(m => ({ default: m.ManualPatientForm })));
+const TrialList = lazy(() => import('./trials/TrialList').then(m => ({ default: m.TrialList })));
+const ResearchSitesView = lazy(() => import('./research-sites/ResearchSitesView').then(m => ({ default: m.ResearchSitesView })));
+const SponsorsView = lazy(() => import('./sponsors/SponsorsView').then(m => ({ default: m.SponsorsView })));
+const HeroSlidesManager = lazy(() => import('./dashboard/HeroSlidesManager'));
+const SuccessStoriesManager = lazy(() => import('./dashboard/SuccessStoriesManager'));
 import { Cie10SingleAutocomplete } from './ui/Cie10SingleAutocomplete';
 import * as XLSX from 'xlsx';
 import { useInactivityLogout } from '../hooks/useInactivityLogout';
 import { useRequireAuth } from '../hooks/useRequireAuth';
+
 
 // Función de navegación para Astro - siempre recarga la página
 const navigate = (path: string) => {
@@ -695,7 +696,10 @@ export default function DashboardPage() {
   if (!isAuthorized) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Validando sesión...</p>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-[#04BFAD] border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-500 text-sm">Validando sesión...</p>
+        </div>
       </div>
     )
   }
@@ -713,8 +717,9 @@ export default function DashboardPage() {
           <div className="p-4 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src="/logo.svg" alt="yoParticipo" className="w-8 h-8 scale-150" />
-              <div>
-                <h1 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>YOParticipo</h1>
+              <div style={{ lineHeight: '0.9' }}>
+                <h1 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: '0', padding: '0', display: 'block', lineHeight: '0.9' }}>YO</h1>
+                <h2 className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #04bcbc, #346c84)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: '0', padding: '0', display: 'block', lineHeight: '1.2' }}>Participo</h2>
                 <p className="text-xs text-gray-500">Dashboard Admin</p>
               </div>
             </div>
@@ -972,7 +977,6 @@ export default function DashboardPage() {
                       size="sm"
                       className="bg-[#04BFAD] hover:bg-[#024959] text-white transition-colors"
                     >
-                      <Icons.Plus className="w-4 h-4 sm:mr-2" />
                       <span className="hidden sm:inline">Agregar Paciente</span>
                     </Button>
                   </div>
@@ -1381,36 +1385,45 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Estudios Clínicos */}
-          {activeSection === "estudios" && (
-            <TrialList 
-              initialTrials={trials}
-              onTrialChange={handleTrialChange}
-              userRole={userRole}
-              userInstitutionId={userInstitutionId}
-              userInstitutionName={userInstitutionName}
-            />
-          )}
+          <Suspense fallback={
+            <div className="flex items-center justify-center py-20">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-8 h-8 border-4 border-[#04BFAD] border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm text-gray-500">Cargando...</p>
+              </div>
+            </div>
+          }>
+            {/* Estudios Clínicos */}
+            {activeSection === "estudios" && (
+              <TrialList 
+                initialTrials={trials}
+                onTrialChange={handleTrialChange}
+                userRole={userRole}
+                userInstitutionId={userInstitutionId}
+                userInstitutionName={userInstitutionName}
+              />
+            )}
 
-          {/* Sitios/Instituciones */}
-          {activeSection === "sitios" && (
-            <ResearchSitesView />
-          )}
+            {/* Sitios/Instituciones */}
+            {activeSection === "sitios" && (
+              <ResearchSitesView userRole={userRole} />
+            )}
 
-          {/* Patrocinadores/CROs */}
-          {activeSection === "sponsors" && (
-            <SponsorsView />
-          )}
+            {/* Patrocinadores/CROs */}
+            {activeSection === "sponsors" && (
+              <SponsorsView userRole={userRole} />
+            )}
 
-          {/* Slider Principal */}
-          {activeSection === "slider" && (
-            <HeroSlidesManager />
-          )}
+            {/* Slider Principal */}
+            {activeSection === "slider" && (
+              <HeroSlidesManager />
+            )}
 
-          {/* Historias que Inspiran */}
-          {activeSection === "historias" && (
-            <SuccessStoriesManager />
-          )}
+            {/* Historias que Inspiran */}
+            {activeSection === "historias" && (
+              <SuccessStoriesManager />
+            )}
+          </Suspense>
         </main>
       </div>
 
@@ -1420,6 +1433,7 @@ export default function DashboardPage() {
       )}
 
       {/* Modales */}
+      <Suspense fallback={null}>
       <TrialForm
         trial={selectedTrial}
         isOpen={isTrialFormOpen}
@@ -1470,6 +1484,7 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+      </Suspense>
     </div>
   )
 }

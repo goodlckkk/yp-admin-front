@@ -224,12 +224,17 @@ export function ManualPatientForm({ isOpen, onClose, onSuccess, userRole }: Manu
 
     try {
       // Preparar payload con teléfono formateado completo (+56 + 9 dígitos)
-      const payload = {
+      const payload: any = {
         ...formData,
         telefono: `+56${formData.telefono.replace(/[^0-9]/g, '')}`,
         telefonoCodigoPais: '+56',
         telefonoNumero: formData.telefono.replace(/[^0-9]/g, ''),
       };
+
+      // Eliminar referralResearchSiteId si está vacío para evitar error de validación UUID
+      if (!payload.referralResearchSiteId) {
+        delete payload.referralResearchSiteId;
+      }
       
       await createPatientIntake(payload);
       

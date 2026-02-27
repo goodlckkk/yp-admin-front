@@ -326,7 +326,6 @@ export default function SuccessStoriesManager() {
           onClick={handleOpenCreate}
           className="bg-[#04BFAD] hover:bg-[#024959] text-white"
         >
-          <Icons.Plus className="h-4 w-4 mr-2" />
           Nueva Historia
         </Button>
       </div>
@@ -435,7 +434,6 @@ export default function SuccessStoriesManager() {
               onClick={handleOpenCreate}
               className="bg-[#04BFAD] hover:bg-[#024959] text-white"
             >
-              <Icons.Plus className="h-4 w-4 mr-2" />
               Crear Primera Historia
             </Button>
           </CardContent>
